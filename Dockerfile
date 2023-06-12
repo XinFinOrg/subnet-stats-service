@@ -11,8 +11,9 @@ WORKDIR /app
 RUN npm install --legacy-peer-deps
 
 # Set Env
-ENV NODE_ENV development
+ENV NODE_ENV production
 EXPOSE 3000
+EXPOSE 443
 
 # Cmd script
-CMD ["npm", "run", "dev"]
+CMD ["npm", "run", "start"]

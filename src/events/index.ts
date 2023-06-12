@@ -5,6 +5,9 @@ import { logger } from '../utils/logger';
 import { HelloData } from '../interfaces/hello.interface';
 import { NodeInfo } from '../interfaces/node.interface';
 import { NodeService } from '../services/node.service';
+import { WS_SECRET } from '../config';
+
+const websocketSecret = WS_SECRET || 'subnet-stats-server';
 
 export class EventsHandler {
   private nodeServide: NodeService;
@@ -28,6 +31,13 @@ export class EventsHandler {
       logger.info('🚀 Received an event from subnet node: ', spark.address.ip);
       spark.on('hello', (data: HelloData) => {
         logger.debug('RECEIVER: Hello, Data: ', JSON.stringify(data));
+        // Auth checking
+        if (!data.secret || websocketSecret != data.secret) {
+          logger.info('Disconnect a node who does not have the correct WS secret: ', spark.address.ip);
+          spark.end(undefined, { reconnect: false });
+          return false;
+        }
+
         if (data.id) {
           const nodeInfo: NodeInfo = {
             id: data.id.toString(),
