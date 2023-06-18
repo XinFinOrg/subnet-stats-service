@@ -1,20 +1,238 @@
 tags:
 - name: health
   description: health check API
-
+        
 paths:
-# [GET] health check
   /healthcheck:
     get:
-      tags:
-      - health
       summary: health check endpoint
+      tags:
+        - health
       responses:
         200:
           description: 'OK'
+        400:
+          description: 'Bad Request'
+        409:
+          description: 'Conflict'
         500:
           description: 'Server Error'
-
+  /information/masterNodes:
+    get:
+      summary: Get master nodes information such as committ size and their status
+      tags:
+        - home
+      responses:
+        '200':
+          description: Master node information
+          content: 
+            'application/json':
+              schema: 
+                type: object
+                properties:
+                  summary:
+                    description: Summary information about all the nodes.
+                    type: object
+                    properties:
+                      committeeSize:
+                        type: integer
+                      activeNodeSize:
+                        type: integer
+                      standByNodeSize:
+                        type: integer
+                    required:
+                      - committeeSize
+                      - activeNodeSize
+                  nodes:
+                    description: A list of existing master nodes. Sorted by nodeId
+                    type: array
+                    items:
+                      $ref: '#/definitions/MasterNode'
+        '400':
+          description: 'Bad Request'
+        '409':
+          description: 'Conflict'
+        '500':
+          description: 'Server Error'
+  /information/relayer:
+    get:
+      summary: Get the relayer related system information such as admin account address and balance, relayer status etc.
+      tags:
+        - home
+      responses:
+        '200':
+          content: 
+            'application/json':
+              schema: 
+                type: object
+                properties:
+                  account:
+                    description: The admin/super account information
+                    type: object
+                    properties:
+                      balance:
+                        description: The super/admin account remaining balance in XDC
+                        type: string
+                      walletAddress:
+                        description: The wallet address of the account
+                        type: string
+                    required:
+                      - walletAddress
+                      - balance
+                  relayer:
+                    type: object
+                    properties:
+                      backlog:
+                        description: The current gap between audited block in smartcontract (parent chain) and latest minded block in subnet 
+                        type: integer
+                      contractAddress:
+                        type: string
+                    required:
+                      - contractAddress
+                      - backlog
+                required:
+                  - account
+                  - relayer
+        '400':
+          description: 'Bad Request'
+        '409':
+          description: 'Conflict'
+        '500':
+          description: 'Server Error'
+  /information/network:
+    get:
+      summary: Get the subnet network information, such as block mining time, tx throughput etc
+      tags:
+        - home
+      responses:
+        '200':
+          content: 
+            'application/json':
+              schema: 
+                type: object
+                properties:
+                  subnet:
+                    type: object
+                    properties:
+                      block:
+                        description: block metadata, such as mining frequency
+                        type: object
+                        properties:
+                          averageBlockTime:
+                            description: The block mining time per X second.
+                            type: integer
+                          txThroughput:
+                            description: The subnet transaction throughput, we only keep track of the last 10 txs and take average per second.
+                            type: integer
+                    required:
+                      - block
+                  parentChain:
+                    type: object
+                    properties:
+                      targetChain:
+                        description: A string value which is used to identify the target parent chain. It can be a URL, IP address or a name.
+                        type: string
+                    required:
+                      - targetChain
+                required:
+                  - subnet
+                  - parentChain
+        '400':
+          description: 'Bad Request'
+        '500':
+          description: 'Server Error'
+                  
+  /confirmation:
+    get:
+      summary: This endpoint is used to get confirmation information for a particular subnet block height, block hash or transaction hash.
+      tags:
+        - confirmation
+      parameters:
+        name: input
+        in: path
+        description: The block height or hash or transaction hash
+        required: true
+        type: string
+      responses:
+        '200':
+          content: 
+            'application/json':
+              schema: 
+                type: object
+                properties:
+                  inputType:
+                    type: string
+                    enum: [BLOCK_HEIGHT, BLOCK_HASH, TRANSACTION_HASH, INVALID]
+                  subnet:
+                    type: object
+                    properties:
+                      isConfirmed:
+                        type: boolean
+                      blockHeight:
+                        type: integer
+                      blockHash:
+                        type: string
+                    required:
+                      - isConfirmed
+                      - blockHeight
+                      - blockHash
+                  parentChain:
+                    type: object
+                    properties:
+                      isConfirmed:
+                        type: boolean
+                      blockHeight:
+                        type: integer
+                      blockHash:
+                        type: string
+                      proposer:
+                        type: string
+                    required:
+                      - isConfirmed
+                      - blockHeight
+                      - blockHash
+                  transaction:
+                    type: object
+                    properties:
+                      isConfirmed:
+                        type: boolean
+                      from:
+                        type: string
+                      to:
+                        type: string
+                      timestamp:
+                        type: string
+                      gas:
+                        type: string
+                required:
+                  - inputType
+                  - subnet
+                  - parentChain
+        '400':
+          description: 'Bad Request'
+        '500':
+          description: 'Server Error'
+                      
+# definitions
+definitions:
+  MasterNode:
+    type: object
+    properties:
+        address:
+          description: The master node xdc address in subnet
+          type: string
+        role:
+          type: string
+          enum: [STANDBY, COMMITTEE_MEMBER]
+        status:
+          type: string
+          enum: [ACTIVE, INACTIVE]
+        currentHeight:
+          type: integer
+    required:
+      - address
+      - role
+        
 schemes:
  - https
  - http

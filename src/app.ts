@@ -10,7 +10,7 @@ import swaggerUi from 'swagger-ui-express';
 import { LOG_FORMAT } from './config';
 import { Routes } from './interfaces/routes.interface';
 import { ErrorMiddleware } from './middlewares/error.middleware';
-import { stream } from './utils/logger';
+import { logger, stream } from './utils/logger';
 
 export class App {
   public app: express.Application;
@@ -45,19 +45,24 @@ export class App {
   }
 
   private initializeSwagger() {
-    const options = {
-      swaggerDefinition: {
-        info: {
-          title: 'REST API',
-          version: '1.0.0',
-          description: 'Example docs',
+    try {
+      const options = {
+        swaggerDefinition: {
+          openapi: '3.0.0',
+          info: {
+            title: 'Subnet Stats Service REST API',
+            version: '1.0.0',
+            description: 'Swagger for the subnet stats server',
+          },
         },
-      },
-      apis: ['swagger.yaml'],
-    };
+        apis: ['swagger.yaml'],
+      };
 
-    const specs = swaggerJSDoc(options);
-    this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
+      const specs = swaggerJSDoc(options);
+      this.app.use('/', swaggerUi.serve, swaggerUi.setup(specs));
+    } catch (error) {
+      logger.error('Fail to initialize swagger: ', error);
+    }
   }
 
   private initializeErrorHandling() {
