@@ -19,7 +19,7 @@ paths:
           description: 'Server Error'
   /information/masterNodes:
     get:
-      summary: Get master nodes information such as committ size and their status
+      summary: Get master nodes information such as committed size and their status
       tags:
         - home
       responses:
@@ -34,15 +34,15 @@ paths:
                     description: Summary information about all the nodes.
                     type: object
                     properties:
-                      committeeSize:
+                      committed:
                         type: integer
-                      activeNodeSize:
+                      activeNode:
                         type: integer
-                      standByNodeSize:
+                      standByNode:
                         type: integer
                     required:
-                      - committeeSize
-                      - activeNodeSize
+                      - committed
+                      - activeNode
                   nodes:
                     description: A list of existing master nodes. Sorted by nodeId
                     type: array
@@ -79,20 +79,15 @@ paths:
                     required:
                       - walletAddress
                       - balance
-                  relayer:
-                    type: object
-                    properties:
-                      backlog:
-                        description: The current gap between audited block in smartcontract (parent chain) and latest minded block in subnet 
-                        type: integer
-                      contractAddress:
-                        type: string
-                    required:
-                      - contractAddress
-                      - backlog
+                  backlog:
+                    description: The current gap between audited block in smartcontract (parent chain) and latest minded block in subnet 
+                    type: integer
+                  contractAddress:
+                    type: string
                 required:
                   - account
-                  - relayer
+                  - contractAddress
+                  - backlog
         '400':
           description: 'Bad Request'
         '409':
@@ -223,7 +218,7 @@ definitions:
           type: string
         role:
           type: string
-          enum: [STANDBY, COMMITTEE_MEMBER]
+          enum: [STANDBY, MINER, PENALTY]
         status:
           type: string
           enum: [ACTIVE, INACTIVE]
