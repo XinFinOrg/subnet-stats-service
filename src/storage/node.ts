@@ -1,5 +1,5 @@
 import NodeCache from 'node-cache';
-import { NodeInfo } from '@/interfaces/node.interface';
+import { NodeInfo } from '../interfaces/node.interface';
 
 // This class is created so that we can easily swap with real DB without making changes to any other files
 export class NodeStorage {
