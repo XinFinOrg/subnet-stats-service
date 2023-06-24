@@ -84,10 +84,21 @@ paths:
                     type: integer
                   contractAddress:
                     type: string
+                  health:
+                    type: object
+                    properties:
+                      status:
+                        description: An enum value to indicate the current relayer status.
+                        type: string
+                        enum: [UP, DOWN]
+                      details:
+                        description: A short description about the current running status when there is an issue. E.g System is running but very low
+                        type: string
                 required:
                   - account
                   - contractAddress
                   - backlog
+                  - health
         '400':
           description: 'Bad Request'
         '409':
@@ -129,9 +140,20 @@ paths:
                         type: string
                     required:
                       - targetChain
+                  health:
+                    type: object
+                    properties:
+                      status:
+                        description: An enum value to indicate the current relayer status.
+                        type: string
+                        enum: [UP, DOWN]
+                      details:
+                        description: A short description about the current running status when there is an issue. E.g System is running but very low
+                        type: string
                 required:
                   - subnet
                   - parentChain
+                  - health
         '400':
           description: 'Bad Request'
         '500':
