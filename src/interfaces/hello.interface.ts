@@ -1,4 +1,4 @@
-export interface HelloData {
+export interface HelloEventData {
   id: number;
   secret: string;
   info: any;
