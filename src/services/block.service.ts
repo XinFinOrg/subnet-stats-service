@@ -47,11 +47,10 @@ export class BlockService {
   */
   private async shouldAddBlock(pointer: { latest: StoredBlock; earliest: StoredBlock }, newBlock: BlockInfo): Promise<Boolean> {
     const { earliest, latest } = pointer;
-    if (
-      !earliest ||
-      latest.number < newBlock.number ||
-      (earliest.number < newBlock.number && !(await this.blockStorage.getMinedBlockByHash(newBlock.hash)))
-    ) {
+    if (!earliest || latest.number < newBlock.number) {
+      return true;
+    }
+    if (earliest.number < newBlock.number && !(await this.blockStorage.getMinedBlockByHash(newBlock.hash))) {
       return true;
     }
     return false;

@@ -23,6 +23,6 @@ export class Db {
     if (!ids || !ids.length) {
       ids = this.cache.keys();
     }
-    return await this.cache.mget<T>(ids);
+    return this.cache.mget<T>(ids);
   }
 }
