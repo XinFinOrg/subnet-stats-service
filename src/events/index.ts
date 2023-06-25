@@ -5,7 +5,7 @@ import { logger } from '../utils/logger';
 import { HelloEventData } from '../interfaces/hello.interface';
 import { NodeInfo } from '../interfaces/node.interface';
 import { WS_SECRET } from '../config';
-import { BlockEventData } from '../interfaces/block.interface';
+import { BlockEventData } from '../interfaces/input/block.interface';
 import { Services, getService } from '../services';
 
 const websocketSecret = WS_SECRET || 'subnet-stats-server';
