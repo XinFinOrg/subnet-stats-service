@@ -1,4 +1,4 @@
-import { BlockService } from './BLOCK.service';
+import { BlockService } from './block.service';
 import { NodeService } from './node.service';
 
 export class Services {
