@@ -1,6 +1,7 @@
 import { Service } from 'typedi';
-import { BlockStorage, StoredBlock } from '../storage/block';
-import { BlockInfo, LatestCommittedBlockInfoData } from '../interfaces/block.interface';
+import { BlockStorage, StoredBlock, StoredLatestCommittedBlock } from '../storage/block';
+import { BlockInfo, LatestCommittedBlockInfoData } from '../interfaces/input/block.interface';
+import { BlockResponse } from '../interfaces/output/blocksResponse.interface';
 
 @Service()
 export class BlockService {
@@ -22,9 +23,32 @@ export class BlockService {
     return await this.blockStorage.getMinedBlockByHash(hash);
   }
 
-  // Get all available blocks in sorted by block number order.
-  public async getAll(): Promise<StoredBlock[]> {
-    return await this.blockStorage.getAllBlocks();
+  // Get all available blocks on the same chain (sorted by block number)
+  public async getRecentBlocks(): Promise<BlockResponse[]> {
+    const allBlocks = await this.blockStorage.getAllBlocks();
+    const lastCommittedBlockInfo = await this.blockStorage.getLatestCommittedBlock();
+    if (!lastCommittedBlockInfo) {
+      return this.shortCircuitRecentBlocks(allBlocks);
+    }
+    const lastCommittedBlock = await this.blockStorage.getMinedBlockByHash(lastCommittedBlockInfo.hash);
+    // Short-curcit if the committedBlock is not even recored in the system. The gap between mined and committed is too far
+    if (!lastCommittedBlock) {
+      return this.shortCircuitRecentBlocks(allBlocks);
+    }
+
+    const sameChainBlocks = this.filterOutForksBeforeStartingBlock(allBlocks, lastCommittedBlock);
+
+    return sameChainBlocks.map(b => {
+      let committedInSubnet = false;
+      if (b.number <= lastCommittedBlockInfo.number) {
+        committedInSubnet = true;
+      }
+      return {
+        ...b,
+        committedInSubnet,
+        committedInParentChain: false, // TODO: WIP for checking the status with parent chain
+      };
+    });
   }
 
   public async addLatestCommittedBlock(newCommittedBlock: LatestCommittedBlockInfoData): Promise<void> {
@@ -32,6 +56,10 @@ export class BlockService {
     if (!lastCommittedBlock || lastCommittedBlock.number < newCommittedBlock.number) {
       this.blockStorage.setLatestCommittedBlock(newCommittedBlock);
     }
+  }
+
+  public async getLastCommittedBlock(): Promise<StoredLatestCommittedBlock> {
+    return await this.blockStorage.getLatestCommittedBlock();
   }
 
   public async getBlockChainStatus(): Promise<boolean> {
@@ -54,5 +82,48 @@ export class BlockService {
       return true;
     }
     return false;
+  }
+
+  /**
+   *
+   * @param chainToFilter: The list of blocks which you want to filter forks with
+   * @param startingBlock: Optional value to indicate the starting block for filtering. If not provided, we start from the last block in the chainToFilter. A common value for this is the last committedBlock
+   * @returns
+   */
+  private filterOutForksBeforeStartingBlock(chainToFilter: StoredBlock[], startingBlock?: StoredBlock): StoredBlock[] {
+    // Nothing to filter if nothing in the chain
+    if (!chainToFilter || !chainToFilter.length) {
+      return chainToFilter;
+    }
+
+    const startingPointer = startingBlock ? startingBlock : chainToFilter[chainToFilter.length - 1];
+    const onChainHash = [startingPointer.hash];
+    let parentHashPointer = startingBlock.parentHash;
+    // Track back through the parentChain hash, if found then mark them as on the same chain
+    while (parentHashPointer) {
+      const parentBlock = chainToFilter.find(b => b.hash === parentHashPointer);
+      if (!parentBlock) {
+        parentHashPointer = undefined;
+        break;
+      }
+      onChainHash.push(parentHashPointer);
+      parentHashPointer = parentBlock.parentHash;
+    }
+    // Special case, we don't want to filter out any blocks that is mined after the startingBlock.
+    const filterBypassedBlockHash = chainToFilter.filter(b => b.number > startingBlock.number).map(b => b.hash);
+    onChainHash.push(...filterBypassedBlockHash);
+
+    // Now filter out anything that is not on the onChainHash list and sort the final list by block number again
+    return chainToFilter.filter(b => onChainHash.find(onchainBlockHash => onchainBlockHash === b.hash)).sort((a, b) => a.number - b.number);
+  }
+
+  private shortCircuitRecentBlocks(allBlocks: StoredBlock[]) {
+    return allBlocks.map(b => {
+      return {
+        ...b,
+        committedInSubnet: false,
+        committedInParentChain: false,
+      };
+    });
   }
 }

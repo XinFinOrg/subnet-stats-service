@@ -31,7 +31,7 @@ paths:
                 type: object
                 properties:
                   blocks:
-                    description: A list of existing master nodes. Sorted by block number
+                    description: A list of recently mined blocks. Sorted by block number
                     type: array
                     items:
                       $ref: '#/definitions/Block'
@@ -42,13 +42,24 @@ paths:
                         type: string
                       number:
                         type: number
-                  latestCommittedBlock:
+                  latestSubnetCommittedBlock:
                     description: The block that was most recently confirm to be committed in the subnet. (Ignoring its confirmation status from parent chain)
                     properties:
                       hash:
                         type: string
                       number:
                         type: number
+                  latestParentChainCommittedBlock:
+                    description: The block that was most recently confirm to be committed in the parent chain.
+                    properties:
+                      hash:
+                        type: string
+                      number:
+                        type: number
+                  chainHealth:
+                    description: A simple enum to indicate whether the subnet chain is operational. i.e if blocks are mined
+                    type: string
+                    enum: [UP, DOWN]
                     
         '400':
           description: 'Bad Request'
@@ -296,9 +307,6 @@ definitions:
           type: string
         number:
           description: The subnet block number
-          type: number
-        round:
-          description: The subnet block round number
           type: number
         parentHash:
           description: The subnet block's parentHash
