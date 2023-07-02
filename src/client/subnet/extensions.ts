@@ -31,7 +31,6 @@ interface MasternodesInfo {
 
 export interface Web3WithExtension extends Web3 {
   xdcSubnet: {
-    getLatestCommittedBlockInfo: () => Promise<CommittedBlockInfo>;
     getV2BlockByNumber: (bluckNum: string) => Promise<FetchedV2BlockInfo>;
     getV2BlockByHash: (blockHash: string) => Promise<FetchedV2BlockInfo>;
     getMasternodesByNumber: (blockStatus: BlockStatus) => Promise<MasternodesInfo>;
@@ -41,10 +40,6 @@ export interface Web3WithExtension extends Web3 {
 export const subnetExtensions = {
   property: SUBNET_EXTENSION_NAME,
   methods: [
-    {
-      name: 'getLatestCommittedBlockInfo',
-      call: 'XDPoS_getLatestCommittedBlockHeader',
-    },
     {
       name: 'getV2BlockByNumber',
       params: 1,
