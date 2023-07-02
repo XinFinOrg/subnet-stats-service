@@ -1,4 +1,4 @@
-import { NodeInfo } from '../interfaces/node.interface';
+import { NodeInfo } from '../interfaces/input/node.interface';
 import { Db } from './base';
 
 const TYPE = 'NODE';

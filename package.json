@@ -11,9 +11,11 @@
         "build:tsc": "tsc && tsc-alias",
         "test": "jest --forceExit --detectOpenHandles",
         "lint": "eslint --ignore-path .gitignore --ext .ts src",
-        "lint:fix": "npm run lint -- --fix"
+        "lint:fix": "npm run lint -- --fix",
+        "postinstall": "patch-package"
     },
     "dependencies": {
+        "agentkeepalive": "^4.3.0",
         "class-transformer": "^0.5.1",
         "class-validator": "^0.13.2",
         "compression": "^1.7.4",
@@ -35,6 +37,7 @@
         "swagger-ui-express": "^4.6.3",
         "typedi": "^0.10.0",
         "uuid": "^9.0.0",
+        "web3": "^1.8.2",
         "winston": "^3.8.1",
         "winston-daily-rotate-file": "^4.7.1",
         "ws": "^8.13.0"
@@ -66,6 +69,7 @@
         "node-config": "^0.0.2",
         "node-gyp": "^9.1.0",
         "nodemon": "^2.0.19",
+        "patch-package": "^7.0.0",
         "pm2": "^5.2.0",
         "prettier": "^2.7.1",
         "supertest": "^6.2.4",

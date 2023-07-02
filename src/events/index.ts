@@ -2,8 +2,8 @@ import Primus, { Spark } from 'primus';
 import { Server } from 'http';
 
 import { logger } from '../utils/logger';
-import { HelloEventData } from '../interfaces/hello.interface';
-import { NodeInfo } from '../interfaces/node.interface';
+import { HelloEventData } from '../interfaces/input/hello.interface';
+import { NodeInfo } from '../interfaces/input/node.interface';
 import { WS_SECRET } from '../config';
 import { BlockEventData } from '../interfaces/input/block.interface';
 import { Services, getService } from '../services';
