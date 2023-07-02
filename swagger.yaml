@@ -67,7 +67,7 @@ paths:
           description: 'Conflict'
         '500':
           description: 'Server Error'
-  /information/masterNodes:
+  /information/masternodes:
     get:
       summary: Get master nodes information such as committed size and their status
       tags:
@@ -84,14 +84,15 @@ paths:
                     description: Summary information about all the nodes.
                     type: object
                     properties:
-                      committed:
+                      committee:
                         type: integer
-                      activeNode:
+                      activeNodes:
                         type: integer
-                      standByNode:
+                      inActiveNodes:
+                        description: Number of penalised nodes
                         type: integer
                     required:
-                      - committed
+                      - committee
                       - activeNode
                   nodes:
                     description: A list of existing master nodes. Sorted by nodeId
@@ -291,11 +292,6 @@ definitions:
         role:
           type: string
           enum: [STANDBY, MINER, PENALTY]
-        status:
-          type: string
-          enum: [ACTIVE, INACTIVE]
-        currentHeight:
-          type: integer
     required:
       - address
       - role
