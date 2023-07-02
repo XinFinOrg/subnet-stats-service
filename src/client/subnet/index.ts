@@ -25,7 +25,6 @@ export class SubnetClient {
   async getLastMasternodesInformation(): Promise<MasternodesInfo> {
     try {
       const { Number, Round, Masternodes, Penalty } = await this.web3.xdcSubnet.getMasternodesByNumber('latest');
-      console.log(Masternodes);
       return {
         currentBlockNumber: Number,
         currentRound: Round,

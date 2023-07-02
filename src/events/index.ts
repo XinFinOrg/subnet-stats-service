@@ -30,7 +30,7 @@ export class EventsHandler {
   public init() {
     // The instance that will receive the events from subnet nodes
     this.receiver.on('connection', (spark: Spark) => {
-      logger.info('🚀 Received an event from subnet node: ', spark.address.ip);
+      logger.info(`🚀 Received an event from subnet node: ${spark.address.ip}`);
       spark.on('hello', (data: HelloEventData) => {
         logger.debug('RECEIVER: Hello, Data: ', JSON.stringify(data));
         // Auth checking
@@ -51,6 +51,7 @@ export class EventsHandler {
         }
 
         // Load the initial data
+        logger.info('Emitting a history event to the connected node');
         spark.emit('history', _.fill(Array(MAX_NUM_OF_BLOCKS_IN_HISTORY), {}));
       });
 
