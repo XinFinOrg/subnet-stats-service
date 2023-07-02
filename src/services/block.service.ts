@@ -1,4 +1,5 @@
 import { Service } from 'typedi';
+import * as _ from 'lodash';
 import { BlockStorage, StoredBlock, StoredLatestCommittedBlock } from '../storage/block';
 import { BlockInfo, LatestCommittedBlockInfoData } from '../interfaces/input/block.interface';
 import { BlockResponse } from '../interfaces/output/blocksResponse.interface';
@@ -21,6 +22,30 @@ export class BlockService {
 
   public async getBlockByHash(hash: string): Promise<StoredBlock> {
     return await this.blockStorage.getMinedBlockByHash(hash);
+  }
+
+  public async getBlockStats(): Promise<any> {
+    const allBlocks = await this.blockStorage.getAllBlocks();
+    let averageBlockTime = 0;
+    let txThroughput = 0;
+    if (allBlocks && allBlocks.length > 1) {
+      allBlocks.sort((a, b) => b.timestamp - a.timestamp);
+      const timeDiff = (allBlocks[0].timestamp - allBlocks[allBlocks.length - 1].timestamp) / 1000;
+      averageBlockTime = allBlocks.length / timeDiff;
+
+      const totalNumOfTxs = _.reduce(
+        allBlocks,
+        (prev, curr) => {
+          return prev + curr.txs.length;
+        },
+        0,
+      );
+      txThroughput = totalNumOfTxs / timeDiff;
+    }
+    return {
+      averageBlockTime,
+      txThroughput,
+    };
   }
 
   // Get all available blocks on the same chain (sorted by block number)
