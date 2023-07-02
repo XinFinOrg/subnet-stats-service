@@ -1,3 +1,4 @@
+import { PARENTCHAIN_URL } from '../config';
 import { BlocksResponse } from '../interfaces/output/blocksResponse.interface';
 import { BlockService } from '../services/block.service';
 import { getService } from './../services/index';
@@ -35,6 +36,31 @@ export class BlocksController {
         chainHealth: chainStatus ? 'UP' : 'DOWN',
       };
       res.status(200).json(data);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public getBlockChainStats = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const { averageBlockTime, txThroughput } = await this.blockService.getBlockStats();
+    const chainStatus = await this.blockService.getBlockChainStatus();
+
+    try {
+      const resp = {
+        subnet: {
+          block: {
+            averageBlockTime,
+            txThroughput,
+          },
+        },
+        parentChain: {
+          targetChain: PARENTCHAIN_URL,
+        },
+        health: {
+          status: chainStatus,
+        },
+      };
+      res.status(200).json(resp);
     } catch (error) {
       next(error);
     }

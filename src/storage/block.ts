@@ -1,3 +1,4 @@
+import { MAX_NUM_OF_BLOCKS_IN_HISTORY } from '../config';
 import { Db } from './base';
 
 const TYPE = 'BLOCK';
@@ -6,8 +7,6 @@ const STATUS_KEY = 'BLOCK_STATUS';
 const STATUS_TTL = 60;
 
 const LATEST_COMMITTEDBLOCK_KEY = 'LATEST_COMMITTED_BLOCK';
-
-const MAX_POOL_SIZE = 100;
 
 /** 
   This class is created so that we can easily swap with real DB without making changes to any other files.
@@ -29,11 +28,11 @@ export class BlockStorage {
   }
 
   async addMinedBlock(block: StoredBlock): Promise<boolean> {
-    const { hash, number, parentHash, timestamp } = block;
-    const dataToStore = { hash, number, parentHash, timestamp };
+    const { hash, number, parentHash, timestamp, txs } = block;
+    const dataToStore = { hash, number, parentHash, timestamp, txs };
     this.minedBlockPool.push(dataToStore);
     this.minedBlockPool.sort((a: StoredBlock, b: StoredBlock) => a.number - b.number);
-    if (this.minedBlockPool.length > MAX_POOL_SIZE) {
+    if (this.minedBlockPool.length > MAX_NUM_OF_BLOCKS_IN_HISTORY) {
       this.minedBlockPool.shift();
     }
 
@@ -45,7 +44,7 @@ export class BlockStorage {
   }
 
   async getAllBlocks(): Promise<StoredBlock[]> {
-    return this.minedBlockPool;
+    return [...this.minedBlockPool];
   }
 
   async getLatestCommittedBlock(): Promise<StoredLatestCommittedBlock> {
@@ -66,6 +65,7 @@ export interface StoredBlock {
   number: number;
   parentHash: string;
   timestamp: number;
+  txs: string[];
 }
 
 export interface StoredLatestCommittedBlock {

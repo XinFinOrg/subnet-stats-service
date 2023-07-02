@@ -1,6 +1,6 @@
 export interface BlockEventData {
   id: number;
-  latestCommittedBlockInfo: LatestCommittedBlockInfoData;
+  latestCommittedBlockInfo?: LatestCommittedBlockInfoData;
   block: BlockInfo;
 }
 
@@ -18,5 +18,6 @@ export interface BlockInfo {
   miner: string;
   gasUsed: number;
   gasLimit: number;
+  txs: string[];
   // There are many other fields, but we don't use them. hence ignored for now
 }

@@ -1,11 +1,12 @@
 import Primus, { Spark } from 'primus';
 import { Server } from 'http';
+import * as _ from 'lodash';
 
 import { logger } from '../utils/logger';
 import { HelloEventData } from '../interfaces/input/hello.interface';
 import { NodeInfo } from '../interfaces/input/node.interface';
-import { WS_SECRET } from '../config';
-import { BlockEventData } from '../interfaces/input/block.interface';
+import { MAX_NUM_OF_BLOCKS_IN_HISTORY, WS_SECRET } from '../config';
+import { BlockEventData, BlockInfo } from '../interfaces/input/block.interface';
 import { Services, getService } from '../services';
 
 const websocketSecret = WS_SECRET || 'subnet-stats-server';
@@ -48,6 +49,9 @@ export class EventsHandler {
           };
           this.services.nodeServide.addNode(nodeInfo);
         }
+
+        // Load the initial data
+        spark.emit('history', _.fill(Array(MAX_NUM_OF_BLOCKS_IN_HISTORY), {}));
       });
 
       // Subnet block data are emitted per each mined block
@@ -59,6 +63,15 @@ export class EventsHandler {
             this.services.blockService.addBlock(data.block);
             this.services.blockService.addLatestCommittedBlock(data.latestCommittedBlockInfo);
           }
+        }
+      });
+
+      spark.on('history', (historyBlocks: { id: number; history: BlockInfo[] }) => {
+        logger.debug('RECEIVER: history, data: ', JSON.stringify(historyBlocks));
+        if (historyBlocks.id && historyBlocks.history.length) {
+          historyBlocks.history.map(b => {
+            this.services.blockService.addBlock(b);
+          });
         }
       });
     });

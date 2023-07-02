@@ -1,4 +1,3 @@
-import { SystemNetworkController } from './../controllers/network.controller';
 import { MasterNodeController } from './../controllers/masternode.controller';
 import { BlocksController } from './../controllers/blocks.controller';
 import { Router } from 'express';
@@ -11,7 +10,6 @@ export class Route implements Routes {
   healthController = new HealthController();
   blocksController = new BlocksController();
   masterNodeController = new MasterNodeController();
-  systemNetworkController = new SystemNetworkController();
   relayerController = new RelayerController();
   constructor() {
     this.initializeRoutes();
@@ -21,7 +19,7 @@ export class Route implements Routes {
     this.router.get('/health', this.healthController.healthCheck);
     this.router.get('/information/blocks', this.blocksController.loadRecentBlocks);
     this.router.get('/information/masternodes', this.masterNodeController.getMasternodesInfo);
-    this.router.get('/information/network', this.systemNetworkController.systemNetworkDetails);
+    this.router.get('/information/network', this.blocksController.getBlockChainStats);
     this.router.get('/information/relayer', this.relayerController.getRelayerRelatedDetails);
   }
 }
