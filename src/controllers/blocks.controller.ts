@@ -1,8 +1,9 @@
+import { NextFunction, Request, Response } from 'express';
 import { PARENTCHAIN_URL } from '../config';
 import { BlocksResponse } from '../interfaces/output/blocksResponse.interface';
 import { BlockService } from '../services/block.service';
 import { getService } from './../services/index';
-import { NextFunction, Request, Response } from 'express';
+import { logger } from '../utils/logger';
 
 export class BlocksController {
   private blockService: BlockService;
@@ -37,15 +38,15 @@ export class BlocksController {
       };
       res.status(200).json(data);
     } catch (error) {
+      logger.error('Exception when load most recent blocks', error);
       next(error);
     }
   };
 
   public getBlockChainStats = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    const { averageBlockTime, txThroughput } = await this.blockService.getBlockStats();
-    const chainStatus = await this.blockService.getBlockChainStatus();
-
     try {
+      const { averageBlockTime, txThroughput } = await this.blockService.getBlockStats();
+      const chainStatus = await this.blockService.getBlockChainStatus();
       const resp = {
         subnet: {
           block: {
@@ -62,6 +63,7 @@ export class BlocksController {
       };
       res.status(200).json(resp);
     } catch (error) {
+      logger.error('Exception when getting blockchain statistics', error);
       next(error);
     }
   };

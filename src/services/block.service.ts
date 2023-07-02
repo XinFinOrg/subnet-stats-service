@@ -40,7 +40,7 @@ export class BlockService {
         },
         0,
       );
-      txThroughput = totalNumOfTxs / (timeDiff / 1000);
+      txThroughput = totalNumOfTxs / timeDiff;
     }
     return {
       averageBlockTime,
