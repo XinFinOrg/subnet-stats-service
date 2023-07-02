@@ -61,7 +61,7 @@ export class App {
       const specs = swaggerJSDoc(options);
       this.app.use('/', swaggerUi.serve, swaggerUi.setup(specs));
     } catch (error) {
-      logger.error('Fail to initialize swagger: ', error);
+      logger.error(`Fail to initialize swagger: ${error}`);
     }
   }
 

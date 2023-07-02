@@ -38,7 +38,7 @@ export class BlocksController {
       };
       res.status(200).json(data);
     } catch (error) {
-      logger.error('Exception when load most recent blocks', error);
+      logger.error(`Exception when load most recent blocks, ${error}`);
       next(error);
     }
   };
@@ -63,7 +63,7 @@ export class BlocksController {
       };
       res.status(200).json(resp);
     } catch (error) {
-      logger.error('Exception when getting blockchain statistics', error);
+      logger.error(`Exception when getting blockchain statistics, ${error}`);
       next(error);
     }
   };

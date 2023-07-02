@@ -32,7 +32,7 @@ export class SubnetClient {
         penalisedMasternodesAddress: Penalty,
       };
     } catch (error) {
-      logger.error('Fail to load masternodes information from subnet nodes', error);
+      logger.error(`Fail to load masternodes information from subnet nodes, ${error}`);
       throw new HttpException(500, error.message ? error.message : 'Exception when getting mastenode information from subnet node');
     }
   }

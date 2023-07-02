@@ -38,10 +38,10 @@ export class EventsHandler {
       });
 
       spark.on('hello', (data: HelloEventData) => {
-        logger.info('RECEIVER: Hello, Data: ', JSON.stringify(data));
+        logger.info(`RECEIVER: Hello, Data: ${JSON.stringify(data)}`);
         // Auth checking
         if (!data || !data.secret || websocketSecret != data.secret) {
-          logger.info('Disconnect a node who does not have the correct WS secret: ', spark.address.ip);
+          logger.info(`Disconnect a node who does not have the correct WS secret: ${spark.address.ip} `);
           spark.end(undefined, { reconnect: false });
           return false;
         }
@@ -63,7 +63,7 @@ export class EventsHandler {
 
       // Subnet block data are emitted per each mined block
       spark.on('block', (data: BlockEventData) => {
-        logger.info('RECEIVER: block, data: ', JSON.stringify(data));
+        logger.info(`RECEIVER: block, data: ${JSON.stringify(data)}`);
         if (data.id) {
           // This event also include the committed block information
           if (data.block && data.latestCommittedBlockInfo) {
@@ -74,7 +74,7 @@ export class EventsHandler {
       });
 
       spark.on('history', (historyBlocks: { id: number; history: BlockInfo[] }) => {
-        logger.info('RECEIVER: history, data: ', JSON.stringify(historyBlocks));
+        logger.info(`RECEIVER: history, data: ${JSON.stringify(historyBlocks)}`);
         if (historyBlocks.id && historyBlocks.history.length) {
           historyBlocks.history.map(b => {
             this.services.blockService.addBlock(b);
