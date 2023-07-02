@@ -40,7 +40,7 @@ export class EventsHandler {
       spark.on('hello', (data: HelloEventData) => {
         logger.info('RECEIVER: Hello, Data: ', JSON.stringify(data));
         // Auth checking
-        if (!data.secret || websocketSecret != data.secret) {
+        if (!data || !data.secret || websocketSecret != data.secret) {
           logger.info('Disconnect a node who does not have the correct WS secret: ', spark.address.ip);
           spark.end(undefined, { reconnect: false });
           return false;
