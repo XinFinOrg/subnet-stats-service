@@ -18,6 +18,6 @@ export interface BlockInfo {
   miner: string;
   gasUsed: number;
   gasLimit: number;
-  txs: string[];
+  transactions: string[];
   // There are many other fields, but we don't use them. hence ignored for now
 }

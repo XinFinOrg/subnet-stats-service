@@ -36,7 +36,7 @@ export class BlockService {
       const totalNumOfTxs = _.reduce(
         allBlocks,
         (prev, curr) => {
-          return prev + curr.txs.length;
+          return prev + curr.transactions.length;
         },
         0,
       );
