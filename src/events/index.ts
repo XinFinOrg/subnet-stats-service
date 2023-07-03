@@ -56,6 +56,8 @@ export class EventsHandler {
           this.services.nodeServide.addNode(nodeInfo);
         }
 
+        spark.emit('ready') // send ack back
+
         // Load the initial data
         logger.info('Emitting a history event to the connected node');
         spark.emit('history', _.fill(Array(MAX_NUM_OF_BLOCKS_IN_HISTORY), {}));

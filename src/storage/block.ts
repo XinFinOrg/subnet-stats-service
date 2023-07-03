@@ -28,8 +28,8 @@ export class BlockStorage {
   }
 
   async addMinedBlock(block: StoredBlock): Promise<boolean> {
-    const { hash, number, parentHash, timestamp, txs } = block;
-    const dataToStore = { hash, number, parentHash, timestamp, txs };
+    const { hash, number, parentHash, timestamp, transactions } = block;
+    const dataToStore = { hash, number, parentHash, timestamp, transactions };
     this.minedBlockPool.push(dataToStore);
     this.minedBlockPool.sort((a: StoredBlock, b: StoredBlock) => a.number - b.number);
     if (this.minedBlockPool.length > MAX_NUM_OF_BLOCKS_IN_HISTORY) {
@@ -65,7 +65,7 @@ export interface StoredBlock {
   number: number;
   parentHash: string;
   timestamp: number;
-  txs: string[];
+  transactions: string[];
 }
 
 export interface StoredLatestCommittedBlock {
