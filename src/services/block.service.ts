@@ -30,7 +30,7 @@ export class BlockService {
     let txThroughput = 0;
     if (allBlocks && allBlocks.length > 1) {
       allBlocks.sort((a, b) => b.timestamp - a.timestamp);
-      const timeDiff = (allBlocks[0].timestamp - allBlocks[allBlocks.length - 1].timestamp) / 1000;
+      const timeDiff = (allBlocks[0].timestamp - allBlocks[allBlocks.length - 1].timestamp);
       averageBlockTime = timeDiff / allBlocks.length;
 
       const totalNumOfTxs = _.reduce(
