@@ -55,7 +55,8 @@ export class BlocksController {
           },
         },
         parentChain: {
-          targetChain: PARENTCHAIN_URL,
+          url: PARENTCHAIN_URL,
+          name: 'Devnet', // TODO: get from web3 api
         },
         health: {
           status: chainStatus,

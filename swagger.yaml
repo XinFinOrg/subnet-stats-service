@@ -186,11 +186,14 @@ paths:
                   parentChain:
                     type: object
                     properties:
-                      targetChain:
+                      url:
                         description: A string value which is used to identify the target parent chain. It can be a URL, IP address or a name.
                         type: string
+                      name:
+                        description: Parent Chain name
+                        type: string
                     required:
-                      - targetChain
+                      - url
                   health:
                     type: object
                     properties:
@@ -291,7 +294,7 @@ definitions:
           type: string
         role:
           type: string
-          enum: [STANDBY, MINER, PENALTY]
+          enum: [CANDIDATE, MASTERNODE, PENALTY]
     required:
       - address
       - role
@@ -306,6 +309,9 @@ definitions:
           type: number
         parentHash:
           description: The subnet block's parentHash
+          type: string
+        miner:
+          description: The masternode address who mined this block
           type: string
         committedInSubnet:
           description: This boolean value is to indicate whether this block has been confirmed in the subnet itself

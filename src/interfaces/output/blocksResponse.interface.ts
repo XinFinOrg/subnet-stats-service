@@ -7,6 +7,7 @@ export interface BlocksResponse {
 }
 
 export interface BlockResponse extends BaseBlockResponse {
+  miner: string;
   parentHash: string;
   committedInSubnet: boolean;
   committedInParentChain: boolean;

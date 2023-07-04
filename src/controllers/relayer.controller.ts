@@ -6,10 +6,10 @@ export class RelayerController {
       const resp = {
         account: {
           balance: '2000',
-          walletAddress: 'xdc123123',
+          walletAddress: 'xdc16C4d7e3f059C3288ad286756EEc9F70814CFC6F',
         },
         backlog: 10,
-        contractAddress: '0x123123',
+        contractAddress: 'xdc16C4d7e3f059C3288ad286756EEc9F70814CFC6F',
         health: {
           status: 'UP',
         },
