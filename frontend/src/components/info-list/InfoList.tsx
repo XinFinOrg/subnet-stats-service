@@ -1,11 +1,11 @@
 import Svg, { SvgNames } from "@/components/images/Svg";
 import Title from "@/components/title/Title";
 
-type InfoListStatus = 'Normal' | 'Abnormal';
+export type InfoListHealth = 'Normal' | 'Abnormal';
 
 interface InfoListProps {
   title: string;
-  status: InfoListStatus;
+  status: InfoListHealth;
   info: InfoItemBaseProps[];
 }
 

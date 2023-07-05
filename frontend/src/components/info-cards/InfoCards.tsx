@@ -1,83 +1,90 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useLoaderData } from 'react-router-dom';
 
-import BlocksInfo, { BlocksInfoItem } from '@/components/blocks-info/BlocksInfo';
+import { BlocksInfoItem } from '@/components/blocks-info/blocks-info-item/BlocksInfoItem';
+import BlocksInfo from '@/components/blocks-info/BlocksInfo';
 import Card from '@/components/card/Card';
-import InfoList from '@/components/info-list/InfoList';
-
-const mockDataItem: BlocksInfoItem = {
-  type: 'recent-block',
-  height: 10000001,
-  hash: '0xdFrsdf...Dsa31ld7',
-  proposedBy: '0xdFrsdf...Dsa31ld7',
-  subnetConfirmed: true,
-  parentConfirmed: false,
-  time: 2
-};
-
-const mockMasterNodeItem: BlocksInfoItem = {
-  type: 'master-node',
-  number: 1,
-  account: '0xdFrsdf...Dsa31ld7',
-  role: 'miner',
-  activity: true,
-  latestParticipateBlock: 10000001
-};
-
-const mockData = Array(20).fill('').map((_v, i) => {
-  return { ...mockDataItem, height: mockDataItem.height + i };
-});
-
-const mockMasterNodes = Array(7).fill('').map<BlocksInfoItem>((_v, i) => {
-  if (i === 3) {
-    return { ...mockMasterNodeItem, role: 'penalty', number: (mockMasterNodeItem).number + i };
-  }
-  else if (i === 5) {
-    return { ...mockMasterNodeItem, role: 'standby', number: (mockMasterNodeItem).number + i };
-  }
-  return { ...mockMasterNodeItem, role: 'miner', number: (mockMasterNodeItem).number + i };
-});
+import InfoList, { InfoListHealth } from '@/components/info-list/InfoList';
+import { formatHash } from '@/utils/formatter';
 
 export default function InfoCards() {
-  const [blocksInfo, setBlocksInfo] = useState<BlocksInfoItem[]>([]);
+  const loaderData: any = useLoaderData();
+  const { network, relayer, masterNodes, blocks } = loaderData;
 
-  const mockInfo = {
-    info1: [
-      { name: 'Block Time', value: '2s' },
-      { name: 'TX Throughput', value: '10 txs/s' },
-      { name: 'Checkpointed to', value: 'XDC Devnet' },
-    ],
-    info2: [
-      { name: 'Smart Contract', value: 'Shorten Hash' },
-      { name: 'Backlog', value: '10 Subnet Headers' },
-      { name: 'Ave. tx fee', value: '0.001XDC/hour' },
-      { name: 'Remaining Balance', value: '10XDC\two weeks' },
-    ],
-    info3: [
-      { name: 'Current committee size', value: '30' },
-      { name: 'Activity', value: '0xdFrsdf...Dsa31ld7' },
-      { name: 'Number of stanby nodes', value: '10' },
-    ],
+  const [recentBlocks, setRecentBlocks] = useState<BlocksInfoItem[]>(getInitRecentBlocks());
+
+  function getNetworkStatus(): InfoListHealth {
+    if (network.health.status === true) {
+      return 'Normal';
+    }
+
+    return 'Abnormal';
+  }
+
+  function getRelayerStatus(): InfoListHealth {
+    if (relayer.health.status === 'UP') {
+      return 'Normal';
+    }
+
+    return 'Abnormal';
+  }
+
+  function getInitRecentBlocks() {
+    return blocks.blocks.sort((a: any, b: any) => b.number - a.number).map((block: any) => ({
+      type: 'recent-block',
+      ...block
+    }));
+  }
+
+  const mappedInfo = {
+    // `recentBlocks` is handled by a state since it would get updated when load more page
+    network: {
+      health: getNetworkStatus(),
+      data: [
+        { name: 'Block Time', value: `${network.subnet.block.averageBlockTime}s` },
+        { name: 'TX Throughput', value: `${Math.round(network.subnet.block.txThroughput * 100) / 100} txs/s` },
+        { name: 'Checkpointed to', value: network.parentChain.name },
+      ]
+    },
+    relayer: {
+      health: getRelayerStatus(),
+      data: [
+        { name: 'Smart Contract', value: formatHash(relayer.account.walletAddress) },
+        { name: 'Backlog', value: `${relayer.backlog} Subnet Headers` },
+        // { name: 'Ave. tx fee', value: '0.001XDC/hour' },
+        { name: 'Ave. tx fee', value: 'api TODO' },
+        { name: 'Remaining Balance', value: relayer.account.balance },
+      ]
+    },
+    masterNodes: {
+      health: 'Normal' as InfoListHealth,
+      data: [
+        { name: 'Current committee size', value: masterNodes.summary.masterNode },
+        // { name: 'Activity', value: '0xdFrsdf...Dsa31ld7' },
+        { name: 'Activity', value: 'TODO: fisher/liam' },
+        { name: 'Number of candidate nodes', value: masterNodes.summary.candidate },
+      ],
+      blocks: masterNodes.nodes.map((v: any, i: number) => ({
+        ...v,
+        type: 'master-node',
+        account: formatHash(v.address),
+        number: i + 1
+      }))
+    },
   };
 
-  // mock function
-  const fetchBlocksData = () => {
-    if (!blocksInfo) {
-      console.log('no info');
+  const fetchMoreRecentBlocks = () => {
+    if (!recentBlocks) {
       return;
     }
 
-    setBlocksInfo(blocksInfo => {
-      const data = Array(20).fill('').map((_v, i) => {
-        return { ...mockDataItem, height: (blocksInfo[blocksInfo.length - 1] as any).height + 1 + i };
-      });
+    // TODO: From api
+    const data: any = [];
 
-      return [...blocksInfo, ...data];
+    setRecentBlocks(recentBlocks => {
+      return [...recentBlocks, ...data];
     });
   };
-
-  useEffect(() => {
-    setBlocksInfo(mockData);
-  }, []);
 
   return (
     <>
@@ -85,32 +92,32 @@ export default function InfoCards() {
         <Card>
           <InfoList
             title='Network Info'
-            status='Normal'
-            info={mockInfo.info1}
+            status={mappedInfo.network.health}
+            info={mappedInfo.network.data}
           />
         </Card>
         <Card>
           <InfoList
             title='Relayer Info'
-            status='Abnormal'
-            info={mockInfo.info2}
+            status={mappedInfo.relayer.health}
+            info={mappedInfo.relayer.data}
           />
         </Card>
         <Card>
           <InfoList
             title='Master Nodes'
-            status='Normal'
-            info={mockInfo.info3}
+            status={mappedInfo.masterNodes.health}
+            info={mappedInfo.masterNodes.data}
           />
         </Card>
       </div>
 
       <div className="grid grid-cols-1 llg:grid-cols-2 gap-6">
         <Card className='max-w-[565px]'>
-          <BlocksInfo title='Recent Blocks' data={blocksInfo} fetchMoreData={fetchBlocksData} enableInfinite />
+          <BlocksInfo title='Recent Blocks' data={recentBlocks} fetchMoreData={fetchMoreRecentBlocks} enableInfinite />
         </Card>
         <Card className='max-w-[565px]'>
-          <BlocksInfo title='Master Nodes' data={mockMasterNodes} />
+          <BlocksInfo title='Master Nodes' data={mappedInfo.masterNodes.blocks} />
         </Card>
       </div>
     </>

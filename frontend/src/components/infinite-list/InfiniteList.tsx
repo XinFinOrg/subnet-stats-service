@@ -1,6 +1,6 @@
 import { PropsWithChildren, useEffect, useRef } from 'react';
 
-import { BlocksInfoItem } from '@/components/blocks-info/BlocksInfo';
+import { BlocksInfoItem } from '@/components/blocks-info/blocks-info-item/BlocksInfoItem';
 
 interface InfiniteListProps extends PropsWithChildren {
   data: BlocksInfoItem[];
@@ -38,7 +38,7 @@ export default function InfiniteList({ fetchData, children }: InfiniteListProps)
       {children}
       <div ref={observerTarget}></div>
       {/* An extra div is essential for infinitely scrolling */}
-      <div>End of list</div>
+      <div className='dark:text-bg-dark-800 text-white'>End of list</div>
     </ >
   );
 }

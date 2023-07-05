@@ -2,8 +2,6 @@ import { useContext } from 'react';
 
 import BlueBlock from '@/assets/blocks/blue-block.svg';
 import GreyBlock from '@/assets/blocks/grey-block.svg';
-import DarkGreyBlock from '@/assets/blocks/dark-grey-block.png';
-import DarkBlueBlock from '@/assets/blocks/dark-blue-block.png';
 import { Block } from '@/components/Blocks';
 import { ThemeContext } from '@/contexts/themeContext';
 
@@ -26,14 +24,8 @@ export default function BlockImage(props: BlockImageProps) {
     <div className='shrink-0 relative w-[35px] h-[37.82px] text-lg leading-none'>
       {isDarkMode ? (
         <>
-          <div
-            className={`z-30 absolute left-0 top-0 ${styles.darkBlock} ${styles.darkGreyBlock}`}
-            style={{ backgroundImage: `url(${DarkGreyBlock})` }}
-          />
-          <div
-            className={`z-40 absolute left-0 top-0 ${styles.darkBlock} ${styles.darkBlueBlock} ${styles.animate} ${block.confirmed ? styles.show : styles.hide}`}
-            style={{ backgroundImage: `url(${DarkBlueBlock})` }}
-          />
+          <div className={`z-30 absolute left-0 top-0 ${styles.darkBlock} ${styles.darkGreyBlock}`} />
+          <div className={`z-40 absolute left-0 top-0 ${styles.darkBlock} ${styles.darkBlueBlock} ${styles.animate} ${block.confirmed ? styles.show : styles.hide}`} />
         </>
       ) : (
         <>
@@ -77,14 +69,14 @@ function BlockNumber({ block, isLastConfirmed, isLast }: BlockImageProps) {
     return (
       <div className="absolute top-[64px] right-0 text-primary flex">
         <div>Block</div>
-        <div className='pl-1'>{block.id}</div>
+        <div className='pl-1'>{block.number}</div>
       </div>
     );
   } else if (isLast) {
     return (
       <div className="absolute top-[64px] right-0 text-primary flex">
         <div>Block</div>
-        <div className='pl-1'>{block.id}</div>
+        <div className='pl-1'>{block.number}</div>
       </div>
     );
   }

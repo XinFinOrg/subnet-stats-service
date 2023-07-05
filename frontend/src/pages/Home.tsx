@@ -9,10 +9,10 @@ export default function Home() {
         <h1 className='pb-6 text-3xl font-bold'>Subnet Blockchain</h1>
         <Blocks />
       </Card>
-      <Card>
+      {/* <Card>
         <h1 className='pb-6 text-3xl font-bold'>Copy at the parent chain</h1>
         <Blocks />
-      </Card>
+      </Card> */}
 
       <InfoCards />
     </div>

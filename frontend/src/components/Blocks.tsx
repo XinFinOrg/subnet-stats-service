@@ -1,49 +1,70 @@
-import { Fragment, useEffect, useRef, useState } from 'react';
+import axios from 'axios';
+import { Fragment, useContext, useEffect, useRef, useState } from 'react';
 
 import BlockConnectLine from '@/components/BlockConnectLine';
 import BlockImage from '@/components/images/BlockImage';
+import { baseUrl } from '@/constants/urls';
+import { TimeContext } from '@/contexts/timeContext';
 import { useIsDesktopL } from '@/hooks/useMediaQuery';
 
 import styles from './blocks.module.scss';
+import { useLoaderData } from 'react-router';
 
 export interface Block {
-  id: number;
+  number: number;
   confirmed: boolean;
 }
 
 const addBlockPerClick = 3;
 
-function getInitData(lastBlock: number, lastConfirmedBlock: number, blockNumber: number) {
-  const initData = [];
+function getBlocks(lastBlock: number, lastConfirmedBlock: number, blockNumber: number) {
+  const blocks = [];
 
   // confirmed blocks
   for (let blockHeight = lastBlock - blockNumber + 1; blockHeight <= lastConfirmedBlock; blockHeight++) {
-    initData.push({ id: blockHeight, confirmed: true });
+    blocks.push({ number: blockHeight, confirmed: true });
   }
 
   // unconfirmed blocks
   for (let blockHeight = lastConfirmedBlock + 1; blockHeight <= lastBlock; blockHeight++) {
-    initData.push({ id: blockHeight, confirmed: false });
+    blocks.push({ number: blockHeight, confirmed: false });
   }
 
-  return initData;
+  return blocks;
 }
 
 export default function Blocks() {
   const isDesktopL = useIsDesktopL();
   // use 13 blocks(desktop), otherwise use 20 blocks(XL desktop)
   const blockNumber = isDesktopL ? 20 : 13;
+  const loaderData: any = useLoaderData();
 
-  const [lastBlock, setLastBlock] = useState(12010);
-  const [lastConfirmedBlock, setLastConfirmedBlock] = useState(12007);
-  const [blocks, setBlocks] = useState<Block[]>(getInitData(lastBlock, lastConfirmedBlock, blockNumber));
+  const [lastBlock, setLastBlock] = useState(loaderData.blocks.latestMinedBlock.number);
+  const [lastConfirmedBlock, setLastConfirmedBlock] = useState(loaderData.blocks.latestSubnetCommittedBlock.number);
+  const [blocks, setBlocks] = useState<Block[]>(getBlocks(loaderData.blocks.latestMinedBlock.number, loaderData.blocks.latestSubnetCommittedBlock.number, blockNumber));
   const initialLastBlock = useRef<number | null>(null);
+  const { currentUnixTime } = useContext(TimeContext);
 
   useEffect(() => {
     if (initialLastBlock.current === null) {
-      initialLastBlock.current = 12010;
+      initialLastBlock.current = loaderData.blocks.latestMinedBlock.number;
     }
-  });
+  }, []);
+
+  // Move this up and send down to two blocks animations
+  useEffect(() => {
+    async function getData() {
+      const { data: { latestMinedBlock, latestSubnetCommittedBlock } } = await axios.get(`${baseUrl}/blocks`);
+      setLastBlock(latestMinedBlock.number);
+      setLastConfirmedBlock(latestSubnetCommittedBlock.number);
+
+      const newBlockNumber = latestMinedBlock.number - (initialLastBlock.current ?? 0) + blockNumber;
+      const blocks = getBlocks(latestMinedBlock.number, latestSubnetCommittedBlock.number, newBlockNumber);
+      setBlocks(blocks);
+    }
+
+    getData();
+  }, [currentUnixTime]);
 
   function confirmBlocksExceptLastTwo() {
     const newBlocks = blocks.map((block, index) => {
@@ -67,7 +88,7 @@ export default function Blocks() {
   function addBlock() {
     const newBlocks = [];
     for (let i = 1; i <= addBlockPerClick; i++) {
-      newBlocks.push({ id: (lastBlock + i), confirmed: false });
+      newBlocks.push({ number: (lastBlock + i), confirmed: false });
     }
 
     setBlocks([
@@ -93,13 +114,13 @@ export default function Blocks() {
         <div className='flex items-center transition duration-1000' style={{ transform: `translateX(${translateAmount}px)` }}>
           {
             blocks.map((block, index) => {
-              const isFirstVisibleConfirmed = block.id === (lastBlock - blockNumber + 1);
-              const isLastConfirmed = block.id === lastConfirmedBlock;
-              const isFirstUnConfirmed = block.id === (lastConfirmedBlock + 1);
+              const isFirstVisibleConfirmed = block.number === (lastBlock - blockNumber + 1);
+              const isLastConfirmed = block.number === lastConfirmedBlock;
+              const isFirstUnConfirmed = block.number === (lastConfirmedBlock + 1);
               const isLast = index === blocks.length - 1;
 
               return (
-                <Fragment key={block.id}>
+                <Fragment key={block.number}>
                   <BlockImage block={block}
                     isFirstConfirmed={isFirstVisibleConfirmed}
                     isLastConfirmed={isLastConfirmed}
