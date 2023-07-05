@@ -1,6 +1,6 @@
 export enum MasternodeRole {
-  STANDBY = 'STANDBY',
-  MINER = 'MINER',
+  CANDIDATE = 'CANDIDATE',
+  MASTERNODE = 'MASTERNODE',
   PENALTY = 'PENALTY',
 }
 

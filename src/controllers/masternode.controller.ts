@@ -16,7 +16,7 @@ export class MasterNodeController {
       const miners: Masternode[] = nodesInfo.masternodes.map(n => {
         return {
           address: n,
-          role: MasternodeRole.MINER,
+          role: MasternodeRole.MASTERNODE,
         };
       });
       const penalty: Masternode[] = nodesInfo.penalties.map(n => {
