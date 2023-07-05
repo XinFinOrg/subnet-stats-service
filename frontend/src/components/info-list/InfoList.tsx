@@ -1,5 +1,5 @@
 import Svg, { SvgNames } from "@/components/images/Svg";
-import Title from "@/title/Title";
+import Title from "@/components/title/Title";
 
 type InfoListStatus = 'Normal' | 'Abnormal';
 

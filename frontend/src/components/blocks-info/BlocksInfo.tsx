@@ -2,7 +2,7 @@ import { PropsWithChildren } from 'react';
 
 import Svg, { SvgNames } from '@/components/images/Svg';
 import InfiniteList from '@/components/infinite-list/InfiniteList';
-import Title from '@/title/Title';
+import Title from '@/components/title/Title';
 
 interface BlocksInfoProps {
   title: string;
