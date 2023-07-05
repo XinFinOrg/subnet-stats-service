@@ -1,103 +1,14 @@
-import axios from 'axios';
-import { Fragment, useContext, useEffect, useRef, useState } from 'react';
-
 import BlockConnectLine from '@/components/BlockConnectLine';
 import BlockImage from '@/components/images/BlockImage';
-import { baseUrl } from '@/constants/urls';
-import { TimeContext } from '@/contexts/timeContext';
-import { useIsDesktopL } from '@/hooks/useMediaQuery';
-
+import { Fragment } from 'react';
 import styles from './blocks.module.scss';
-import { useLoaderData } from 'react-router';
 
 export interface Block {
   number: number;
   confirmed: boolean;
 }
 
-const addBlockPerClick = 3;
-
-function getBlocks(lastBlock: number, lastConfirmedBlock: number, blockNumber: number) {
-  const blocks = [];
-
-  // confirmed blocks
-  for (let blockHeight = lastBlock - blockNumber + 1; blockHeight <= lastConfirmedBlock; blockHeight++) {
-    blocks.push({ number: blockHeight, confirmed: true });
-  }
-
-  // unconfirmed blocks
-  for (let blockHeight = lastConfirmedBlock + 1; blockHeight <= lastBlock; blockHeight++) {
-    blocks.push({ number: blockHeight, confirmed: false });
-  }
-
-  return blocks;
-}
-
-export default function Blocks() {
-  const isDesktopL = useIsDesktopL();
-  // use 13 blocks(desktop), otherwise use 20 blocks(XL desktop)
-  const blockNumber = isDesktopL ? 20 : 13;
-  const loaderData: any = useLoaderData();
-
-  const [lastBlock, setLastBlock] = useState(loaderData.blocks.latestMinedBlock.number);
-  const [lastConfirmedBlock, setLastConfirmedBlock] = useState(loaderData.blocks.latestSubnetCommittedBlock.number);
-  const [blocks, setBlocks] = useState<Block[]>(getBlocks(loaderData.blocks.latestMinedBlock.number, loaderData.blocks.latestSubnetCommittedBlock.number, blockNumber));
-  const initialLastBlock = useRef<number | null>(null);
-  const { currentUnixTime } = useContext(TimeContext);
-
-  useEffect(() => {
-    if (initialLastBlock.current === null) {
-      initialLastBlock.current = loaderData.blocks.latestMinedBlock.number;
-    }
-  }, []);
-
-  // Move this up and send down to two blocks animations
-  useEffect(() => {
-    async function getData() {
-      const { data: { latestMinedBlock, latestSubnetCommittedBlock } } = await axios.get(`${baseUrl}/blocks`);
-      setLastBlock(latestMinedBlock.number);
-      setLastConfirmedBlock(latestSubnetCommittedBlock.number);
-
-      const newBlockNumber = latestMinedBlock.number - (initialLastBlock.current ?? 0) + blockNumber;
-      const blocks = getBlocks(latestMinedBlock.number, latestSubnetCommittedBlock.number, newBlockNumber);
-      setBlocks(blocks);
-    }
-
-    getData();
-  }, [currentUnixTime]);
-
-  function confirmBlocksExceptLastTwo() {
-    const newBlocks = blocks.map((block, index) => {
-      if (index === blocks.length - 1 || index === blocks.length - 2) {
-        return { ...block, confirmed: false };
-      }
-
-      return { ...block, confirmed: true };
-    });
-
-    setBlocks(newBlocks);
-    setLastConfirmedBlock(lastBlock - 2);
-  }
-
-  // TODO: replace addBlockPerClick to api data
-  /**
-   * 1. get increase block number by api(block number)
-   * 2. push new blocks by loop & block id from api
-   * 3. set new lastBlock state, set new translateX length state
-   */
-  function addBlock() {
-    const newBlocks = [];
-    for (let i = 1; i <= addBlockPerClick; i++) {
-      newBlocks.push({ number: (lastBlock + i), confirmed: false });
-    }
-
-    setBlocks([
-      ...blocks,
-      ...newBlocks
-    ]);
-    setLastBlock(lastBlock => lastBlock + 3);
-  }
-
+export default function Blocks({initialLastBlock, lastBlock, lastConfirmedBlock, blockNumber, blocks}: any) {
   {/* n * block-width + (n - 1) * spacing */ }
   const blockSize = 35 + 17.99;
   const translateAmount = initialLastBlock.current ? -((lastBlock - initialLastBlock.current) * blockSize) : 0;
@@ -172,11 +83,6 @@ export default function Blocks() {
 
         {/* Left brace layer mask */}
         <div className='absolute top-[0px] w-[40px] left-[-3px] h-[40px] dark:bg-bg-dark-800 bg-white ' />
-      </div>
-
-      <div>
-        <button className="bg-blue-500 text-white py-2 px-4 mt-5 rounded text-base" onClick={addBlock}>Add block</button>
-        <button className="bg-blue-500 text-white py-2 px-4 mt-5 rounded text-base ml-2" onClick={confirmBlocksExceptLastTwo}>Confirm blocks</button>
       </div>
     </>
   );
