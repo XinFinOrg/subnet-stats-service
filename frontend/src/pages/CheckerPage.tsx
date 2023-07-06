@@ -4,7 +4,7 @@ import InfoList from '@/components/info-list/InfoList';
 import SearchBar from '@/components/search-bar/SearchBar';
 import { Info } from '@/types/info';
 
-export default function Checker() {
+export default function CheckerPage() {
 
   const mappedInfo: Info = {
     transaction: {

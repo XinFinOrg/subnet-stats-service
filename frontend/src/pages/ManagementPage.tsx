@@ -1,4 +1,4 @@
-export default function Management() {
+export default function ManagementPage() {
   return (
     <div className='text-white'>Management</div>
   );

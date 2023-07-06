@@ -4,9 +4,10 @@ import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom';
 
 import { baseUrl } from '@/constants/urls.ts';
-import Checker from '@/pages/Checker.tsx';
-import Home from '@/pages/Home.tsx';
-import Management from '@/pages/Management.tsx';
+import CheckerPage from '@/pages/CheckerPage.tsx';
+import ErrorPage from '@/pages/ErrorPage.tsx';
+import HomePage from '@/pages/HomePage.tsx';
+import ManagementPage from '@/pages/ManagementPage.tsx';
 
 import App from './App.tsx';
 
@@ -53,16 +54,17 @@ const router = createBrowserRouter([
     path: "/",
     element: <App />,
     loader: appLoader,
+    errorElement: <ErrorPage />,
     children: [{
       path: "home",
       loader: homeLoader,
-      element: <Home />,
+      element: <HomePage />,
     }, {
       path: "checker",
-      element: <Checker />,
+      element: <CheckerPage />,
     }, {
       path: "management",
-      element: <Management />,
+      element: <ManagementPage />,
     }, {
       path: "*",
       element: <Navigate to="/home" replace />,

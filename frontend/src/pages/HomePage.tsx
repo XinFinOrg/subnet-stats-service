@@ -26,7 +26,7 @@ function getBlocks(lastBlock: number, lastConfirmedBlock: number, blockNumber: n
 
   return blocks;
 }
-export default function Home() {
+export default function HomePage() {
   const isDesktopL = useIsDesktopL();
   // use 13 blocks(desktop), otherwise use 20 blocks(XL desktop)
   const blockNumber = isDesktopL ? 20 : 13;
@@ -62,6 +62,12 @@ export default function Home() {
 
     getData();
   }, [currentUnixTime]);
+
+
+  if (!loaderData) {
+    console.log('no data')
+    return <>...</>
+  }
 
   if (!initialLastBlock.current) {
     return <></>;
