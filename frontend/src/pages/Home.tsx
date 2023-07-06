@@ -9,7 +9,7 @@ import { baseUrl } from '@/constants/urls';
 import { TimeContext } from '@/contexts/timeContext';
 import { useIsDesktopL } from '@/hooks/useMediaQuery';
 
-import type { LoaderData } from '@/types/loaderData';
+import type { HomeLoaderData } from '@/types/loaderData';
 
 function getBlocks(lastBlock: number, lastConfirmedBlock: number, blockNumber: number) {
   const blocks = [];
@@ -30,7 +30,7 @@ export default function Home() {
   const isDesktopL = useIsDesktopL();
   // use 13 blocks(desktop), otherwise use 20 blocks(XL desktop)
   const blockNumber = isDesktopL ? 20 : 13;
-  const loaderData = useLoaderData() as LoaderData;
+  const loaderData = useLoaderData() as HomeLoaderData;
 
   const [lastBlock, setLastBlock] = useState(loaderData.blocks.latestMinedBlock.number);
   const [lastConfirmedBlock, setLastConfirmedBlock] = useState(loaderData.blocks.latestSubnetCommittedBlock.number);
@@ -46,21 +46,16 @@ export default function Home() {
     }
   }, []);
 
-  // Move this up and send down to two blocks animations
   useEffect(() => {
     async function getData() {
       const { data: { latestMinedBlock, latestSubnetCommittedBlock, latestParentChainCommittedBlock } } = await axios.get(`${baseUrl}/blocks`);
       setLastBlock(latestMinedBlock.number);
       setLastConfirmedBlock(latestSubnetCommittedBlock.number);
-      // Mocked
-      // setLatestParentChainCommittedBlock(latestParentChainCommittedBlock.number)
-      latestParentChainCommittedBlock;
-      setLastParentConfirmedBlock(latestSubnetCommittedBlock.number - 5);
+      setLastParentConfirmedBlock(latestParentChainCommittedBlock.number);
 
       const newBlockNumber = latestMinedBlock.number - (initialLastBlock.current ?? 0) + blockNumber;
       const blocks = getBlocks(latestMinedBlock.number, latestSubnetCommittedBlock.number, newBlockNumber);
-      // mocked
-      const parentChainBlocks = getBlocks(latestMinedBlock.number, latestSubnetCommittedBlock.number - 5, newBlockNumber);
+      const parentChainBlocks = getBlocks(latestMinedBlock.number, latestParentChainCommittedBlock.number, newBlockNumber);
       setBlocks(blocks);
       setParentChainBlocks(parentChainBlocks);
     }

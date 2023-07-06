@@ -1,4 +1,8 @@
-export interface LoaderData {
+export interface AppLoaderData {
+  name: string;
+}
+
+export interface HomeLoaderData {
   masterNodes: MasterNodes;
   blocks: Blocks;
   network: Network;
@@ -81,10 +85,12 @@ interface Relayer {
     /** A short description about the current running status when there is an issue. E.g System is running but very low */
     details: string;
   };
+  averageTXfee: number;
 }
 
 interface Network {
   subnet: {
+    name: string;
     /** block metadata, such as mining frequency */
     block: {
       /** The block mining time per X second. */

@@ -12,7 +12,20 @@ import App from './App.tsx';
 
 import '@/index.css';
 
-export async function loader() {
+export async function appLoader() {
+  async function getData() {
+    const response = await axios.get(`${baseUrl}/network`);
+    return response.data;
+  }
+
+  const data = await getData();
+
+  return {
+    name: data.subnet.name
+  };
+};
+
+export async function homeLoader() {
   async function getData() {
     const urls = [
       `${baseUrl}/masternodes`,
@@ -39,9 +52,10 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
+    loader: appLoader,
     children: [{
       path: "home",
-      loader,
+      loader: homeLoader,
       element: <Home />,
     }, {
       path: "checker",

@@ -6,11 +6,11 @@ import BlocksInfo from '@/components/blocks-info/BlocksInfo';
 import Card from '@/components/card/Card';
 import InfoList from '@/components/info-list/InfoList';
 import { Info, InfoListHealth } from '@/types/info';
-import { LoaderData } from '@/types/loaderData';
+import { HomeLoaderData } from '@/types/loaderData';
 import { formatHash } from '@/utils/formatter';
 
 export default function InfoCards() {
-  const loaderData = useLoaderData() as LoaderData;
+  const loaderData = useLoaderData() as HomeLoaderData;
 
   const [recentBlocks, setRecentBlocks] = useState<BlocksInfoItem[]>(getInitRecentBlocks());
 
@@ -38,7 +38,6 @@ export default function InfoCards() {
   }
 
   const mappedInfo: Info = {
-    // `recentBlocks` is handled by a state since it would get updated when load more page
     network: {
       health: getNetworkStatus(),
       data: [
@@ -52,18 +51,15 @@ export default function InfoCards() {
       data: [
         { name: 'Smart Contract', value: formatHash(loaderData.relayer.account.walletAddress) },
         { name: 'Backlog', value: `${loaderData.relayer.backlog} Subnet Headers` },
-        // { name: 'Ave. tx fee', value: '0.001XDC/hour' },
-        { name: 'Ave. tx fee', value: 'api TODO' },
+        { name: 'Ave. tx fee', value: loaderData.relayer.averageTXfee },
         { name: 'Remaining Balance', value: loaderData.relayer.account.balance },
       ]
     },
     masterNodes: {
-      health: 'Normal' as InfoListHealth,
       data: [
-        { name: 'Current committee size', value: loaderData.masterNodes.summary.activeNodes },
-        // { name: 'Activity', value: '0xdFrsdf...Dsa31ld7' },
-        { name: 'Activity', value: 'TODO: fisher/liam' },
-        { name: 'Number of candidate nodes', value: loaderData.masterNodes.summary.inActiveNodes },
+        { name: 'Current committee size', value: loaderData.masterNodes.summary.committee },
+        { name: 'Activity', value: `${loaderData.masterNodes.summary.activeNodes}(active) ${loaderData.masterNodes.summary.inActiveNodes}(inactive)` },
+        { name: 'Number of standby nodes', value: loaderData.masterNodes.summary.inActiveNodes },
       ],
     },
   };
