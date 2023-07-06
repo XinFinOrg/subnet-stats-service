@@ -33,8 +33,13 @@ export class BlocksController {
               number: lastSubnetCommittedBlock.number,
             }
           : {},
-        latestParentChainCommittedBlock: {}, // TODO: WIP for the parent chain block confirmation
-        chainHealth: chainStatus ? 'UP' : 'DOWN',
+        latestParentChainCommittedBlock: { // TODO: WIP for the parent chain block confirmation
+          hash: lastSubnetCommittedBlock.hash,
+          number:lastSubnetCommittedBlock.number-6,
+        }, 
+        health: {
+          status: chainStatus ? 'UP' : 'DOWN',
+        }
       };
       res.status(200).json(data);
     } catch (error) {
@@ -49,6 +54,7 @@ export class BlocksController {
       const chainStatus = await this.blockService.getBlockChainStatus();
       const resp = {
         subnet: {
+          name: 'hashlab-subnet',
           block: {
             averageBlockTime,
             txThroughput,
@@ -59,7 +65,7 @@ export class BlocksController {
           name: 'Devnet', // TODO: get from web3 api
         },
         health: {
-          status: chainStatus,
+          status: chainStatus ? 'UP' : 'DOWN',
         },
       };
       res.status(200).json(resp);

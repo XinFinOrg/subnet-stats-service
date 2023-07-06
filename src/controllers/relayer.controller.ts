@@ -9,6 +9,7 @@ export class RelayerController {
           walletAddress: 'xdc16C4d7e3f059C3288ad286756EEc9F70814CFC6F',
         },
         backlog: 10,
+        averageTXfee: 0.03,
         contractAddress: 'xdc16C4d7e3f059C3288ad286756EEc9F70814CFC6F',
         health: {
           status: 'UP',
