@@ -5,10 +5,7 @@ import Nav from '@/components/nav/Nav';
 import { ThemeModes } from '@/components/theme-switch/ThemeSwitch';
 import { ThemeContext } from '@/contexts/themeContext';
 import { TimeContext } from '@/contexts/timeContext';
-
-function getUnixTime() {
-  return Math.floor(Date.now() / 1000);
-}
+import { getUnixTime, pollingPeriod } from '@/utils/time';
 
 function App() {
   const [theme, setTheme] = useState<ThemeModes>('light');
@@ -17,7 +14,7 @@ function App() {
   useEffect(() => {
     const intervalId = setInterval(() => {
       setCurrentUnixTime(getUnixTime());
-    }, 5 * 1000);
+    }, pollingPeriod);
 
     return () => clearInterval(intervalId);
   }, []);

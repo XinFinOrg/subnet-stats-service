@@ -8,10 +8,18 @@ export interface Block {
   confirmed: boolean;
 }
 
-export default function Blocks({initialLastBlock, lastBlock, lastConfirmedBlock, blockNumber, blocks}: any) {
+interface BlocksProps {
+  initialLastBlock: number;
+  lastBlock: number;
+  lastConfirmedBlock: number;
+  blockNumber: number;
+  blocks: Block[];
+}
+
+export default function Blocks({ initialLastBlock, lastBlock, lastConfirmedBlock, blockNumber, blocks }: BlocksProps) {
   {/* n * block-width + (n - 1) * spacing */ }
   const blockSize = 35 + 17.99;
-  const translateAmount = initialLastBlock.current ? -((lastBlock - initialLastBlock.current) * blockSize) : 0;
+  const translateAmount = initialLastBlock ? -((lastBlock - initialLastBlock) * blockSize) : 0;
   const unConfirmedNumber = lastBlock - lastConfirmedBlock;
   const confirmedNumber = blockNumber - unConfirmedNumber;
   // Definition: From left to right, the first visible index is 0

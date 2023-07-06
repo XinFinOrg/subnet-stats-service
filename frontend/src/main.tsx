@@ -27,17 +27,13 @@ export async function loader() {
 
   const data = await getData();
 
-  if (!data || data.length < 4) {
-    return;
-  }
-
   return {
     masterNodes: data[0],
     relayer: data[1],
     network: data[2],
     blocks: data[3],
   };
-}
+};
 
 const router = createBrowserRouter([
   {

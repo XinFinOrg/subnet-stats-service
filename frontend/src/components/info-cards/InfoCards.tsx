@@ -6,15 +6,16 @@ import BlocksInfo from '@/components/blocks-info/BlocksInfo';
 import Card from '@/components/card/Card';
 import InfoList, { InfoListHealth } from '@/components/info-list/InfoList';
 import { formatHash } from '@/utils/formatter';
+import { LoaderData } from '@/types/loaderData';
 
 export default function InfoCards() {
-  const loaderData: any = useLoaderData();
+  const loaderData = useLoaderData() as LoaderData;
   const { network, relayer, masterNodes, blocks } = loaderData;
 
   const [recentBlocks, setRecentBlocks] = useState<BlocksInfoItem[]>(getInitRecentBlocks());
 
   function getNetworkStatus(): InfoListHealth {
-    if (network.health.status === true) {
+    if (network.health.status === 'UP') {
       return 'Normal';
     }
 
@@ -29,8 +30,8 @@ export default function InfoCards() {
     return 'Abnormal';
   }
 
-  function getInitRecentBlocks() {
-    return blocks.blocks.sort((a: any, b: any) => b.number - a.number).map((block: any) => ({
+  function getInitRecentBlocks(): BlocksInfoItem[] {
+    return blocks.blocks.sort((a, b) => b.number - a.number).map<BlocksInfoItem>(block => ({
       type: 'recent-block',
       ...block
     }));
@@ -59,10 +60,10 @@ export default function InfoCards() {
     masterNodes: {
       health: 'Normal' as InfoListHealth,
       data: [
-        { name: 'Current committee size', value: masterNodes.summary.masterNode },
+        { name: 'Current committee size', value: masterNodes.summary.activeNodes },
         // { name: 'Activity', value: '0xdFrsdf...Dsa31ld7' },
         { name: 'Activity', value: 'TODO: fisher/liam' },
-        { name: 'Number of candidate nodes', value: masterNodes.summary.candidate },
+        { name: 'Number of candidate nodes', value: masterNodes.summary.inActiveNodes },
       ],
       blocks: masterNodes.nodes.map((v: any, i: number) => ({
         ...v,

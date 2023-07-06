@@ -35,7 +35,7 @@ export default function InfoList({ title, status, info }: InfoListProps) {
 
 interface InfoItemBaseProps {
   name: string;
-  value: string;
+  value: number | string;
 }
 
 interface InfoItemProps extends InfoItemBaseProps {

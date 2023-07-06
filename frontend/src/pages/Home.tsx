@@ -9,6 +9,8 @@ import { baseUrl } from '@/constants/urls';
 import { TimeContext } from '@/contexts/timeContext';
 import { useIsDesktopL } from '@/hooks/useMediaQuery';
 
+import type { LoaderData } from '@/types/loaderData';
+
 function getBlocks(lastBlock: number, lastConfirmedBlock: number, blockNumber: number) {
   const blocks = [];
 
@@ -28,7 +30,7 @@ export default function Home() {
   const isDesktopL = useIsDesktopL();
   // use 13 blocks(desktop), otherwise use 20 blocks(XL desktop)
   const blockNumber = isDesktopL ? 20 : 13;
-  const loaderData: any = useLoaderData();
+  const loaderData = useLoaderData() as LoaderData;
 
   const [lastBlock, setLastBlock] = useState(loaderData.blocks.latestMinedBlock.number);
   const [lastConfirmedBlock, setLastConfirmedBlock] = useState(loaderData.blocks.latestSubnetCommittedBlock.number);
@@ -66,12 +68,16 @@ export default function Home() {
     getData();
   }, [currentUnixTime]);
 
+  if (!initialLastBlock.current) {
+    return <></>;
+  }
+
   return (
     <div className='grid gap-6 grid-col-1'>
       <Card>
         <h1 className='pb-6 text-3xl font-bold'>Subnet Blockchain</h1>
         <Blocks
-          initialLastBlock={initialLastBlock}
+          initialLastBlock={initialLastBlock.current}
           lastBlock={lastBlock}
           lastConfirmedBlock={lastConfirmedBlock}
           blockNumber={blockNumber}
@@ -81,7 +87,7 @@ export default function Home() {
       <Card>
         <h1 className='pb-6 text-3xl font-bold'>Copy at the parent chain</h1>
         <Blocks
-          initialLastBlock={initialLastBlock}
+          initialLastBlock={initialLastBlock.current}
           lastBlock={lastBlock}
           lastConfirmedBlock={lastParentConfirmedBlock}
           blockNumber={blockNumber}
