@@ -1,30 +1,29 @@
-import Svg, { SvgNames } from "@/components/images/Svg";
-import Title from "@/components/title/Title";
-
-export type InfoListHealth = 'Normal' | 'Abnormal';
+import Svg, { SvgNames } from '@/components/images/Svg';
+import Title from '@/components/title/Title';
+import { InfoListHealth } from '@/types/info';
 
 interface InfoListProps {
   title: string;
-  status: InfoListHealth;
   info: InfoItemBaseProps[];
+  status?: InfoListHealth;
 }
 
 export default function InfoList({ title, status, info }: InfoListProps) {
   return (
     <>
       <div className="flex justify-between items-center pb-6">
-        <div>
-          <Title title={title} />
-        </div>
-        <div className='inline-flex items-center'>
-          <span>Status</span>
-          <span
-            className={`ml-1 px-3 py-2.5 bg-opacity-20 rounded-3xl font-bold leading-none
+        <Title title={title} />
+        {status && (
+          <div className='inline-flex items-center'>
+            <span>Status</span>
+            <span
+              className={`ml-1 px-3 py-2.5 bg-opacity-20 rounded-3xl font-bold leading-none
             ${status === 'Normal' ? 'bg-sky-500 text-sky-500' : 'bg-warning text-warning'}
           `}>
-            {status}
-          </span>
-        </div>
+              {status}
+            </span>
+          </div>
+        )}
       </div>
       {info.map((item, index) => {
         return <InfoItem key={index} {...item} isFirst={index === 0} />;

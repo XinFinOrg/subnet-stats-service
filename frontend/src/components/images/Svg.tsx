@@ -1,9 +1,10 @@
 import Check from '@/assets/check.svg';
 import Cross from '@/assets/cross.svg';
-import Penalty from '@/assets/penalty.svg';
-import Standby from '@/assets/standby.svg';
 import Miner from '@/assets/miner.svg';
+import Penalty from '@/assets/penalty.svg';
 import Rhombus from '@/assets/rhombus.svg';
+import Search from '@/assets/search.svg';
+import Standby from '@/assets/standby.svg';
 
 interface GeneralSvgProps {
   colour: string;
@@ -92,9 +93,10 @@ type SvgSizes = 'sm';
 interface SvgProps {
   svgName: SvgNames;
   size?: SvgSizes;
+  sizeClass?: string;
 }
 
-export default function Svg({ svgName, size }: SvgProps) {
+export default function Svg({ svgName, size, sizeClass: userDefinedSizeClass }: SvgProps) {
   function getSizeClass(size?: SvgSizes) {
     switch (size) {
       case 'sm':
@@ -105,7 +107,7 @@ export default function Svg({ svgName, size }: SvgProps) {
     }
   }
 
-  const sizeClass = getSizeClass(size);
+  const sizeClass = userDefinedSizeClass ?? getSizeClass(size);
   let SvgComponent = '';
   let alt = '';
 
@@ -139,6 +141,11 @@ export default function Svg({ svgName, size }: SvgProps) {
       SvgComponent = Rhombus;
       alt = 'Rhombus';
       break;
+
+    case SvgNames.Search:
+      SvgComponent = Search;
+      alt = 'Search';
+      break;
   }
 
   return (
@@ -163,4 +170,5 @@ export enum SvgNames {
   Penalty = 'Penalty',
   Standby = 'Standby',
   Rhombus = 'Rhombus',
+  Search = 'Search',
 }

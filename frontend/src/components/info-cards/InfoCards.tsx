@@ -4,18 +4,18 @@ import { useLoaderData } from 'react-router-dom';
 import { BlocksInfoItem } from '@/components/blocks-info/blocks-info-item/BlocksInfoItem';
 import BlocksInfo from '@/components/blocks-info/BlocksInfo';
 import Card from '@/components/card/Card';
-import InfoList, { InfoListHealth } from '@/components/info-list/InfoList';
-import { formatHash } from '@/utils/formatter';
+import InfoList from '@/components/info-list/InfoList';
+import { Info, InfoListHealth } from '@/types/info';
 import { LoaderData } from '@/types/loaderData';
+import { formatHash } from '@/utils/formatter';
 
 export default function InfoCards() {
   const loaderData = useLoaderData() as LoaderData;
-  const { network, relayer, masterNodes, blocks } = loaderData;
 
   const [recentBlocks, setRecentBlocks] = useState<BlocksInfoItem[]>(getInitRecentBlocks());
 
   function getNetworkStatus(): InfoListHealth {
-    if (network.health.status === 'UP') {
+    if (loaderData.network.health.status === 'UP') {
       return 'Normal';
     }
 
@@ -23,7 +23,7 @@ export default function InfoCards() {
   }
 
   function getRelayerStatus(): InfoListHealth {
-    if (relayer.health.status === 'UP') {
+    if (loaderData.relayer.health.status === 'UP') {
       return 'Normal';
     }
 
@@ -31,48 +31,49 @@ export default function InfoCards() {
   }
 
   function getInitRecentBlocks(): BlocksInfoItem[] {
-    return blocks.blocks.sort((a, b) => b.number - a.number).map<BlocksInfoItem>(block => ({
+    return loaderData.blocks.blocks.sort((a, b) => b.number - a.number).map<BlocksInfoItem>(block => ({
       type: 'recent-block',
       ...block
     }));
   }
 
-  const mappedInfo = {
+  const mappedInfo: Info = {
     // `recentBlocks` is handled by a state since it would get updated when load more page
     network: {
       health: getNetworkStatus(),
       data: [
-        { name: 'Block Time', value: `${network.subnet.block.averageBlockTime}s` },
-        { name: 'TX Throughput', value: `${Math.round(network.subnet.block.txThroughput * 100) / 100} txs/s` },
-        { name: 'Checkpointed to', value: network.parentChain.name },
+        { name: 'Block Time', value: `${loaderData.network.subnet.block.averageBlockTime}s` },
+        { name: 'TX Throughput', value: `${Math.round(loaderData.network.subnet.block.txThroughput * 100) / 100} txs/s` },
+        { name: 'Checkpointed to', value: loaderData.network.parentChain.name },
       ]
     },
     relayer: {
       health: getRelayerStatus(),
       data: [
-        { name: 'Smart Contract', value: formatHash(relayer.account.walletAddress) },
-        { name: 'Backlog', value: `${relayer.backlog} Subnet Headers` },
+        { name: 'Smart Contract', value: formatHash(loaderData.relayer.account.walletAddress) },
+        { name: 'Backlog', value: `${loaderData.relayer.backlog} Subnet Headers` },
         // { name: 'Ave. tx fee', value: '0.001XDC/hour' },
         { name: 'Ave. tx fee', value: 'api TODO' },
-        { name: 'Remaining Balance', value: relayer.account.balance },
+        { name: 'Remaining Balance', value: loaderData.relayer.account.balance },
       ]
     },
     masterNodes: {
       health: 'Normal' as InfoListHealth,
       data: [
-        { name: 'Current committee size', value: masterNodes.summary.activeNodes },
+        { name: 'Current committee size', value: loaderData.masterNodes.summary.activeNodes },
         // { name: 'Activity', value: '0xdFrsdf...Dsa31ld7' },
         { name: 'Activity', value: 'TODO: fisher/liam' },
-        { name: 'Number of candidate nodes', value: masterNodes.summary.inActiveNodes },
+        { name: 'Number of candidate nodes', value: loaderData.masterNodes.summary.inActiveNodes },
       ],
-      blocks: masterNodes.nodes.map((v: any, i: number) => ({
-        ...v,
-        type: 'master-node',
-        account: formatHash(v.address),
-        number: i + 1
-      }))
     },
   };
+
+  const masterNodes = loaderData.masterNodes.nodes.map((v: any, i: number) => ({
+    ...v,
+    type: 'master-node',
+    account: formatHash(v.address),
+    number: i + 1
+  }))
 
   const fetchMoreRecentBlocks = () => {
     if (!recentBlocks) {
@@ -106,7 +107,7 @@ export default function InfoCards() {
         </Card>
         <Card>
           <InfoList
-            title='Master Nodes'
+            title='Master Nodes Info'
             status={mappedInfo.masterNodes.health}
             info={mappedInfo.masterNodes.data}
           />
@@ -118,7 +119,7 @@ export default function InfoCards() {
           <BlocksInfo title='Recent Blocks' data={recentBlocks} fetchMoreData={fetchMoreRecentBlocks} enableInfinite />
         </Card>
         <Card className='max-w-[565px]'>
-          <BlocksInfo title='Master Nodes' data={mappedInfo.masterNodes.blocks} />
+          <BlocksInfo title='Master Nodes' data={masterNodes} />
         </Card>
       </div>
     </>
