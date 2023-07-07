@@ -1,5 +1,6 @@
 import Check from '@/assets/check.svg';
 import Cross from '@/assets/cross.svg';
+import Loading from '@/assets/loading.svg';
 import Miner from '@/assets/miner.svg';
 import Penalty from '@/assets/penalty.svg';
 import Rhombus from '@/assets/rhombus.svg';
@@ -146,6 +147,11 @@ export default function Svg({ svgName, size, sizeClass: userDefinedSizeClass }: 
       SvgComponent = Search;
       alt = 'Search';
       break;
+
+    case SvgNames.Loading:
+      SvgComponent = Loading;
+      alt = 'Loading data';
+      break;
   }
 
   return (
@@ -171,4 +177,5 @@ export enum SvgNames {
   Standby = 'Standby',
   Rhombus = 'Rhombus',
   Search = 'Search',
+  Loading = 'Loading',
 }
