@@ -65,8 +65,8 @@ export default function HomePage() {
 
 
   if (!loaderData) {
-    console.log('no data')
-    return <>...</>
+    console.log('no data');
+    return <>...</>;
   }
 
   if (!initialLastBlock.current) {

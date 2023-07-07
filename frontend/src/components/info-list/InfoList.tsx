@@ -11,7 +11,7 @@ interface InfoListProps {
 export default function InfoList({ title, status, info }: InfoListProps) {
   return (
     <>
-      <div className="flex justify-between items-center pb-6">
+      <div className='flex justify-between items-center pb-6'>
         <Title title={title} />
         {status && (
           <div className='inline-flex items-center'>

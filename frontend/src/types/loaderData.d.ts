@@ -46,7 +46,7 @@ interface Blocks {
     number: number;
   };
   /** A simple enum to indicate whether the subnet chain is operational. i.e if blocks are mined */
-  chainHealth: "UP" | "DOWN";
+  chainHealth: 'UP' | 'DOWN';
 }
 
 namespace Blocks {
@@ -81,7 +81,7 @@ interface Relayer {
   contractAddress: string;
   health: {
     /** An enum value to indicate the current relayer status. */
-    status: "UP" | "DOWN";
+    status: 'UP' | 'DOWN';
     /** A short description about the current running status when there is an issue. E.g System is running but very low */
     details: string;
   };
@@ -107,7 +107,7 @@ interface Network {
   };
   health: {
     /** An enum value to indicate the current relayer status. */
-    status: "UP" | "DOWN";
+    status: 'UP' | 'DOWN';
     /** A short description about the current running status when there is an issue. E.g System is running but very low */
     details: string;
   };

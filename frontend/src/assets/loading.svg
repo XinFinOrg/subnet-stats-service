@@ -1,43 +1,43 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-  style="margin: auto; display: block; shape-rendering: auto;"
-  width="195px" height="195px" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
-  <rect x="12.5" y="12.5" width="23" height="23" fill="#64646f">
-    <animate attributeName="fill" values="#6ac3f8;#64646f;#64646f" keyTimes="0;0.125;1"
-      dur="1.8867924528301885s" repeatCount="indefinite" begin="0s" calcMode="discrete"></animate>
+<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'
+  style='margin: auto; display: block; shape-rendering: auto;'
+  width='195px' height='195px' viewBox='0 0 100 100' preserveAspectRatio='xMidYMid'>
+  <rect x='12.5' y='12.5' width='23' height='23' fill='#64646f'>
+    <animate attributeName='fill' values='#6ac3f8;#64646f;#64646f' keyTimes='0;0.125;1'
+      dur='1.8867924528301885s' repeatCount='indefinite' begin='0s' calcMode='discrete'></animate>
   </rect>
-  <rect x="38.5" y="12.5" width="23" height="23" fill="#64646f">
-    <animate attributeName="fill" values="#6ac3f8;#64646f;#64646f" keyTimes="0;0.125;1"
-      dur="1.8867924528301885s" repeatCount="indefinite" begin="0.23584905660377356s"
-      calcMode="discrete"></animate>
+  <rect x='38.5' y='12.5' width='23' height='23' fill='#64646f'>
+    <animate attributeName='fill' values='#6ac3f8;#64646f;#64646f' keyTimes='0;0.125;1'
+      dur='1.8867924528301885s' repeatCount='indefinite' begin='0.23584905660377356s'
+      calcMode='discrete'></animate>
   </rect>
-  <rect x="64.5" y="12.5" width="23" height="23" fill="#64646f">
-    <animate attributeName="fill" values="#6ac3f8;#64646f;#64646f" keyTimes="0;0.125;1"
-      dur="1.8867924528301885s" repeatCount="indefinite" begin="0.4716981132075471s"
-      calcMode="discrete"></animate>
+  <rect x='64.5' y='12.5' width='23' height='23' fill='#64646f'>
+    <animate attributeName='fill' values='#6ac3f8;#64646f;#64646f' keyTimes='0;0.125;1'
+      dur='1.8867924528301885s' repeatCount='indefinite' begin='0.4716981132075471s'
+      calcMode='discrete'></animate>
   </rect>
-  <rect x="12.5" y="38.5" width="23" height="23" fill="#64646f">
-    <animate attributeName="fill" values="#6ac3f8;#64646f;#64646f" keyTimes="0;0.125;1"
-      dur="1.8867924528301885s" repeatCount="indefinite" begin="1.650943396226415s"
-      calcMode="discrete"></animate>
+  <rect x='12.5' y='38.5' width='23' height='23' fill='#64646f'>
+    <animate attributeName='fill' values='#6ac3f8;#64646f;#64646f' keyTimes='0;0.125;1'
+      dur='1.8867924528301885s' repeatCount='indefinite' begin='1.650943396226415s'
+      calcMode='discrete'></animate>
   </rect>
-  <rect x="64.5" y="38.5" width="23" height="23" fill="#64646f">
-    <animate attributeName="fill" values="#6ac3f8;#64646f;#64646f" keyTimes="0;0.125;1"
-      dur="1.8867924528301885s" repeatCount="indefinite" begin="0.7075471698113207s"
-      calcMode="discrete"></animate>
+  <rect x='64.5' y='38.5' width='23' height='23' fill='#64646f'>
+    <animate attributeName='fill' values='#6ac3f8;#64646f;#64646f' keyTimes='0;0.125;1'
+      dur='1.8867924528301885s' repeatCount='indefinite' begin='0.7075471698113207s'
+      calcMode='discrete'></animate>
   </rect>
-  <rect x="12.5" y="64.5" width="23" height="23" fill="#64646f">
-    <animate attributeName="fill" values="#6ac3f8;#64646f;#64646f" keyTimes="0;0.125;1"
-      dur="1.8867924528301885s" repeatCount="indefinite" begin="1.4150943396226414s"
-      calcMode="discrete"></animate>
+  <rect x='12.5' y='64.5' width='23' height='23' fill='#64646f'>
+    <animate attributeName='fill' values='#6ac3f8;#64646f;#64646f' keyTimes='0;0.125;1'
+      dur='1.8867924528301885s' repeatCount='indefinite' begin='1.4150943396226414s'
+      calcMode='discrete'></animate>
   </rect>
-  <rect x="38.5" y="64.5" width="23" height="23" fill="#64646f">
-    <animate attributeName="fill" values="#6ac3f8;#64646f;#64646f" keyTimes="0;0.125;1"
-      dur="1.8867924528301885s" repeatCount="indefinite" begin="1.1792452830188678s"
-      calcMode="discrete"></animate>
+  <rect x='38.5' y='64.5' width='23' height='23' fill='#64646f'>
+    <animate attributeName='fill' values='#6ac3f8;#64646f;#64646f' keyTimes='0;0.125;1'
+      dur='1.8867924528301885s' repeatCount='indefinite' begin='1.1792452830188678s'
+      calcMode='discrete'></animate>
   </rect>
-  <rect x="64.5" y="64.5" width="23" height="23" fill="#64646f">
-    <animate attributeName="fill" values="#6ac3f8;#64646f;#64646f" keyTimes="0;0.125;1"
-      dur="1.8867924528301885s" repeatCount="indefinite" begin="0.9433962264150942s"
-      calcMode="discrete"></animate>
+  <rect x='64.5' y='64.5' width='23' height='23' fill='#64646f'>
+    <animate attributeName='fill' values='#6ac3f8;#64646f;#64646f' keyTimes='0;0.125;1'
+      dur='1.8867924528301885s' repeatCount='indefinite' begin='0.9433962264150942s'
+      calcMode='discrete'></animate>
   </rect>
 </svg>

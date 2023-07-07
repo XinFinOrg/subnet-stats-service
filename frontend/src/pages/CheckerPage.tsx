@@ -58,7 +58,7 @@ export default function CheckerPage() {
     <>
       <SearchBar />
       <ConfirmationStatus className='pt-8' />
-      <div className="pt-8 grid grid-cols-2 llg:grid-cols-3 gap-6">
+      <div className='pt-8 grid grid-cols-2 llg:grid-cols-3 gap-6'>
         <Card>
           <InfoList
             title='Transaction Info'

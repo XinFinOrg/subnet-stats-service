@@ -1,5 +1,5 @@
 import {
-  BlockCell, BlocksInfoItem
+    BlockCell, BlocksInfoItem
 } from '@/components/blocks-info/blocks-info-item/BlocksInfoItem';
 import { cellWith } from '@/components/blocks-info/constants';
 import { MasterNodeTitle } from '@/components/blocks-info/master-node-title/MasterNodeTitle';
@@ -25,7 +25,7 @@ export default function BlocksInfo({ title, data, fetchMoreData }: BlocksInfoPro
       ) : (
         <Title title={title} />
       )}
-      <div className="mt-6 h-[400px] overflow-hidden hover:overflow-auto relative dark:text-text-dark-100">
+      <div className='mt-6 h-[400px] overflow-hidden hover:overflow-auto relative dark:text-text-dark-100'>
         <>
           <BlocksInfoHeading type={data[0].type} />
           {fetchMoreData ? (

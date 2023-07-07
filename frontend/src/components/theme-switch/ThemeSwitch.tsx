@@ -12,17 +12,17 @@ export default function ThemeSwitch() {
 
     if (selectedTheme === 'dark') {
       window.document.body.classList.add('dark');
-      document.body.style.backgroundColor = "black";
+      document.body.style.backgroundColor = 'black';
       return;
     }
 
     window.document.body.classList.remove('dark');
-    document.body.style.backgroundColor = "white";
+    document.body.style.backgroundColor = 'white';
   }, [setTheme, selectedTheme]);
 
   return (
     <div className='shadow-grey m-6 w-[188px] dark:bg-bg-dark-900 dark:border-0 border-2 rounded-full'>
-      <div className="flex justify-between px-[6px]">
+      <div className='flex justify-between px-[6px]'>
         <ThemeItem selected={selectedTheme === 'light'} changeTheme={() => setSelectedTheme('light')}>
           <InlineSvg svgName={InlineSvgNames.Sun} colour={selectedTheme === 'light' ? InlineSvgColours.Primary : InlineSvgColours.Grey} />
         </ThemeItem>

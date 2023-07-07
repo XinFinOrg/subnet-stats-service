@@ -24,7 +24,7 @@ export async function appLoader() {
   return {
     name: data.subnet.name
   };
-};
+}
 
 export async function homeLoader() {
   async function getData() {
@@ -47,30 +47,30 @@ export async function homeLoader() {
     network: data[2],
     blocks: data[3],
   };
-};
+}
 
 const router = createBrowserRouter([
   {
-    path: "/",
+    path: '/',
     element: <App />,
     loader: appLoader,
     errorElement: <ErrorPage />,
     children: [{
-      path: "home",
+      path: 'home',
       loader: homeLoader,
       element: <HomePage />,
     }, {
-      path: "checker",
+      path: 'checker',
       element: <CheckerPage />,
     }, {
-      path: "management",
+      path: 'management',
       element: <ManagementPage />,
     }, {
-      path: "*",
-      element: <Navigate to="/home" replace />,
+      path: '*',
+      element: <Navigate to='/home' replace />,
     }, {
-      path: "/",
-      element: <Navigate to="/home" replace />,
+      path: '/',
+      element: <Navigate to='/home' replace />,
     }]
   }
 ]);

@@ -86,7 +86,7 @@ export default function InfoCards() {
 
   return (
     <>
-      <div className="grid grid-cols-2 llg:grid-cols-3 gap-6">
+      <div className='grid grid-cols-2 llg:grid-cols-3 gap-6'>
         <Card>
           <InfoList
             title='Network Info'
@@ -110,7 +110,7 @@ export default function InfoCards() {
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 llg:grid-cols-2 gap-6">
+      <div className='grid grid-cols-1 llg:grid-cols-2 gap-6'>
         <Card className='max-w-[565px]'>
           <BlocksInfo title='Recent Blocks' data={recentBlocks} fetchMoreData={fetchMoreRecentBlocks} enableInfinite />
         </Card>

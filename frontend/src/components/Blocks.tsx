@@ -1,6 +1,8 @@
+import { Fragment } from 'react';
+
 import BlockConnectLine from '@/components/BlockConnectLine';
 import BlockImage from '@/components/images/BlockImage';
-import { Fragment } from 'react';
+
 import styles from './blocks.module.scss';
 
 export interface Block {
@@ -81,7 +83,7 @@ export default function Blocks({ initialLastBlock, lastBlock, lastConfirmedBlock
         </div>
 
         {/* 'Block 1' text */}
-        <div className="absolute top-[120px] left-0 text-primary flex text-lg">
+        <div className='absolute top-[120px] left-0 text-primary flex text-lg'>
           <div>Block</div>
           <div className='pl-1'>1</div>
         </div>

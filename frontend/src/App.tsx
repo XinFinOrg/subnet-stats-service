@@ -26,7 +26,7 @@ function App() {
       <ThemeContext.Provider value={{ theme, setTheme }}>
         <div className='relative max-w-[1440px] m-auto flex font-nunito-sans text-text-dark dark:text-text-white dark:bg-bg-dark-900'>
           <Nav />
-          <main className="mx-6 my-8 grow w-[1146px]">
+          <main className='mx-6 my-8 grow w-[1146px]'>
             {navigation.state === 'loading' ? (
               <div className='flex justify-center items-center h-screen'>
                 <Svg svgName={SvgNames.Loading} sizeClass='w-[100px]' />

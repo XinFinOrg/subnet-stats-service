@@ -16,11 +16,11 @@ export default function Nav(): JSX.Element {
   return (
     <nav id='nav' className='sticky top-0 dark:bg-bg-dark-1000 w-[246px] h-[1024px] shrink-0 shadow-grey flex flex-col justify-between'>
       <div>
-        <div className="flex items-center flex-col border-b-[1px] border-text-white dark:border-border-light">
+        <div className='flex items-center flex-col border-b-[1px] border-text-white dark:border-border-light'>
           <div className='pt-12 font-bold text-[26px]'>
             Logo: TODO
           </div>
-          <div className="py-6 dark:text-sky-300">
+          <div className='py-6 dark:text-sky-300'>
             {loaderData.name}
           </div>
         </div>

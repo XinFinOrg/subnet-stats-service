@@ -27,7 +27,7 @@ export default function NavItem({ text, Image, className, page }: NavItemProps) 
       }}>
         {({ isActive }) => (
           <>
-            <div className="mt-[-2px]"><Image isActive={isActive} /></div>
+            <div className='mt-[-2px]'><Image isActive={isActive} /></div>
             <span className='pl-2.5'>{text}</span>
           </>
         )}

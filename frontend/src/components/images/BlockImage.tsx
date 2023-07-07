@@ -29,8 +29,8 @@ export default function BlockImage(props: BlockImageProps) {
         </>
       ) : (
         <>
-          <img src={GreyBlock} alt="" className={`z-30 absolute left-0 top-0`} />
-          <img src={BlueBlock} alt="" className={`z-40 absolute left-0 top-0 ${styles.animate} ${block.confirmed ? styles.show : styles.hide}`} />
+          <img src={GreyBlock} alt='' className={`z-30 absolute left-0 top-0`} />
+          <img src={BlueBlock} alt='' className={`z-40 absolute left-0 top-0 ${styles.animate} ${block.confirmed ? styles.show : styles.hide}`} />
         </>
       )}
       <StatusBrace {...props} />
@@ -48,7 +48,7 @@ function StatusBrace({ isLastConfirmed, isFirstUnConfirmed, isLast }: BlockImage
   }
 
   return (
-    <div className="absolute -top-[54px] -right-[10px] -left-[10px] border-t-2 dark:border-text-white-800" />
+    <div className='absolute -top-[54px] -right-[10px] -left-[10px] border-t-2 dark:border-text-white-800' />
   );
 }
 
@@ -67,14 +67,14 @@ function BraceEnd() {
 function BlockNumber({ block, isLastConfirmed, isLast }: BlockImageProps) {
   if (isLastConfirmed) {
     return (
-      <div className="absolute top-[64px] right-0 text-primary flex">
+      <div className='absolute top-[64px] right-0 text-primary flex'>
         <div>Block</div>
         <div className='pl-1'>{block.number}</div>
       </div>
     );
   } else if (isLast) {
     return (
-      <div className="absolute top-[64px] right-0 text-primary flex">
+      <div className='absolute top-[64px] right-0 text-primary flex'>
         <div>Block</div>
         <div className='pl-1'>{block.number}</div>
       </div>

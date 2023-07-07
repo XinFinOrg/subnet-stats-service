@@ -10,7 +10,7 @@ export default function SearchBar() {
   }
 
   return (
-    <div className="flex justify-between border-2 border-text-white-400 dark:border-none rounded-full pl-4 pr-2.5 py-2.5 dark:bg-bg-dark-800">
+    <div className='flex justify-between border-2 border-text-white-400 dark:border-none rounded-full pl-4 pr-2.5 py-2.5 dark:bg-bg-dark-800'>
       <input
         type='text'
         className={`pl-3 grow text-base leading-tight outline-none
@@ -19,7 +19,7 @@ export default function SearchBar() {
         }
         value={searchText}
         onChange={e => setSearchText(e.target.value)}
-        placeholder="Block Height, Block Hash, TX Hash"
+        placeholder='Block Height, Block Hash, TX Hash'
       />
       <button className='-m-1.5' onClick={search}>
         <Svg svgName={SvgNames.Search} sizeClass='w-[48px] h-[48px]' />
