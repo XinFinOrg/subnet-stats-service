@@ -2,6 +2,8 @@ import Check from '@/assets/check.svg';
 import Cross from '@/assets/cross.svg';
 import Loading from '@/assets/loading.svg';
 import Miner from '@/assets/miner.svg';
+import NoResultDark from '@/assets/no-results-dark.svg';
+import NoResult from '@/assets/no-results.svg';
 import Penalty from '@/assets/penalty.svg';
 import Rhombus from '@/assets/rhombus.svg';
 import Search from '@/assets/search.svg';
@@ -152,6 +154,16 @@ export default function Svg({ svgName, size, sizeClass: userDefinedSizeClass }: 
       SvgComponent = Loading;
       alt = 'Loading data';
       break;
+
+    case SvgNames.NoResult:
+      SvgComponent = NoResult;
+      alt = 'No Result';
+      break;
+
+    case SvgNames.NoResultDark:
+      SvgComponent = NoResultDark;
+      alt = 'No Result';
+      break;
   }
 
   return (
@@ -178,4 +190,6 @@ export enum SvgNames {
   Rhombus = 'Rhombus',
   Search = 'Search',
   Loading = 'Loading',
+  NoResult = 'NoResult',
+  NoResultDark = 'NoResultDark',
 }
