@@ -1,11 +1,10 @@
 import axios from 'axios';
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useLoaderData } from 'react-router-dom';
 
 import Blocks, { Block } from '@/components/Blocks';
 import Card from '@/components/card/Card';
 import InfoCards from '@/components/info-cards/InfoCards';
-import Loader from '@/components/loader/Loader';
 import { baseUrl } from '@/constants/urls';
 import { TimeContext } from '@/contexts/timeContext';
 import { useIsDesktopL } from '@/hooks/useMediaQuery';
@@ -37,14 +36,8 @@ export default function HomePage() {
   const [lastParentConfirmedBlock, setLastParentConfirmedBlock] = useState(loaderData.blocks.latestParentChainCommittedBlock.number);
   const [blocks, setBlocks] = useState<Block[]>(getBlocks(loaderData.blocks.latestMinedBlock.number, loaderData.blocks.latestSubnetCommittedBlock.number, blockNumber));
   const [parentChainBlocks, setParentChainBlocks] = useState<Block[]>(getBlocks(loaderData.blocks.latestMinedBlock.number, loaderData.blocks.latestSubnetCommittedBlock.number, blockNumber));
-  const initialLastBlock = useRef<number | null>(null);
+  const [initialLastBlock] = useState<number>(loaderData.blocks.latestMinedBlock.number);
   const { currentUnixTime } = useContext(TimeContext);
-
-  useEffect(() => {
-    if (initialLastBlock.current === null) {
-      initialLastBlock.current = loaderData.blocks.latestMinedBlock.number;
-    }
-  }, [loaderData.blocks.latestMinedBlock.number]);
 
   useEffect(() => {
     async function getData() {
@@ -53,7 +46,7 @@ export default function HomePage() {
       setLastConfirmedBlock(latestSubnetCommittedBlock.number);
       setLastParentConfirmedBlock(latestParentChainCommittedBlock.number);
 
-      const newBlockNumber = latestMinedBlock.number - (initialLastBlock.current ?? 0) + blockNumber;
+      const newBlockNumber = latestMinedBlock.number - initialLastBlock + blockNumber;
       const blocks = getBlocks(latestMinedBlock.number, latestSubnetCommittedBlock.number, newBlockNumber);
       const parentChainBlocks = getBlocks(latestMinedBlock.number, latestParentChainCommittedBlock.number, newBlockNumber);
       setBlocks(blocks);
@@ -61,21 +54,14 @@ export default function HomePage() {
     }
 
     getData();
-  }, [blockNumber, currentUnixTime]);
-
-
-  if (!initialLastBlock.current) {
-    return (
-      <Loader />
-    );
-  }
+  }, [blockNumber, currentUnixTime, initialLastBlock]);
 
   return (
     <div className='grid gap-6 grid-col-1'>
       <Card>
         <h1 className='pb-6 text-3xl font-bold'>Subnet Blockchain</h1>
         <Blocks
-          initialLastBlock={initialLastBlock.current}
+          initialLastBlock={initialLastBlock}
           lastBlock={lastBlock}
           lastConfirmedBlock={lastConfirmedBlock}
           blockNumber={blockNumber}
@@ -85,7 +71,7 @@ export default function HomePage() {
       <Card>
         <h1 className='pb-6 text-3xl font-bold'>Copy at the parent chain</h1>
         <Blocks
-          initialLastBlock={initialLastBlock.current}
+          initialLastBlock={initialLastBlock}
           lastBlock={lastBlock}
           lastConfirmedBlock={lastParentConfirmedBlock}
           blockNumber={blockNumber}
