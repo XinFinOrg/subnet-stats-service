@@ -5,16 +5,17 @@ import HouseImage from '@/components/images/HouseImage';
 import ManagementImage from '@/components/images/ManagementImage';
 import NavItem from '@/components/nav-item/NavItem';
 import ThemeSwitch from '@/components/theme-switch/ThemeSwitch';
+import { useIsDesktopL } from '@/hooks/useMediaQuery';
 
 import type { AppLoaderData } from '@/types/loaderData';
-
 export type Pages = 'home' | 'checker' | 'management';
 
 export default function Nav(): JSX.Element {
   const loaderData = useLoaderData() as AppLoaderData;
+  const isDesktopL = useIsDesktopL();
 
   return (
-    <nav id='nav' className='sticky top-0 dark:bg-bg-dark-1000 w-[246px] h-[1024px] shrink-0 shadow-grey flex flex-col justify-between'>
+    <nav id='nav' className={`sticky top-0 dark:bg-bg-dark-1000 w-[246px] ${isDesktopL ? 'h-[1024px]' : 'h-[600px]'} max-h-screen shrink-0 shadow-grey flex flex-col justify-between`}>
       <div>
         <div className='flex items-center flex-col border-b-[1px] border-text-white dark:border-border-light'>
           <div className='pt-12 font-bold text-[26px]'>
