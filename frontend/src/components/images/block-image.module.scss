@@ -1,0 +1,19 @@
+.animate {
+  -webkit-transition: all 0.5s ease-out;
+  transition: all 0.5s ease-out;
+}
+
+.hide {
+  clip-path: inset(0 100% 0 0);
+}
+
+.show {
+  clip-path: inset(0 0 0 0);
+}
+
+.darkBlock {
+  width: 50px;
+  height: 70px;
+  background-size: cover;
+  margin: 0 -8px;
+}
