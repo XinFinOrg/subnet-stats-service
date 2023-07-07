@@ -42,11 +42,14 @@ export default function Blocks({ initialLastBlock, lastBlock, lastConfirmedBlock
 
               return (
                 <Fragment key={block.number}>
-                  <BlockImage block={block}
+                  <BlockImage
+                    block={block}
                     isFirstConfirmed={isFirstVisibleConfirmed}
                     isLastConfirmed={isLastConfirmed}
                     isFirstUnConfirmed={isFirstUnConfirmed}
                     isLast={isLast}
+                    index={index}
+                    blockNumber={blocks.length + 1}
                   />
                   {
                     !isLast && (
