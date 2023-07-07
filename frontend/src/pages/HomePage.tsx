@@ -5,12 +5,12 @@ import { useLoaderData } from 'react-router-dom';
 import Blocks, { Block } from '@/components/Blocks';
 import Card from '@/components/card/Card';
 import InfoCards from '@/components/info-cards/InfoCards';
+import Loader from '@/components/loader/Loader';
 import { baseUrl } from '@/constants/urls';
 import { TimeContext } from '@/contexts/timeContext';
 import { useIsDesktopL } from '@/hooks/useMediaQuery';
 
 import type { HomeLoaderData } from '@/types/loaderData';
-
 function getBlocks(lastBlock: number, lastConfirmedBlock: number, blockNumber: number) {
   const blocks = [];
 
@@ -44,7 +44,7 @@ export default function HomePage() {
     if (initialLastBlock.current === null) {
       initialLastBlock.current = loaderData.blocks.latestMinedBlock.number;
     }
-  }, []);
+  }, [loaderData.blocks.latestMinedBlock.number]);
 
   useEffect(() => {
     async function getData() {
@@ -61,16 +61,13 @@ export default function HomePage() {
     }
 
     getData();
-  }, [currentUnixTime]);
+  }, [blockNumber, currentUnixTime]);
 
-
-  if (!loaderData) {
-    console.log('no data');
-    return <>...</>;
-  }
 
   if (!initialLastBlock.current) {
-    return <></>;
+    return (
+      <Loader />
+    );
   }
 
   return (

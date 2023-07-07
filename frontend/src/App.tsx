@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Outlet, useNavigation } from 'react-router-dom';
 
-import Svg, { SvgNames } from '@/components/images/Svg';
+import Loader from '@/components/loader/Loader';
 import Nav from '@/components/nav/Nav';
 import { ThemeModes } from '@/components/theme-switch/ThemeSwitch';
 import { ThemeContext } from '@/contexts/themeContext';
@@ -28,9 +28,7 @@ function App() {
           <Nav />
           <main className='mx-6 my-8 grow w-[1146px]'>
             {navigation.state === 'loading' ? (
-              <div className='flex justify-center items-center h-screen'>
-                <Svg svgName={SvgNames.Loading} sizeClass='w-[100px]' />
-              </div>
+              <Loader />
             ) : (
               <Outlet />
             )}
