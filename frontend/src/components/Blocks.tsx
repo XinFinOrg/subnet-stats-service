@@ -26,12 +26,12 @@ export default function Blocks({ initialLastBlock, lastBlock, lastConfirmedBlock
   const confirmedNumber = blockNumber - unConfirmedNumber;
   // Definition: From left to right, the first visible index is 0
   const confirmedBlocksMidIndex = (confirmedNumber - 1) / 2;
-  const unConfirmedBlocksMidIndex = confirmedNumber + (unConfirmedNumber / 2);
+  const notConfirmedBlocksMidIndex = confirmedNumber + (unConfirmedNumber / 2);
 
   return (
     <>
       {/* Ex: 20 blocks + spacing = (35 + 18) * 20 - 18 = 1042px */}
-      <div className='pt-[60px] llg:w-[1060px] w-[672px] h-[150px] overflow-hidden relative'>
+      <div className='pt-[60px] llg:w-[1060px] w-[685px] h-[150px] overflow-hidden relative'>
         <div className='flex items-center transition duration-1000' style={{ transform: `translateX(${translateAmount}px)` }}>
           {
             blocks.map((block, index) => {
@@ -50,6 +50,9 @@ export default function Blocks({ initialLastBlock, lastBlock, lastConfirmedBlock
                     isLast={isLast}
                     index={index}
                     blockNumber={blocks.length + 1}
+                    confirmedBlocksMidIndex={confirmedBlocksMidIndex}
+                    notConfirmedBlocksMidIndex={notConfirmedBlocksMidIndex}
+                    blockSize={blockSize}
                   />
                   {
                     !isLast && (
@@ -63,28 +66,6 @@ export default function Blocks({ initialLastBlock, lastBlock, lastConfirmedBlock
           }
         </div>
 
-        {/* 'Confirmed' text */}
-        <div
-          style={{ transform: `translateX(${confirmedBlocksMidIndex * blockSize}px)` }}
-          className={`
-            text-text-white-500
-            absolute -top-[5px] -left-[28px] px-1 flex text-lg dark:bg-bg-dark-800 bg-white z-30 dark:text-text-white-800 ${styles.animate}
-          `}
-        >
-          Confirmed
-        </div>
-
-        {/* 'Not Confirmed' text */}
-        <div
-          style={{ transform: `translateX(${unConfirmedBlocksMidIndex * blockSize}px)` }}
-          className={`
-            text-text-white-500
-            absolute -top-[5px] -left-[72px] px-1 flex text-lg dark:bg-bg-dark-800 bg-white z-20 dark:text-text-white-800 ${styles.animate}
-          `}
-        >
-          Not Confirmed
-        </div>
-
         {/* 'Block 1' text */}
         <div className='absolute top-[120px] left-0 text-primary flex text-lg'>
           <div>Block</div>
@@ -92,7 +73,7 @@ export default function Blocks({ initialLastBlock, lastBlock, lastConfirmedBlock
         </div>
 
         {/* First confirmed left brace */}
-        <div className='absolute top-[6px] w-[50px] left-[16px] z-20 pt-[20px] dark:bg-bg-dark-800 bg-white border-t-2 border-l-2 rounded-tl-[20px] dark:border-text-white-800' />
+        <div className='absolute top-[6px] w-[30px] left-[16px] z-20 pt-[20px] dark:bg-bg-dark-800 bg-white border-t-2 border-l-2 rounded-tl-[20px] dark:border-text-white-800' />
 
         {/* Left brace layer mask */}
         <div className='absolute top-[0px] w-[40px] left-[-3px] h-[40px] dark:bg-bg-dark-800 bg-white ' />

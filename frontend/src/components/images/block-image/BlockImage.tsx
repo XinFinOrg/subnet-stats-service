@@ -1,4 +1,5 @@
 import { useContext } from 'react';
+import { twMerge } from 'tailwind-merge';
 
 import BlueBlock from '@/assets/blocks/blue-block.svg';
 import GreyBlock from '@/assets/blocks/grey-block.svg';
@@ -15,6 +16,9 @@ interface BlockImageProps {
   isLast: boolean;
   index: number;
   blockNumber: number;
+  confirmedBlocksMidIndex: number;
+  notConfirmedBlocksMidIndex: number;
+  blockSize: number;
 }
 
 export default function BlockImage(props: BlockImageProps) {
@@ -44,12 +48,48 @@ export default function BlockImage(props: BlockImageProps) {
       )}
       <StatusBrace {...props} />
       <BlockNumber {...props} />
+      {props.isFirstConfirmed && (
+        <>
+          <StatusText
+            text='Confirmed'
+            translateAmount={props.confirmedBlocksMidIndex * props.blockSize}
+            className='-left-[28px]'
+          />
+          <StatusText
+            text='Not Confirmed'
+            translateAmount={props.notConfirmedBlocksMidIndex * props.blockSize}
+            className='-left-[72px]'
+          />
+        </>
+      )}
+    </div>
+  );
+}
+interface BaseTextProps {
+  text: string;
+  translateAmount: number;
+  className: string;
+}
+
+function StatusText({ text, translateAmount, className }: BaseTextProps) {
+  return (
+    <div
+      style={{ transform: `translateX(${translateAmount}px)` }}
+      className={twMerge(`
+        text-text-white-500 whitespace-nowrap
+        absolute -top-[65px] -left-[50px] px-1 flex text-lg dark:bg-bg-dark-800 bg-white z-30 dark:text-text-white-800 ${styles.animate}
+      `, className)}
+    >
+      {text}
     </div>
   );
 }
 
+/**
+ * The line(border) that surrounded with 'Confirmed'/'Not Confirmed' text
+ * --- Confirmed ---
+ */
 function StatusBrace({ isLastConfirmed, isFirstUnConfirmed, isLast }: BlockImageProps) {
-  // Block status indicator
   if (isFirstUnConfirmed) {
     return <BraceStart />;
   } else if (isLastConfirmed || isLast) {
