@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="13 13 75 75">
+  <mask id="mask0_364_47512" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="13" y="13"
+    width="75" height="75">
+    <path
+      d="M88 50.5C88 29.7893 71.2107 13 50.5 13C29.7893 13 13 29.7893 13 50.5C13 71.2107 29.7893 88 50.5 88C71.2107 88 88 71.2107 88 50.5Z"
+      fill="white"></path>
+  </mask>
+  <g mask="url(#mask0_364_47512)">
+    <g filter="url(#filter0_d_364_47512)">
+      <path
+        d="M66.0273 13H34.9727C22.8375 13 13 22.8375 13 34.9727V66.0273C13 78.1625 22.8375 88 34.9727 88H66.0273C78.1625 88 88 78.1625 88 66.0273V34.9727C88 22.8375 78.1625 13 66.0273 13Z"
+        fill="#393B41"></path>
+      <path
+        d="M54 48.8574C54 47.2794 52.433 46.0002 50.5 46.0002C48.567 46.0002 47 47.2794 47 48.8574V67.1431C47 68.7211 48.567 70.0002 50.5 70.0002C52.433 70.0002 54 68.7211 54 67.1431V48.8574Z"
+        fill="#667075"></path>
+      <path
+        d="M53.0827 32.3622C51.6528 30.9323 49.3344 30.9323 47.9045 32.3622C46.4746 33.7921 46.4746 36.1105 47.9045 37.5404C49.3344 38.9704 51.6528 38.9704 53.0827 37.5404C54.5127 36.1105 54.5127 33.7921 53.0827 32.3622Z"
+        fill="#667075"></path>
+    </g>
+  </g>
+  <defs>
+    <filter id="filter0_d_364_47512" x="-7" y="-4" width="123" height="123"
+      filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood>
+      <feColorMatrix in="SourceAlpha" type="matrix"
+        values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"></feColorMatrix>
+      <feOffset dx="4" dy="7"></feOffset>
+      <feGaussianBlur stdDeviation="12"></feGaussianBlur>
+      <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.24 0"></feColorMatrix>
+      <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_364_47512"></feBlend>
+      <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_364_47512" result="shape"></feBlend>
+    </filter>
+  </defs>
+</svg>

@@ -1,6 +1,6 @@
 import { useContext } from 'react';
-import { twMerge } from 'tailwind-merge';
 
+import { Dot } from '@/components/dot/Dot';
 import Svg, { SvgNames } from '@/components/images/Svg';
 import { ThemeContext } from '@/contexts/themeContext';
 
@@ -22,19 +22,5 @@ export default function SearchNotFound() {
         </div>
       </div>
     </div>
-  );
-}
-
-interface DotProps {
-  className?: string;
-}
-
-function Dot(props: DotProps) {
-
-  return (
-    <div className={`${twMerge(
-      props.className,
-      'rounded-full w-5 h-5 bg-white dark:bg-bg-dark-700'
-    )}`} />
   );
 }

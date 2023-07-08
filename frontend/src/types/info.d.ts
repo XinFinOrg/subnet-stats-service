@@ -1,6 +1,6 @@
 export interface Info {
   [x: string]: {
-    data: Info.Data[];
+    data?: Info.Data[];
     health?: InfoListHealth;
   };
 }

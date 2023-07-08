@@ -1,5 +1,7 @@
 import Check from '@/assets/check.svg';
 import Cross from '@/assets/cross.svg';
+import InfoDark from '@/assets/info-dark.svg';
+import Info from '@/assets/info.svg';
 import Loading from '@/assets/loading.svg';
 import Miner from '@/assets/miner.svg';
 import NoResultDark from '@/assets/no-results-dark.svg';
@@ -97,9 +99,10 @@ interface SvgProps {
   svgName: SvgNames;
   size?: SvgSizes;
   sizeClass?: string;
+  className?: string;
 }
 
-export default function Svg({ svgName, size, sizeClass: userDefinedSizeClass }: SvgProps) {
+export default function Svg({ svgName, size, sizeClass: userDefinedSizeClass, className }: SvgProps) {
   function getSizeClass(size?: SvgSizes) {
     switch (size) {
       case 'sm':
@@ -164,10 +167,20 @@ export default function Svg({ svgName, size, sizeClass: userDefinedSizeClass }: 
       SvgComponent = NoResultDark;
       alt = 'No Result';
       break;
+
+    case SvgNames.Info:
+      SvgComponent = Info;
+      alt = 'Info';
+      break;
+
+    case SvgNames.InfoDark:
+      SvgComponent = InfoDark;
+      alt = 'Info';
+      break;
   }
 
   return (
-    <img className={`inline-block ${sizeClass}`} src={SvgComponent} alt={alt} />
+    <img className={`inline-block ${sizeClass} ${className}`} src={SvgComponent} alt={alt} />
   );
 }
 
@@ -192,4 +205,6 @@ export enum SvgNames {
   Loading = 'Loading',
   NoResult = 'NoResult',
   NoResultDark = 'NoResultDark',
+  Info = 'Info',
+  InfoDark = 'InfoDark',
 }

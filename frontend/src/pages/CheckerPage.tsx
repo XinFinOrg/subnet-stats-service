@@ -9,23 +9,23 @@ import { Info } from '@/types/info';
 import { SearchResult } from '@/types/searchResult';
 
 export default function CheckerPage() {
-  const [searchResult, setSearchResult] = useState<SearchResult>();
+  const [searchResult, setSearchResult] = useState<SearchResult>({});
 
   const mappedInfo: Info = {
     transaction: {
-      data: [{
-        name: 'Block time',
-        value: '2'
-      }, {
-        name: 'TX Throughput',
-        value: '10 texts/s'
-      }, {
-        name: 'Checkpointed to',
-        value: 'XDC'
-      }, {
-        name: 'Gas',
-        value: 'Date Time'
-      }]
+      // data: [{
+      //   name: 'Block time',
+      //   value: '2'
+      // }, {
+      //   name: 'TX Throughput',
+      //   value: '10 texts/s'
+      // }, {
+      //   name: 'Checkpointed to',
+      //   value: 'XDC'
+      // }, {
+      //   name: 'Gas',
+      //   value: 'Date Time'
+      // }]
     },
     subnetBlock: {
       data: [{
@@ -66,22 +66,22 @@ export default function CheckerPage() {
         <>
           <ConfirmationStatus className='pt-8' />
           <div className='pt-8 grid grid-cols-2 llg:grid-cols-3 gap-6'>
-            <Card>
+            <Card className='border-none px-0 py-0'>
               <InfoList
                 title='Transaction Info'
-                info={mappedInfo.transaction.data}
+                info={mappedInfo.transaction?.data}
               />
             </Card>
             <Card>
               <InfoList
                 title='Subnet Block Info '
-                info={mappedInfo.subnetBlock.data}
+                info={mappedInfo.subnetBlock?.data}
               />
             </Card>
             <Card>
               <InfoList
                 title='Checkpointing parent chain block'
-                info={mappedInfo.parentChain.data}
+                info={mappedInfo.parentChain?.data}
               />
             </Card>
           </div></>
