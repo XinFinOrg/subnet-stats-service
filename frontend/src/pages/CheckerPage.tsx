@@ -9,7 +9,7 @@ import { Info } from '@/types/info';
 import { SearchResult } from '@/types/searchResult';
 
 export default function CheckerPage() {
-  const [searchResult, setSearchResult] = useState<SearchResult>({});
+  const [searchResult] = useState<SearchResult>({});
 
   const mappedInfo: Info = {
     transaction: {
