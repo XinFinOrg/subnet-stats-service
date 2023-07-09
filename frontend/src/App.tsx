@@ -14,6 +14,20 @@ function App() {
   const navigation = useNavigation();
 
   useEffect(() => {
+    /**
+     * The following code runs timer only when tab is active
+     */
+    // let intervalId: number;
+
+    // window.addEventListener('focus', () => {
+    //   intervalId = setInterval(() => {
+    //     setCurrentUnixTime(getUnixTime());
+    //   }, pollingPeriod);
+    // });
+
+    // window.addEventListener('blur', () => {
+    //   clearInterval(intervalId);
+    // });
     const intervalId = setInterval(() => {
       setCurrentUnixTime(getUnixTime());
     }, pollingPeriod);
