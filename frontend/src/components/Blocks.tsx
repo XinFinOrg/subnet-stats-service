@@ -3,8 +3,6 @@ import { Fragment } from 'react';
 import BlockConnectLine from '@/components/BlockConnectLine';
 import BlockImage from '@/components/images/block-image/BlockImage';
 
-import styles from './blocks.module.scss';
-
 export interface Block {
   number: number;
   confirmed: boolean;

@@ -2,6 +2,8 @@ import { useContext } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import BlueBlock from '@/assets/blocks/blue-block.svg';
+import DarkBlueBlock from '@/assets/blocks/dark-blue-block.png';
+import DarkGreyBlock from '@/assets/blocks/dark-grey-block.png';
 import GreyBlock from '@/assets/blocks/grey-block.svg';
 import { Block } from '@/components/Blocks';
 import { ThemeContext } from '@/contexts/themeContext';
@@ -37,8 +39,15 @@ export default function BlockImage(props: BlockImageProps) {
     <div className='shrink-0 relative w-[35px] h-[37.82px] text-lg leading-none'>
       {isDarkMode ? (
         <>
-          <div className={`z-30 absolute left-0 top-0 ${styles.darkBlock} ${styles.darkGreyBlock}`} />
-          <div className={`z-40 absolute left-0 top-0 ${styles.darkBlock} ${styles.darkBlueBlock} ${styles.animate} ${block.confirmed ? styles.show : styles.hide}`} />
+          {/* The provided dark block image size are different from the light block images, therefore we use background image to adjust width */}
+          <div
+            className={`z-30 absolute left-0 top-0 ${styles.darkBlock}`}
+            style={{ backgroundImage: `url(${DarkGreyBlock})` }}
+          />
+          <div
+            className={`z-40 absolute left-0 top-0 ${styles.darkBlock} ${styles.animate} ${block.confirmed ? styles.show : styles.hide}`}
+            style={{ backgroundImage: `url(${DarkBlueBlock})` }}
+          />
         </>
       ) : (
         <>
