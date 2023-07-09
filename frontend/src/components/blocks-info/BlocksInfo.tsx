@@ -1,10 +1,11 @@
 import {
-    BlockCell, BlocksInfoItem
+  BlockCell, BlocksInfoItem
 } from '@/components/blocks-info/blocks-info-item/BlocksInfoItem';
 import { cellWith } from '@/components/blocks-info/constants';
 import { MasterNodeTitle } from '@/components/blocks-info/master-node-title/MasterNodeTitle';
 import InfiniteList from '@/components/infinite-list/InfiniteList';
 import Title from '@/components/title/Title';
+import Tooltip from '@/components/tooltip/Tooltip';
 
 interface BlocksInfoProps {
   title: string;
@@ -55,7 +56,10 @@ function BlocksInfoHeading({ type }: BlocksInfoHeadingProps) {
         <BlockCell className={cellWith.recentBlocks.hash}>Hash</BlockCell>
         <BlockCell className={cellWith.recentBlocks.proposedBy}>Proposed By</BlockCell>
         <BlockCell className={cellWith.recentBlocks.status}>Status</BlockCell>
-        <BlockCell className={cellWith.recentBlocks.time}>Time</BlockCell>
+        <BlockCell className={cellWith.recentBlocks.time}>
+          Time
+          {/* <div className='inline-flex'>Time <Tooltip text='The time passed after the block get confirmed.' buttonClassName='ml-1' /></div> */}
+        </BlockCell>
       </div>
     );
   }
