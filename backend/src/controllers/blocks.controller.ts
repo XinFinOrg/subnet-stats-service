@@ -4,6 +4,7 @@ import { BlocksResponse } from '../interfaces/output/blocksResponse.interface';
 import { BlockService } from '../services/block.service';
 import { getService } from './../services/index';
 import { logger } from '../utils/logger';
+import { HttpException } from '../exceptions/httpException';
 
 export class BlocksController {
   private blockService: BlockService;
@@ -14,9 +15,12 @@ export class BlocksController {
 
   public loadRecentBlocks = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const recentBlocks = await this.blockService.getRecentBlocks();
-      const chainStatus = await this.blockService.getBlockChainStatus();
-      const lastSubnetCommittedBlock = await this.blockService.getLastSubnetCommittedBlock();
+      const [recentBlocks, chainStatus, lastSubnetCommittedBlock] = await Promise.all([
+        this.blockService.getRecentBlocks(),
+        this.blockService.getBlockChainStatus(),
+        this.blockService.getLastSubnetCommittedBlock(),
+      ]);
+
       const latestMinedBlock =
         recentBlocks && recentBlocks.length
           ? {
@@ -45,13 +49,12 @@ export class BlocksController {
 
   public getBlockChainStats = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const { averageBlockTime, txThroughput } = await this.blockService.getBlockStats();
-      const chainStatus = await this.blockService.getBlockChainStatus();
+      const [blockStatus, chainStatus] = await Promise.all([this.blockService.getBlockStats(), this.blockService.getBlockChainStatus()]);
       const resp = {
         subnet: {
           block: {
-            averageBlockTime,
-            txThroughput,
+            averageBlockTime: blockStatus.averageBlockTime,
+            txThroughput: blockStatus.txThroughput,
           },
         },
         parentChain: {
@@ -67,5 +70,94 @@ export class BlocksController {
       logger.error(`Exception when getting blockchain statistics, ${error}`);
       next(error);
     }
+  };
+
+  public confirmBlock = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      let resp: ConfirmationResponse;
+      const input = req.query.input as string;
+
+      if (input.startsWith('0x')) {
+        let blockHash = input;
+        let inputType: InputType = 'BLOCK_HASH';
+        // It's either block hash or tx hash
+        const tx = await this.blockService.getTransactionInfo(input);
+        if (tx) {
+          inputType = 'TRANSACTION_HASH';
+          resp = {
+            transaction: {
+              from: tx.from,
+              to: tx.to,
+              gas: tx.gas,
+              timestamp: tx.timestamp,
+            },
+          } as ConfirmationResponse;
+          blockHash = tx.blockHash;
+        }
+        const { subnet, parentChain } = await this.blockService.confirmBlockByHash(blockHash);
+        resp = {
+          ...resp,
+          inputType,
+          subnet: {
+            isConfirmed: subnet.committedInSubnet,
+            blockHeight: subnet.subnetBlockHeight,
+            blockHash: subnet.subnetBlockHash,
+          },
+          parentChain: {
+            isConfirmed: parentChain.committedInParentChain,
+            blockHash: parentChain.parentchainBlockHash,
+            blockHeight: parentChain.parentchainBlockHeight,
+          },
+        };
+      } else if (parseInt(input)) {
+        // Verify by block number
+        const { subnet, parentChain } = await this.blockService.confirmBlockByHeight(parseInt(input));
+        resp = {
+          inputType: 'BLOCK_HEIGHT',
+          subnet: {
+            isConfirmed: subnet.committedInSubnet,
+            blockHeight: subnet.subnetBlockHeight,
+            blockHash: subnet.subnetBlockHash,
+          },
+          parentChain: {
+            isConfirmed: parentChain.committedInParentChain,
+            blockHash: parentChain.parentchainBlockHash,
+            blockHeight: parentChain.parentchainBlockHeight,
+          },
+        };
+      } else {
+        logger.warn(`Invalid input type, not hex and not integer, value: ${input}`);
+        throw new HttpException(400, 'Invalid input type');
+      }
+      res.status(200).json(resp);
+    } catch (error) {
+      if (!(error instanceof HttpException)) {
+        logger.error(`Exception when confirming block, ${error}`);
+      }
+      next(error);
+    }
+  };
+}
+
+type InputType = 'BLOCK_HEIGHT' | 'BLOCK_HASH' | 'TRANSACTION_HASH' | 'INVALID';
+interface ConfirmationResponse {
+  inputType: InputType;
+  subnet: {
+    isConfirmed: boolean;
+    blockHeight: number;
+    blockHash: string;
+    proposer?: string;
+  };
+  parentChain: {
+    isConfirmed: boolean;
+    blockHeight: number;
+    blockHash: string;
+    proposer?: string;
+  };
+  transaction?: {
+    from: string;
+    to: string;
+    gas: number;
+    timestamp: string;
   };
 }

@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 import { BlockStorage, StoredBlock, StoredLatestCommittedBlock } from '../storage/block';
 import { BlockInfo, LatestCommittedBlockInfoData } from '../interfaces/input/block.interface';
 import { BlockResponse } from '../interfaces/output/blocksResponse.interface';
-import { SubnetClient } from '@/client/subnet';
+import { SubnetClient } from '../client/subnet';
 
 @Service()
 export class BlockService {
@@ -30,7 +30,7 @@ export class BlockService {
     return await this.blockStorage.getMinedBlockByHash(hash);
   }
 
-  public async getBlockStats(): Promise<any> {
+  public async getBlockStats() {
     const allBlocks = await this.blockStorage.getAllBlocks();
     let averageBlockTime = 0;
     let txThroughput = 0;
@@ -88,7 +88,6 @@ export class BlockService {
 
   // This method will get the latest committed block in subnet
   public async getLastSubnetCommittedBlock(): Promise<StoredLatestCommittedBlock> {
-    // TODO: Replace with a call to the subnet to get the data
     let block = await this.blockStorage.getLatestCommittedBlock();
     if (!block) {
       block = await this.subnetClient.getLatestCommittedBlockInfo();
@@ -103,11 +102,62 @@ export class BlockService {
 
   // Returns the block num difference between what's mined in subnet and what's submitted to parent chain
   public async getProcessingBacklog(): Promise<{ gap: number; isProcessing: boolean }> {
-    const lastSubnetCommittedBlock = await this.getLastSubnetCommittedBlock();
-    const { processedUntil, isProcessing } = await this.getSmartContractProcessingInfo();
+    const [lastSubnetCommittedBlock, smartContractProcessingInfo] = await Promise.all([
+      this.getLastSubnetCommittedBlock(),
+      this.getSmartContractProcessingInfo(),
+    ]);
     return {
-      gap: lastSubnetCommittedBlock.number - processedUntil || -1,
-      isProcessing,
+      gap: lastSubnetCommittedBlock.number - smartContractProcessingInfo.processedUntil || -1,
+      isProcessing: smartContractProcessingInfo.isProcessing,
+    };
+  }
+
+  public async confirmBlockByHeight(blockToConfirmHeight: number) {
+    const result = await this.subnetClient.getBlock(blockToConfirmHeight);
+    return this.confirmBlock(result.hash);
+  }
+
+  public async confirmBlockByHash(blockToConfirmHash: string) {
+    const result = await this.subnetClient.getBlockInfoByHash(blockToConfirmHash);
+    return this.confirmBlock(blockToConfirmHash, result);
+  }
+
+  public async getTransactionInfo(hash: string) {
+    const txResult = await this.subnetClient.getTxByTransactionHash(hash);
+    if (!txResult) return undefined;
+    const { timestamp } = await this.subnetClient.getBlock(txResult.blockHash);
+    return {
+      from: txResult.from,
+      to: txResult.to,
+      gas: txResult.gas,
+      timestamp,
+      blockHash: txResult.blockHash,
+    };
+  }
+
+  // Perform confirmation operation to confirm the subnet block has been confirm on both subnet and parentchain
+  private async confirmBlock(
+    blockToConfirmHash: string,
+    subnetBlockInfo?: { subnetBlockNumber: number; committedInSubnet: boolean; proposer: string },
+  ) {
+    // Only fetch if not provided
+    if (!subnetBlockInfo) {
+      subnetBlockInfo = await this.subnetClient.getBlockInfoByHash(blockToConfirmHash);
+    }
+
+    const parentchainConfirmation = await this.parentChainClient.confirmBlock(blockToConfirmHash);
+    return {
+      subnet: {
+        committedInSubnet: subnetBlockInfo.committedInSubnet,
+        subnetBlockHeight: subnetBlockInfo.subnetBlockNumber,
+        subnetBlockHash: blockToConfirmHash,
+        proposer: subnetBlockInfo.proposer,
+      },
+      parentChain: {
+        committedInParentChain: parentchainConfirmation.isCommitted,
+        parentchainBlockHeight: parentchainConfirmation.parentChainNum,
+        parentchainBlockHash: parentchainConfirmation.parentchainHash,
+      },
     };
   }
 

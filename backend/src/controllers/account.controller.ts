@@ -1,4 +1,4 @@
-import { BlockService } from '@/services/block.service';
+import { BlockService } from '../services/block.service';
 import { CONTRACT_ADDRESS, WALLET_ADDRESS } from '../config';
 import { getService } from '../services';
 import { AccountService } from '../services/account.service';
@@ -15,17 +15,17 @@ export class RelayerController {
 
   public getRelayerRelatedDetails = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const balance = await this.accountService.getBalance();
-      const { isProcessing, gap } = await this.blockService.getProcessingBacklog();
+      const [balance, processingBacklog] = await Promise.all([this.accountService.getBalance(), this.blockService.getProcessingBacklog()]);
+
       const resp = {
         account: {
           balance: balance,
           walletAddress: WALLET_ADDRESS,
         },
-        backlog: gap,
+        backlog: processingBacklog.gap,
         contractAddress: CONTRACT_ADDRESS,
         health: {
-          status: isProcessing ? 'UP' : 'DOWN',
+          status: processingBacklog.isProcessing ? 'UP' : 'DOWN',
         },
       };
       res.status(200).json(resp);

@@ -1,7 +1,5 @@
 import Web3 from 'web3';
 
-const SUBNET_EXTENSION_NAME = 'xdcSubnet';
-
 export type BlockStatus = 'latest' | 'pending' | 'earliest' | 'committed';
 
 export interface CommittedBlockInfo {
@@ -18,6 +16,7 @@ export interface FetchedV2BlockInfo {
   Round: number;
   EncodedRLP: string;
   Error: string;
+  Miner: string;
 }
 
 interface MasternodesInfo {
@@ -38,28 +37,30 @@ export interface Web3WithExtension extends Web3 {
   };
 }
 
-export const subnetExtensions = {
-  property: SUBNET_EXTENSION_NAME,
-  methods: [
-    {
-      name: 'getV2Block',
-      params: 1,
-      call: 'XDPoS_getV2BlockByNumber',
-    },
-    {
-      name: 'getV2BlockByNumber',
-      params: 1,
-      call: 'XDPoS_getV2BlockByNumber',
-    },
-    {
-      name: 'getV2BlockByHash',
-      params: 1,
-      call: 'XDPoS_getV2BlockByHash',
-    },
-    {
-      name: 'getMasternodesByNumber',
-      params: 1,
-      call: 'XDPoS_getMasternodesByNumber',
-    },
-  ],
+export const networkExtensions = (extensionName = 'xdcSubnet') => {
+  return {
+    property: extensionName,
+    methods: [
+      {
+        name: 'getV2Block',
+        params: 1,
+        call: 'XDPoS_getV2BlockByNumber',
+      },
+      {
+        name: 'getV2BlockByNumber',
+        params: 1,
+        call: 'XDPoS_getV2BlockByNumber',
+      },
+      {
+        name: 'getV2BlockByHash',
+        params: 1,
+        call: 'XDPoS_getV2BlockByHash',
+      },
+      {
+        name: 'getMasternodesByNumber',
+        params: 1,
+        call: 'XDPoS_getMasternodesByNumber',
+      },
+    ],
+  };
 };

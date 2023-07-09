@@ -1,11 +1,11 @@
 import Web3 from 'web3';
 import { Contract } from 'web3-eth-contract';
-import { AbiItem } from 'web3-utils';
 import { HttpsAgent } from 'agentkeepalive';
 import { abi } from './contract';
 import { logger } from '../../utils/logger';
 import { CONTRACT_ADDRESS, PARENTCHAIN_URL } from '../../config';
 import { HttpException } from '../../exceptions/httpException';
+import { networkExtensions, Web3WithExtension } from '../extensions';
 
 export interface SmartContractAuditedBlockInfo {
   smartContractHash: string;
@@ -15,14 +15,14 @@ export interface SmartContractAuditedBlockInfo {
 }
 
 export class ParentChainClient {
-  private web3: Web3;
+  private web3: Web3WithExtension;
   private smartContractInstance: Contract;
 
   constructor() {
     const keepaliveAgent = new HttpsAgent();
     const provider = new Web3.providers.HttpProvider(PARENTCHAIN_URL, { keepAlive: true, agent: { https: keepaliveAgent } });
-    this.web3 = new Web3(provider);
-    this.smartContractInstance = new this.web3.eth.Contract(abi as AbiItem[], CONTRACT_ADDRESS);
+    this.web3 = new Web3(provider).extend(networkExtensions());
+    this.smartContractInstance = new this.web3.eth.Contract(abi as any[], CONTRACT_ADDRESS);
   }
 
   async getBalance(walletAddress: string): Promise<string> {
@@ -75,5 +75,20 @@ export class ParentChainClient {
       logger.error(`Error when fetching parent chain block by subnet block hash, error: ${error}`);
       throw error;
     }
+  }
+
+  /**
+   * Confirm a subnet block whether it has been fully confirmed/committed in parentchain.
+   * @param subnetHash The subnet block hash to confirm in parentchain
+   * @returns boolean to indicate whether fully confirmed and the hosting block height and hash in parentchain
+   */
+  async confirmBlock(subnetHash: string) {
+    const { finalized, mainnet_num } = await this.smartContractInstance.methods.getHeader(subnetHash).call();
+    const { Committed, Hash } = await this.web3.xdcSubnet.getV2BlockByNumber(Web3.utils.numberToHex(mainnet_num));
+    return {
+      isCommitted: Committed && finalized,
+      parentchainHash: Hash,
+      parentChainNum: mainnet_num,
+    };
   }
 }
