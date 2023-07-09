@@ -1,0 +1,27 @@
+diff --git a/node_modules/web3-core-helpers/node_modules/web3-utils/lib/index.js b/node_modules/web3-core-helpers/node_modules/web3-utils/lib/index.js
+index f33a432..1e715a7 100644
+--- a/node_modules/web3-core-helpers/node_modules/web3-utils/lib/index.js
++++ b/node_modules/web3-core-helpers/node_modules/web3-utils/lib/index.js
+@@ -259,10 +259,18 @@ var toWei = function (number, unit) {
+ var toChecksumAddress = function (address) {
+     if (typeof address === 'undefined')
+         return '';
+-    if (!/^(0x)?[0-9a-f]{40}$/i.test(address))
+-        throw new Error('Given address "' + address + '" is not a valid Ethereum address.');
+-    address = address.toLowerCase().replace(/^0x/i, '');
+-    var addressHash = utils.sha3(address).replace(/^0x/i, '');
++    if (!/^(0x)?[0-9a-f]{40}$/i.test(address) && !/^(xdc)?[0-9a-f]{40}$/i.test(address))
++        throw new Error('Given address "' + address + '" is not a valid XDC address.');
++        
++    var addressHash;
++    if (/^(xdc)?[0-9a-f]{40}$/i.test(address)) {
++      address = address.toLowerCase().replace(/^xdc/i, '');
++      addressHash = utils.sha3(address).replace(/^xdc/i, '');
++    } else {
++      address = address.toLowerCase().replace(/^0x/i, '');
++      addressHash = utils.sha3(address).replace(/^0x/i, '');
++    }
++        
+     var checksumAddress = '0x';
+     for (var i = 0; i < address.length; i++) {
+         // If ith character is 8 to f then make it uppercase

@@ -36,4 +36,18 @@ export class SubnetClient {
       throw new HttpException(500, error.message ? error.message : 'Exception when getting mastenode information from subnet node');
     }
   }
+
+  async getLatestCommittedBlockInfo(): Promise<{ hash: string; number: number; round: number }> {
+    try {
+      const { Hash, Number, Round } = await this.web3.xdcSubnet.getV2Block('committed');
+      return {
+        hash: Hash,
+        number: Number,
+        round: Round,
+      };
+    } catch (error) {
+      logger.error(`Fail to load last committed block information from subnet, ${error}`);
+      throw new HttpException(500, error.message ? error.message : 'Exception when getting last committed block information from subnet node');
+    }
+  }
 }

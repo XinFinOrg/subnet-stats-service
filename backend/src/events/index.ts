@@ -56,7 +56,7 @@ export class EventsHandler {
           this.services.nodeServide.addNode(nodeInfo);
         }
 
-        spark.emit('ready') // send ack back
+        spark.emit('ready'); // send ack back
 
         // Load the initial data
         logger.info('Emitting a history event to the connected node');
@@ -70,7 +70,7 @@ export class EventsHandler {
           // This event also include the committed block information
           if (data.block && data.latestCommittedBlockInfo) {
             this.services.blockService.addBlock(data.block);
-            this.services.blockService.addLatestCommittedBlock(data.latestCommittedBlockInfo);
+            this.services.blockService.addLatestSubnetCommittedBlock(data.latestCommittedBlockInfo);
           }
         }
       });

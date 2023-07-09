@@ -3,7 +3,7 @@ import { BlocksController } from './../controllers/blocks.controller';
 import { Router } from 'express';
 import { Routes } from '../interfaces/routes.interface';
 import { HealthController } from '../controllers/health.controller';
-import { RelayerController } from '../controllers/relayer.controller';
+import { RelayerController } from '../controllers/account.controller';
 
 export class Route implements Routes {
   public router = Router();

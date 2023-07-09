@@ -16,7 +16,7 @@ export class BlocksController {
     try {
       const recentBlocks = await this.blockService.getRecentBlocks();
       const chainStatus = await this.blockService.getBlockChainStatus();
-      const lastSubnetCommittedBlock = await this.blockService.getLastCommittedBlock();
+      const lastSubnetCommittedBlock = await this.blockService.getLastSubnetCommittedBlock();
       const latestMinedBlock =
         recentBlocks && recentBlocks.length
           ? {
