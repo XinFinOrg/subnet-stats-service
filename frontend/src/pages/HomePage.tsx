@@ -6,7 +6,7 @@ import Blocks, { Block } from '@/components/Blocks';
 import Card from '@/components/card/Card';
 import InfoCards from '@/components/info-cards/InfoCards';
 import { baseUrl } from '@/constants/urls';
-import { TimeContext } from '@/contexts/timeContext';
+import { TimeContext } from '@/contexts/TimeContext';
 import { useIsDesktopL } from '@/hooks/useMediaQuery';
 
 import type { HomeLoaderData } from '@/types/loaderData';

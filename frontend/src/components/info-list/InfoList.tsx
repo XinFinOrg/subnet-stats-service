@@ -3,7 +3,7 @@ import { useContext } from 'react';
 import { Dot } from '@/components/dot/Dot';
 import Svg, { SvgNames } from '@/components/images/Svg';
 import Title from '@/components/title/Title';
-import { ThemeContext } from '@/contexts/themeContext';
+import { ThemeContext } from '@/contexts/ThemeContext';
 
 import styles from './info-list.module.scss';
 
