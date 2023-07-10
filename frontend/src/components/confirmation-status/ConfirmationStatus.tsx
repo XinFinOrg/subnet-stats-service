@@ -27,5 +27,5 @@ function ConfirmationStatusItem(props: ConfirmationStatusItemProps) {
       <span className='inline-block w-[120px]'>{props.name}</span>
       <span className='text-primary dark:text-sky-300 font-semibold leading-tight bg-sky-300 bg-opacity-20 rounded-lg px-[5px] py-[3px]'>{props.value}</span>
     </div>
-  )
+  );
 }

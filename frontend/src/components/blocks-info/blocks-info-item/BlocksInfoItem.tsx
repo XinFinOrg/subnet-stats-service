@@ -2,8 +2,8 @@ import { PropsWithChildren, useContext } from 'react';
 
 import { cellWith } from '@/components/blocks-info/constants';
 import Svg, { SvgNames } from '@/components/images/Svg';
+import { TimeContext } from '@/contexts/TimeContext';
 import { formatHash } from '@/utils/formatter';
-import { TimeContext } from '@/contexts/timeContext';
 
 export type BlocksInfoItem = RecentBlock | MasterNode;
 type BlocksInfoItemProps = BlocksInfoItem;
@@ -53,7 +53,7 @@ export function BlocksInfoItem(data: BlocksInfoItemProps) {
         <BlockImageCell className={cellWith.recentBlocks.status}>
           <BlockConfirmStatus committedInSubnet={data.committedInSubnet} committedInParentChain={data.committedInParentChain} />
         </BlockImageCell>
-        <BlockCell className={cellWith.recentBlocks.time}>{getTimeDiff(data.timestamp)}</BlockCell>
+        <BlockCell className={cellWith.recentBlocks.time}>{getTimeDiff(data.timestamp)} ago</BlockCell>
       </div>
     );
   }

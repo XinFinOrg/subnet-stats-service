@@ -4,8 +4,8 @@ import { Outlet, useNavigation } from 'react-router-dom';
 import Loader from '@/components/loader/Loader';
 import Nav from '@/components/nav/Nav';
 import { ThemeModes } from '@/components/theme-switch/ThemeSwitch';
-import { ThemeContext } from '@/contexts/themeContext';
-import { TimeContext } from '@/contexts/timeContext';
+import { ThemeContext } from '@/contexts/ThemeContext';
+import { TimeContext } from '@/contexts/TimeContext';
 import { getUnixTime, pollingPeriod } from '@/utils/time';
 
 function App() {
@@ -14,6 +14,20 @@ function App() {
   const navigation = useNavigation();
 
   useEffect(() => {
+    /**
+     * The following code runs timer only when tab is active
+     */
+    // let intervalId: number;
+
+    // window.addEventListener('focus', () => {
+    //   intervalId = setInterval(() => {
+    //     setCurrentUnixTime(getUnixTime());
+    //   }, pollingPeriod);
+    // });
+
+    // window.addEventListener('blur', () => {
+    //   clearInterval(intervalId);
+    // });
     const intervalId = setInterval(() => {
       setCurrentUnixTime(getUnixTime());
     }, pollingPeriod);

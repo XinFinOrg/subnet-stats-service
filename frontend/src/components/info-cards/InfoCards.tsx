@@ -58,7 +58,7 @@ export default function InfoCards() {
     masterNodes: {
       data: [
         { name: 'Current committee size', value: loaderData.masterNodes.summary.committee },
-        { name: 'Activity', value: `${loaderData.masterNodes.summary.activeNodes}(active) ${loaderData.masterNodes.summary.inActiveNodes}(inactive)` },
+        { name: 'Activity(active / inactive)', value: `${loaderData.masterNodes.summary.activeNodes} / ${loaderData.masterNodes.summary.committee - loaderData.masterNodes.summary.activeNodes}` },
         { name: 'Number of standby nodes', value: loaderData.masterNodes.summary.inActiveNodes },
       ],
     },
@@ -69,7 +69,7 @@ export default function InfoCards() {
     type: 'master-node',
     account: formatHash(v.address),
     number: i + 1
-  }))
+  }));
 
   const fetchMoreRecentBlocks = () => {
     if (!recentBlocks) {

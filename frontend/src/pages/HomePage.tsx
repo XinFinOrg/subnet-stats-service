@@ -6,7 +6,7 @@ import Blocks, { Block } from '@/components/Blocks';
 import Card from '@/components/card/Card';
 import InfoCards from '@/components/info-cards/InfoCards';
 import { baseUrl } from '@/constants/urls';
-import { TimeContext } from '@/contexts/timeContext';
+import { TimeContext } from '@/contexts/TimeContext';
 import { useIsDesktopL } from '@/hooks/useMediaQuery';
 
 import type { HomeLoaderData } from '@/types/loaderData';
@@ -59,7 +59,7 @@ export default function HomePage() {
   return (
     <div className='grid gap-6 grid-col-1'>
       <Card>
-        <h1 className='pb-6 text-3xl font-bold'>Subnet Blockchain</h1>
+        <h1 className='pb-4 text-xl font-medium'>Subnet Blockchain</h1>
         <Blocks
           initialLastBlock={initialLastBlock}
           lastBlock={lastBlock}
@@ -69,7 +69,7 @@ export default function HomePage() {
         />
       </Card>
       <Card>
-        <h1 className='pb-6 text-3xl font-bold'>Copy at the parent chain</h1>
+        <h1 className='pb-4 text-xl font-medium'>Copy at the parent chain</h1>
         <Blocks
           initialLastBlock={initialLastBlock}
           lastBlock={lastBlock}

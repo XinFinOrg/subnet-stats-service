@@ -10,6 +10,7 @@ import Penalty from '@/assets/penalty.svg';
 import Rhombus from '@/assets/rhombus.svg';
 import Search from '@/assets/search.svg';
 import Standby from '@/assets/standby.svg';
+import Logo from '@/assets/xdc-logo.svg';
 
 interface GeneralSvgProps {
   colour: string;
@@ -177,6 +178,11 @@ export default function Svg({ svgName, size, sizeClass: userDefinedSizeClass, cl
       SvgComponent = InfoDark;
       alt = 'Info';
       break;
+
+    case SvgNames.Logo:
+      SvgComponent = Logo;
+      alt = 'XDO Logo';
+      break;
   }
 
   return (
@@ -207,4 +213,5 @@ export enum SvgNames {
   NoResultDark = 'NoResultDark',
   Info = 'Info',
   InfoDark = 'InfoDark',
+  Logo = 'Logo',
 }
