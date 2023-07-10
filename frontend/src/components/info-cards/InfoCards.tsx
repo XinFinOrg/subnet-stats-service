@@ -37,6 +37,37 @@ export default function InfoCards() {
     }));
   }
 
+  function formatBalance(balance: number) {
+    const abbreTable = [{
+      name: 'Septillion', pow: 24,
+    }, {
+      name: 'Sextillion', pow: 21,
+    }, {
+      name: 'Quintillion', pow: 18,
+    }, {
+      name: 'Quadrillion', pow: 15,
+    }, {
+      name: 'Trillion', pow: 12,
+    }, {
+      name: 'B', pow: 9,
+    }, {
+      name: 'M', pow: 6,
+    }, {
+      name: 'K', pow: 3,
+    }];
+
+    for (let i = 0; i < abbreTable.length; i++) {
+      const { name, pow } = abbreTable[i];
+      const base = Math.pow(10, pow);
+
+      if (balance / base > 0) {
+        return `${Math.floor(((balance / base) * 100)) / 100} ${name}`;
+      }
+    }
+
+    return balance;
+  }
+
   const mappedInfo: Info = {
     network: {
       health: getNetworkStatus(),
@@ -51,8 +82,8 @@ export default function InfoCards() {
       data: [
         { name: 'Smart Contract', value: formatHash(loaderData.relayer.account.walletAddress) },
         { name: 'Backlog', value: `${loaderData.relayer.backlog} Subnet Headers` },
-        { name: 'Ave. tx fee', value: loaderData.relayer.averageTXfee },
-        { name: 'Remaining Balance', value: loaderData.relayer.account.balance },
+        // TODO: explore cash format
+        { name: 'Remaining Balance', value: formatBalance(parseInt(loaderData.relayer.account.balance)) },
       ]
     },
     masterNodes: {
