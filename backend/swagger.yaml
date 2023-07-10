@@ -35,27 +35,40 @@ paths:
                     type: array
                     items:
                       $ref: '#/definitions/Block'
-                  latestMinedBlock:
-                    description: The block that was most recently mined in the subnet. regardless its confirmation status
+                  subnet:
+                    type: object
                     properties:
-                      hash:
-                        type: string
-                      number:
-                        type: number
-                  latestSubnetCommittedBlock:
-                    description: The block that was most recently confirm to be committed in the subnet. (Ignoring its confirmation status from parent chain)
+                      latestMinedBlock:
+                        description: The block that was most recently mined in the subnet. regardless its confirmation status
+                        properties:
+                          hash:
+                            type: string
+                          number:
+                            type: number
+                      latestCommittedBlock:
+                        description: The block that was most recently confirm to be committed in the subnet. (Ignoring its confirmation status from parent chain)
+                        properties:
+                          hash:
+                            type: string
+                          number:
+                            type: number
+                  checkpoint:
+                    type: object
                     properties:
-                      hash:
-                        type: string
-                      number:
-                        type: number
-                  latestParentChainCommittedBlock:
-                    description: The block that was most recently confirm to be committed in the parent chain.
-                    properties:
-                      hash:
-                        type: string
-                      number:
-                        type: number
+                      latestCommittedSubnetBlock:
+                        description: The block that was most recently confirm to be committed in the parent chain.
+                        properties:
+                          hash:
+                            type: string
+                          number:
+                            type: number
+                      latestSubmittedSubnetBlock:
+                        description: The block that was most recently submitted in the parent chain for comfirmation, but not yet confirmed
+                        properties:
+                          hash:
+                            type: string
+                          number:
+                            type: number
                   health:
                     type: object
                     properties:

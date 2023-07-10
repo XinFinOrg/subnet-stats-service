@@ -15,12 +15,14 @@ export class BlocksController {
 
   public loadRecentBlocks = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const [recentBlocks, chainStatus, lastSubnetCommittedBlock, latestParentchainCommittedSubnetBlock] = await Promise.all([
+      const [recentBlocks, chainStatus, lastSubnetCommittedBlock, parentchainSubnetBlock] = await Promise.all([
         this.blockService.getRecentBlocks(),
         this.blockService.getBlockChainStatus(),
         this.blockService.getLastSubnetCommittedBlock(),
-        this.blockService.getLastParentchainCommittedSubnetBlock(),
+        this.blockService.getLastParentchainSubnetBlock(),
       ]);
+
+      const { committed, submitted } = parentchainSubnetBlock;
 
       const latestMinedBlock =
         recentBlocks && recentBlocks.length
@@ -31,16 +33,24 @@ export class BlocksController {
           : {};
       const data: BlocksResponse = {
         blocks: recentBlocks,
-        latestMinedBlock,
-        latestSubnetCommittedBlock: lastSubnetCommittedBlock
-          ? {
-              hash: lastSubnetCommittedBlock.hash,
-              number: lastSubnetCommittedBlock.number,
-            }
-          : {},
-        latestParentChainCommittedBlock: {
-          hash: latestParentchainCommittedSubnetBlock.hash,
-          number: latestParentchainCommittedSubnetBlock.height,
+        subnet: {
+          latestMinedBlock,
+          latestCommittedBlock: lastSubnetCommittedBlock
+            ? {
+                hash: lastSubnetCommittedBlock.hash,
+                number: lastSubnetCommittedBlock.number,
+              }
+            : {},
+        },
+        checkpoint: {
+          latestCommittedSubnetBlock: {
+            hash: committed.hash,
+            number: committed.height,
+          },
+          latestSubmittedSubnetBlock: {
+            hash: submitted.hash,
+            number: submitted.height,
+          },
         },
         health: {
           status: chainStatus ? 'UP' : 'DOWN',
