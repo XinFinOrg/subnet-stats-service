@@ -5,7 +5,8 @@ import { cellWith } from '@/components/blocks-info/constants';
 import { MasterNodeTitle } from '@/components/blocks-info/master-node-title/MasterNodeTitle';
 import InfiniteList from '@/components/infinite-list/InfiniteList';
 import Title from '@/components/title/Title';
-import Tooltip from '@/components/tooltip/Tooltip';
+
+// import Tooltip from '@/components/tooltip/Tooltip';
 
 interface BlocksInfoProps {
   title: string;
@@ -26,7 +27,7 @@ export default function BlocksInfo({ title, data, fetchMoreData }: BlocksInfoPro
       ) : (
         <Title title={title} />
       )}
-      <div className='mt-6 h-[400px] overflow-hidden hover:overflow-auto relative dark:text-text-dark-100'>
+      <div className='mt-0 h-[400px] overflow-hidden hover:overflow-auto relative dark:text-text-dark-100'>
         <>
           <BlocksInfoHeading type={data[0].type} />
           {fetchMoreData ? (
@@ -51,11 +52,11 @@ interface BlocksInfoHeadingProps {
 function BlocksInfoHeading({ type }: BlocksInfoHeadingProps) {
   if (type === 'recent-block') {
     return (
-      <div className='flex dark:bg-bg-dark-800 bg-white sticky top-0'>
+      <div className='flex dark:bg-bg-dark-800 bg-white sticky top-0 items-center'>
         <BlockCell className={cellWith.recentBlocks.height}>Height</BlockCell>
         <BlockCell className={cellWith.recentBlocks.hash}>Hash</BlockCell>
         <BlockCell className={cellWith.recentBlocks.proposedBy}>Proposed By</BlockCell>
-        <BlockCell className={cellWith.recentBlocks.status}>Status</BlockCell>
+        <BlockCell className={cellWith.recentBlocks.status}>Confirmation Status</BlockCell>
         <BlockCell className={cellWith.recentBlocks.time}>
           Time
           {/* <div className='inline-flex'>Time <Tooltip text='The time passed after the block get confirmed.' buttonClassName='ml-1' /></div> */}

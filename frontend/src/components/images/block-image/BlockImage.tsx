@@ -62,12 +62,12 @@ export default function BlockImage(props: BlockImageProps) {
           <StatusText
             text='Confirmed'
             translateAmount={props.confirmedBlocksMidIndex * props.blockSize}
-            className='-left-[28px]'
+            className='-left-[18px]'
           />
           <StatusText
             text='Not Confirmed'
             translateAmount={props.notConfirmedBlocksMidIndex * props.blockSize}
-            className='-left-[72px]'
+            className='-left-[58.5px]'
           />
         </>
       )}
@@ -86,7 +86,7 @@ function StatusText({ text, translateAmount, className }: BaseTextProps) {
       style={{ transform: `translateX(${translateAmount}px)` }}
       className={twMerge(`
         text-text-white-500 whitespace-nowrap
-        absolute -top-[65px] -left-[50px] px-1 flex text-lg dark:bg-bg-dark-800 bg-white z-30 dark:text-text-white-800 ${styles.animate}
+        absolute -top-[43px] -left-[50px] px-1 flex text-sm dark:bg-bg-dark-800 bg-white z-30 dark:text-text-white-800 ${styles.animate}
       `, className)}
     >
       {text}
@@ -106,33 +106,33 @@ function StatusBrace({ isLastConfirmed, isFirstUnConfirmed, isLast }: BlockImage
   }
 
   return (
-    <div className='absolute -top-[54px] -right-[10px] -left-[10px] border-t-2 dark:border-text-white-800' />
+    <div className='absolute -top-[34px] -right-[10px] -left-[10px] border-t dark:border-text-white-800' />
   );
 }
 
 function BraceStart() {
   return (
-    <div className='absolute -top-[54px] -right-[9px] left-[16px] pt-[20px] dark:text-primary flex border-t-2 border-l-2 rounded-tl-[20px] dark:border-text-white-800' />
+    <div className='absolute -top-[34px] -right-[9px] left-[16px] pt-[20px] dark:text-primary flex border-t border-l rounded-tl-[20px] dark:border-text-white-800' />
   );
 }
 
 function BraceEnd() {
   return (
-    <div className='absolute -top-[54px] right-[16px] -left-[9px] pt-[20px] dark:text-primary flex border-t-2 border-r-2 rounded-tr-[20px] dark:border-text-white-800' />
+    <div className='absolute -top-[34px] right-[16px] -left-[9px] pt-[20px] dark:text-primary flex border-t border-r rounded-tr-[20px] dark:border-text-white-800' />
   );
 }
 
 function BlockNumber({ block, isLastConfirmed, isLast }: BlockImageProps) {
   if (isLastConfirmed) {
     return (
-      <div className='absolute top-[64px] right-0 text-primary flex'>
+      <div className='absolute top-[60px] right-0 text-primary flex text-sm'>
         <div>Block</div>
         <div className='pl-1'>{block.number}</div>
       </div>
     );
   } else if (isLast) {
     return (
-      <div className='absolute top-[64px] right-0 text-primary flex'>
+      <div className='absolute top-[60px] right-0 text-primary flex text-sm'>
         <div>Block</div>
         <div className='pl-1'>{block.number}</div>
       </div>

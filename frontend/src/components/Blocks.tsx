@@ -65,13 +65,13 @@ export default function Blocks({ initialLastBlock, lastBlock, lastConfirmedBlock
         </div>
 
         {/* 'Block 1' text */}
-        <div className='absolute top-[120px] left-0 text-primary flex text-lg'>
+        <div className='absolute top-[120px] left-0 text-primary flex text-md'>
           <div>Block</div>
           <div className='pl-1'>1</div>
         </div>
 
         {/* First confirmed left brace */}
-        <div className='absolute top-[6px] w-[30px] left-[16px] z-20 pt-[20px] dark:bg-bg-dark-800 bg-white border-t-2 border-l-2 rounded-tl-[20px] dark:border-text-white-800' />
+        <div className='absolute top-[26px] w-[30px] left-[16px] z-20 pt-[20px] dark:bg-bg-dark-800 bg-white border-t border-l rounded-tl-[20px] dark:border-text-white-800' />
 
         {/* Left brace layer mask */}
         <div className='absolute top-[0px] w-[40px] left-[-3px] h-[40px] dark:bg-bg-dark-800 bg-white ' />

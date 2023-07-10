@@ -1,10 +1,10 @@
 export const cellWith = {
   recentBlocks: {
-    'height': 'w-[85px]',
-    'hash': 'w-[140px]',
-    'proposedBy': 'w-[140px]',
-    'status': 'w-[70px]',
-    'time': 'w-[50px]',
+    'height': 'w-[70px]',
+    'hash': 'w-[125px]',
+    'proposedBy': 'w-[125px]',
+    'status': 'w-[100px]',
+    'time': 'w-[80px]',
   },
   masterNodes: {
     'number': 'w-[64px]',

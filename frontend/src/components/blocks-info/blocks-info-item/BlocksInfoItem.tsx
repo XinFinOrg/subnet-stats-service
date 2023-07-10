@@ -53,7 +53,7 @@ export function BlocksInfoItem(data: BlocksInfoItemProps) {
         <BlockImageCell className={cellWith.recentBlocks.status}>
           <BlockConfirmStatus committedInSubnet={data.committedInSubnet} committedInParentChain={data.committedInParentChain} />
         </BlockImageCell>
-        <BlockCell className={cellWith.recentBlocks.time}>{getTimeDiff(data.timestamp)}</BlockCell>
+        <BlockCell className={cellWith.recentBlocks.time}>{getTimeDiff(data.timestamp)} ago</BlockCell>
       </div>
     );
   }
