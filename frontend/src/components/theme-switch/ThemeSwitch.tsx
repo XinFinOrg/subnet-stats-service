@@ -4,7 +4,14 @@ import { InlineSvg, InlineSvgColours, InlineSvgNames } from '@/components/images
 import { ThemeContext } from '@/contexts/ThemeContext';
 
 export default function ThemeSwitch() {
-  const [selectedTheme, setSelectedTheme] = useState<ThemeModes>('dark');
+  const [selectedTheme, setSelectedTheme] = useState<ThemeModes>(() => {
+    const theme = window.localStorage.getItem('theme');
+    if (theme !== 'light' && theme !== 'dark') {
+      return 'dark';
+    }
+
+    return theme;
+  });
   const { setTheme } = useContext(ThemeContext);
 
   useEffect(() => {
@@ -13,11 +20,13 @@ export default function ThemeSwitch() {
     if (selectedTheme === 'dark') {
       window.document.body.classList.add('dark');
       document.body.style.backgroundColor = 'black';
+      window.localStorage.setItem('theme', 'dark');
       return;
     }
 
     window.document.body.classList.remove('dark');
     document.body.style.backgroundColor = 'white';
+    window.localStorage.setItem('theme', 'light');
   }, [setTheme, selectedTheme]);
 
   return (
