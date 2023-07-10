@@ -1,8 +1,8 @@
-// import { useState } from 'react';
+import { useState } from 'react';
 import { useLoaderData } from 'react-router-dom';
 
-// import { BlocksInfoItem } from '@/components/blocks-info/blocks-info-item/BlocksInfoItem';
-// import BlocksInfo from '@/components/blocks-info/BlocksInfo';
+import { BlocksInfoItem } from '@/components/blocks-info/blocks-info-item/BlocksInfoItem';
+import BlocksInfo from '@/components/blocks-info/BlocksInfo';
 import Card from '@/components/card/Card';
 import InfoList from '@/components/info-list/InfoList';
 import { Info, InfoListHealth } from '@/types/info';
@@ -12,7 +12,7 @@ import { formatHash } from '@/utils/formatter';
 export default function InfoCards() {
   const loaderData = useLoaderData() as HomeLoaderData;
 
-  // const [recentBlocks, setRecentBlocks] = useState<BlocksInfoItem[]>(getInitRecentBlocks());
+  const [recentBlocks, setRecentBlocks] = useState<BlocksInfoItem[]>(getInitRecentBlocks());
 
   function getNetworkStatus(): InfoListHealth {
     if (loaderData.network.health.status === 'UP') {
@@ -30,12 +30,12 @@ export default function InfoCards() {
     return 'Abnormal';
   }
 
-  // function getInitRecentBlocks(): BlocksInfoItem[] {
-  //   return loaderData.blocks.blocks.sort((a, b) => b.number - a.number).map<BlocksInfoItem>(block => ({
-  //     type: 'recent-block',
-  //     ...block
-  //   }));
-  // }
+  function getInitRecentBlocks(): BlocksInfoItem[] {
+    return loaderData.blocks.blocks.sort((a, b) => b.number - a.number).map<BlocksInfoItem>(block => ({
+      type: 'recent-block',
+      ...block
+    }));
+  }
 
   const mappedInfo: Info = {
     network: {
@@ -72,18 +72,18 @@ export default function InfoCards() {
   }));
   masterNodes;
 
-  // const fetchMoreRecentBlocks = () => {
-  //   if (!recentBlocks) {
-  //     return;
-  //   }
+  const fetchMoreRecentBlocks = () => {
+    if (!recentBlocks) {
+      return;
+    }
 
-  //   // TODO: From api
-  //   const data: any = [];
+    // TODO: From api
+    const data: any = [];
 
-  //   setRecentBlocks(recentBlocks => {
-  //     return [...recentBlocks, ...data];
-  //   });
-  // };
+    setRecentBlocks(recentBlocks => {
+      return [...recentBlocks, ...data];
+    });
+  };
 
   return (
     <>
@@ -112,12 +112,12 @@ export default function InfoCards() {
       </div>
 
       <div className='grid grid-cols-1 llg:grid-cols-2 gap-6'>
-        {/* <Card className='max-w-[565px]'>
+        <Card className='max-w-[565px]'>
           <BlocksInfo title='Recent Blocks' data={recentBlocks} fetchMoreData={fetchMoreRecentBlocks} enableInfinite />
-        </Card> */}
-        {/* {masterNodes && <Card className='max-w-[565px]'>
+        </Card>
+        {masterNodes && <Card className='max-w-[565px]'>
           <BlocksInfo title='Master Nodes' data={masterNodes} />
-        </Card>} */}
+        </Card>}
       </div>
     </>
   );
