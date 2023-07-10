@@ -15,7 +15,7 @@ jobs:
       with:
         node-version: '18.x'
     - name: Install dependencies
-      run: npm install
+      run: cd backend && npm install
     - name: Run build
       run: npm run build # Double check we can build
     # TODO: Tests to be added

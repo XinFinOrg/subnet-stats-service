@@ -15,7 +15,7 @@ jobs:
       with:
         node-version: '18.x'
     - name: Install dependencies
-      run: npm install
+      run: cd backend && npm install
     - name: Docker login
       env:
         DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}}
