@@ -2,7 +2,7 @@ import { PropsWithChildren, useContext } from 'react';
 
 import { cellWith } from '@/components/blocks-info/constants';
 import Svg, { SvgNames } from '@/components/images/Svg';
-import { TimeContext } from '@/contexts/TimeContext2';
+import { TimeContext } from '@/contexts/TimeContext';
 import { formatHash } from '@/utils/formatter';
 
 export type BlocksInfoItem = RecentBlock | MasterNode;
