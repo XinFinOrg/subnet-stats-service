@@ -83,6 +83,9 @@ export class BlocksController {
     try {
       let resp: ConfirmationResponse;
       const input = req.query.input as string;
+      if (!input) {
+        throw new HttpException(400, 'Input must be provided');
+      }
 
       if (input.startsWith('0x')) {
         let blockHash = input;
