@@ -32,10 +32,10 @@ export default function BlocksInfo({ title, data, fetchMoreData }: BlocksInfoPro
           <BlocksInfoHeading type={data[0].type} />
           {fetchMoreData ? (
             <InfiniteList data={data} fetchData={fetchMoreData}>
-              <BlocksInfoItems data={data} />
+              <BlocksInfoItems data={data} title={title} />
             </InfiniteList>
           ) : (
-            <BlocksInfoItems data={data} />
+            <BlocksInfoItems data={data} title={title} />
           )}
         </>
       </div>
@@ -78,9 +78,10 @@ function BlocksInfoHeading({ type }: BlocksInfoHeadingProps) {
 
 interface BlocksInfoItemsProps {
   data: BlocksInfoItem[];
+  title: string;
 }
 
-function BlocksInfoItems({ data }: BlocksInfoItemsProps) {
+function BlocksInfoItems({ data, title }: BlocksInfoItemsProps) {
   return (
     <>
       {
@@ -89,7 +90,7 @@ function BlocksInfoItems({ data }: BlocksInfoItemsProps) {
             className={`flex border-b-2 border-text-white-400 dark:border-opacity-40 dark:border-text-dark-400
               ${index === 0 ? 'border-t-2' : ''}`
             }
-            key={d.number}
+            key={`${title}-${d.number}`}
           >
             <BlocksInfoItem {...d} />
           </div>

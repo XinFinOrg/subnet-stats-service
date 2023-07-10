@@ -57,14 +57,14 @@ export default function InfoCards() {
     },
     masterNodes: {
       data: [
-        { name: 'Current committee size', value: loaderData.masterNodes.summary.committee },
-        { name: 'Activity(active / inactive)', value: `${loaderData.masterNodes.summary.activeNodes} / ${loaderData.masterNodes.summary.committee - loaderData.masterNodes.summary.activeNodes}` },
-        { name: 'Number of standby nodes', value: loaderData.masterNodes.summary.inActiveNodes },
+        { name: 'Current committee size', value: loaderData.masterNodes?.summary?.committee },
+        { name: 'Activity(active / inactive)', value: `${loaderData.masterNodes?.summary?.activeNodes} / ${loaderData.masterNodes.summary.committee - loaderData.masterNodes?.summary?.activeNodes}` },
+        { name: 'Number of standby nodes', value: loaderData.masterNodes?.summary?.inActiveNodes },
       ],
     },
   };
 
-  const masterNodes = loaderData.masterNodes.nodes.map((v: any, i: number) => ({
+  const masterNodes = loaderData.masterNodes?.nodes?.map((v: any, i: number) => ({
     ...v,
     type: 'master-node',
     account: formatHash(v.address),
@@ -111,12 +111,12 @@ export default function InfoCards() {
       </div>
 
       <div className='grid grid-cols-1 llg:grid-cols-2 gap-6'>
-        <Card className='max-w-[565px]'>
+        {/* <Card className='max-w-[565px]'>
           <BlocksInfo title='Recent Blocks' data={recentBlocks} fetchMoreData={fetchMoreRecentBlocks} enableInfinite />
-        </Card>
-        <Card className='max-w-[565px]'>
+        </Card> */}
+        {/* {masterNodes && <Card className='max-w-[565px]'>
           <BlocksInfo title='Master Nodes' data={masterNodes} />
-        </Card>
+        </Card>} */}
       </div>
     </>
   );

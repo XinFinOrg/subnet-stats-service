@@ -66,9 +66,10 @@ export default function HomePage() {
           lastConfirmedBlock={lastConfirmedBlock}
           blockNumber={blockNumber}
           blocks={blocks}
+          name='subnet'
         />
       </Card>
-      <Card>
+      {/* <Card>
         <h1 className='pb-4 text-xl font-medium'>Copy at the parent chain</h1>
         <Blocks
           initialLastBlock={initialLastBlock}
@@ -76,8 +77,9 @@ export default function HomePage() {
           lastConfirmedBlock={lastParentConfirmedBlock}
           blockNumber={blockNumber}
           blocks={parentChainBlocks}
+          name='parent'
         />
-      </Card>
+      </Card> */}
 
       <InfoCards />
     </div>

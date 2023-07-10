@@ -14,9 +14,10 @@ interface BlocksProps {
   lastConfirmedBlock: number;
   blockNumber: number;
   blocks: Block[];
+  name?: string;
 }
 
-export default function Blocks({ initialLastBlock, lastBlock, lastConfirmedBlock, blockNumber, blocks }: BlocksProps) {
+export default function Blocks({ initialLastBlock, lastBlock, lastConfirmedBlock, blockNumber, blocks, name }: BlocksProps) {
   {/* n * block-width + (n - 1) * spacing */ }
   const blockSize = 35 + 17.99;
   const translateAmount = initialLastBlock ? -((lastBlock - initialLastBlock) * blockSize) : 0;
@@ -39,7 +40,7 @@ export default function Blocks({ initialLastBlock, lastBlock, lastConfirmedBlock
               const isLast = index === blocks.length - 1;
 
               return (
-                <Fragment key={block.number}>
+                <Fragment key={`${name} ${block.number}`}>
                   <BlockImage
                     block={block}
                     isFirstConfirmed={isFirstVisibleConfirmed}
