@@ -33,25 +33,26 @@ export default function HomePage() {
 
   const [lastBlock, setLastBlock] = useState(loaderData.blocks.latestMinedBlock.number);
   const [lastConfirmedBlock, setLastConfirmedBlock] = useState(loaderData.blocks.latestSubnetCommittedBlock.number);
-  // const [lastParentConfirmedBlock, setLastParentConfirmedBlock] = useState(loaderData.blocks.latestParentChainCommittedBlock.number);
+  const [lastParentConfirmedBlock, setLastParentConfirmedBlock] = useState(loaderData.blocks.latestParentChainCommittedBlock.number);
   const [blocks, setBlocks] = useState<Block[]>(getBlocks(loaderData.blocks.latestMinedBlock.number, loaderData.blocks.latestSubnetCommittedBlock.number, blockNumber));
-  // const [parentChainBlocks, setParentChainBlocks] = useState<Block[]>(getBlocks(loaderData.blocks.latestMinedBlock.number, loaderData.blocks.latestSubnetCommittedBlock.number, blockNumber));
+  const [parentChainBlocks, setParentChainBlocks] = useState<Block[]>(getBlocks(loaderData.blocks.latestMinedBlock.number, loaderData.blocks.latestSubnetCommittedBlock.number, blockNumber));
   const [initialLastBlock] = useState<number>(loaderData.blocks.latestMinedBlock.number);
   const { currentUnixTime } = useContext(TimeContext);
 
   useEffect(() => {
     async function getData() {
       // const { data: { latestMinedBlock, latestSubnetCommittedBlock, latestParentChainCommittedBlock } } = await axios.get(`${baseUrl}/blocks`);
-      const { data: { latestMinedBlock, latestSubnetCommittedBlock, } } = await axios.get(`${baseUrl}/blocks`);
+      const { data: { latestMinedBlock, latestSubnetCommittedBlock } } = await axios.get(`${baseUrl}/blocks`);
       setLastBlock(latestMinedBlock.number);
       setLastConfirmedBlock(latestSubnetCommittedBlock.number);
-      // setLastParentConfirmedBlock(latestParentChainCommittedBlock.number);
+      setLastParentConfirmedBlock(latestSubnetCommittedBlock.number - 1);
 
       const newBlockNumber = latestMinedBlock.number - initialLastBlock + blockNumber;
       const blocks = getBlocks(latestMinedBlock.number, latestSubnetCommittedBlock.number, newBlockNumber);
-      // const parentChainBlocks = getBlocks(latestMinedBlock.number, latestParentChainCommittedBlock.number, newBlockNumber);
+      // Mock
+      const parentChainBlocks = getBlocks(latestMinedBlock.number, latestSubnetCommittedBlock.number - 1, newBlockNumber);
       setBlocks(blocks);
-      // setParentChainBlocks(parentChainBlocks);
+      setParentChainBlocks(parentChainBlocks);
     }
 
     getData();
@@ -70,7 +71,7 @@ export default function HomePage() {
           name='subnet'
         />
       </Card>
-      {/* <Card>
+      <Card>
         <h1 className='pb-4 text-xl font-medium'>Copy at the parent chain</h1>
         <Blocks
           initialLastBlock={initialLastBlock}
@@ -80,7 +81,7 @@ export default function HomePage() {
           blocks={parentChainBlocks}
           name='parent'
         />
-      </Card> */}
+      </Card>
 
       <InfoCards />
     </div>

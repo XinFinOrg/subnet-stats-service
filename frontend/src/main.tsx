@@ -48,6 +48,14 @@ export async function homeLoader() {
     //   network: data[2],
     //   blocks: data[3],
     // };
+    let blocks = data[2];
+    blocks = ({
+      ...blocks, latestParentChainCommittedBlock: {
+        hash: blocks.latestParentChainCommittedBlock.hash,
+        number: blocks.latestSubnetCommittedBlock.number - 1
+      }
+    });
+
     return {
       masterNodes: {
         summary: {
@@ -65,32 +73,10 @@ export async function homeLoader() {
       },
       relayer: data[0],
       network: data[1],
-      blocks: {
-        ...data[2], latestParentChainCommittedBlock: {
-          "hash": "0x0ab7ea86c39aca0ac7b8a33c8d852eb44e6ec9861e3735fb2159752a925c49ef",
-          "number": data[2].latestSubnetCommittedBlock.number
-        }
-      },
+      blocks: blocks
     };
   } catch (error) {
-    // console.log(data)
-    console.log(error);
-    return {
-      masterNodes: {
-        summary: {
-          committee: 3,
-          activeNodes: 3,
-          inActiveNodes: 0,
-        },
-        nodes: [{
-          address: 'sadjfklasdfj',
-          type: 'miner'
-        }, {
-          address: 'sadjfklasdfj',
-          type: 'miner'
-        }]
-      }
-    };
+    console.error(error);
   }
 }
 
