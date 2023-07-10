@@ -18,7 +18,7 @@ export class MasternodesService {
     const { masternodesAddress, penalisedMasternodesAddress } = await this.subnetClient.getLastMasternodesInformation();
     const data = {
       masternodes: masternodesAddress.sort(),
-      penalties: penalisedMasternodesAddress.sort(),
+      penalties: penalisedMasternodesAddress? penalisedMasternodesAddress.sort() : [],
     };
     this.masternodesStorage.addNodesToCache(data);
     return data;
