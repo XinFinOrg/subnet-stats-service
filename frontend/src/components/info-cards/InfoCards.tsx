@@ -70,7 +70,6 @@ export default function InfoCards() {
     account: formatHash(v.address),
     number: i + 1
   }));
-  masterNodes;
 
   const fetchMoreRecentBlocks = () => {
     if (!recentBlocks) {

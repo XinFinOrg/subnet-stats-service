@@ -55,7 +55,13 @@ export async function homeLoader() {
           activeNodes: 3,
           inActiveNodes: 0,
         },
-        nodes: []
+        nodes: [{
+          address: 'sadjfklasdfj',
+          type: 'miner'
+        }, {
+          address: 'sadjfklasdfj',
+          type: 'miner'
+        }]
       },
       relayer: data[0],
       network: data[1],
@@ -76,7 +82,13 @@ export async function homeLoader() {
           activeNodes: 3,
           inActiveNodes: 0,
         },
-        nodes: []
+        nodes: [{
+          address: 'sadjfklasdfj',
+          type: 'miner'
+        }, {
+          address: 'sadjfklasdfj',
+          type: 'miner'
+        }]
       }
     };
   }
