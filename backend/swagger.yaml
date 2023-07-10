@@ -56,10 +56,18 @@ paths:
                         type: string
                       number:
                         type: number
-                  chainHealth:
-                    description: A simple enum to indicate whether the subnet chain is operational. i.e if blocks are mined
-                    type: string
-                    enum: [UP, DOWN]
+                  health:
+                    type: object
+                    properties:
+                      status:
+                        description: A simple enum to indicate whether the subnet chain is operational. i.e if blocks are mined
+                        type: string
+                        enum: [UP, DOWN]
+                      details:
+                        description: A short description about the current running status when there is an issue. E.g System is running but very low
+                        type: string
+                    required:
+                      - status
                     
         '400':
           description: 'Bad Request'
@@ -171,6 +179,9 @@ paths:
                   subnet:
                     type: object
                     properties:
+                      name:
+                        description: Subnet Chain name
+                        type: string
                       block:
                         description: block metadata, such as mining frequency
                         type: object

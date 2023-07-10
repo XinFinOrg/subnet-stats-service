@@ -15,10 +15,11 @@ export class BlocksController {
 
   public loadRecentBlocks = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const [recentBlocks, chainStatus, lastSubnetCommittedBlock] = await Promise.all([
+      const [recentBlocks, chainStatus, lastSubnetCommittedBlock, latestParentchainCommittedSubnetBlock] = await Promise.all([
         this.blockService.getRecentBlocks(),
         this.blockService.getBlockChainStatus(),
         this.blockService.getLastSubnetCommittedBlock(),
+        this.blockService.getLastParentchainCommittedSubnetBlock(),
       ]);
 
       const latestMinedBlock =
@@ -37,8 +38,13 @@ export class BlocksController {
               number: lastSubnetCommittedBlock.number,
             }
           : {},
-        latestParentChainCommittedBlock: {}, // TODO: WIP for the parent chain block confirmation
-        chainHealth: chainStatus ? 'UP' : 'DOWN',
+        latestParentChainCommittedBlock: {
+          hash: latestParentchainCommittedSubnetBlock.hash,
+          number: latestParentchainCommittedSubnetBlock.height,
+        },
+        health: {
+          status: chainStatus ? 'UP' : 'DOWN',
+        },
       };
       res.status(200).json(data);
     } catch (error) {
@@ -52,6 +58,7 @@ export class BlocksController {
       const [blockStatus, chainStatus] = await Promise.all([this.blockService.getBlockStats(), this.blockService.getBlockChainStatus()]);
       const resp = {
         subnet: {
+          name: 'hashlab-subnet', // TODO: Get it from web3 api
           block: {
             averageBlockTime: blockStatus.averageBlockTime,
             txThroughput: blockStatus.txThroughput,
@@ -62,7 +69,7 @@ export class BlocksController {
           name: 'Devnet', // TODO: get from web3 api
         },
         health: {
-          status: chainStatus,
+          status: chainStatus ? 'UP' : 'DOWN',
         },
       };
       res.status(200).json(resp);

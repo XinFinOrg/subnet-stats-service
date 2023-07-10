@@ -65,16 +65,21 @@ export class BlockService {
     }
 
     const sameChainBlocks = this.filterOutForksBeforeStartingBlock(allBlocks, lastCommittedBlock);
+    const { height } = await this.getLastParentchainCommittedSubnetBlock();
 
     return sameChainBlocks.map(b => {
       let committedInSubnet = false;
+      let committedInParentChain = false;
       if (b.number <= lastCommittedBlockInfo.number) {
         committedInSubnet = true;
+      }
+      if (b.number <= height) {
+        committedInParentChain = true;
       }
       return {
         ...b,
         committedInSubnet,
-        committedInParentChain: false, // TODO: WIP for checking the status with parent chain
+        committedInParentChain,
       };
     });
   }
@@ -94,6 +99,14 @@ export class BlockService {
       await this.blockStorage.setLatestCommittedBlock(block);
     }
     return block;
+  }
+
+  public async getLastParentchainCommittedSubnetBlock() {
+    const { smartContractCommittedHash, smartContractCommittedHeight } = await this.parentChainClient.getLastAudittedBlock();
+    return {
+      height: smartContractCommittedHeight,
+      hash: smartContractCommittedHash,
+    };
   }
 
   public async getBlockChainStatus(): Promise<boolean> {

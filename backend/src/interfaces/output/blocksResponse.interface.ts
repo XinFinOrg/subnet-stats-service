@@ -3,7 +3,9 @@ export interface BlocksResponse {
   latestMinedBlock: BaseBlockResponse | {};
   latestSubnetCommittedBlock: BaseBlockResponse | {};
   latestParentChainCommittedBlock: BaseBlockResponse | {};
-  chainHealth: 'UP' | 'DOWN';
+  health: {
+    status: 'UP' | 'DOWN';
+  };
 }
 
 export interface BlockResponse extends BaseBlockResponse {
