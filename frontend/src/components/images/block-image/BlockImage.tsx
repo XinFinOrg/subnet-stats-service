@@ -6,7 +6,7 @@ import DarkBlueBlock from '@/assets/blocks/dark-blue-block.png';
 import DarkGreyBlock from '@/assets/blocks/dark-grey-block.png';
 import GreyBlock from '@/assets/blocks/grey-block.svg';
 import { Block } from '@/components/Blocks';
-import { ThemeContext } from '@/contexts/ThemeContext';
+import { ThemeContext } from '@/contexts/ThemeContext2';
 
 import styles from './block-image.module.scss';
 

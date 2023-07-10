@@ -1,7 +1,7 @@
 import { PropsWithChildren, useContext, useEffect, useState } from 'react';
 
 import { InlineSvg, InlineSvgColours, InlineSvgNames } from '@/components/images/Svg';
-import { ThemeContext } from '@/contexts/ThemeContext';
+import { ThemeContext } from '@/contexts/ThemeContext2';
 
 export default function ThemeSwitch() {
   const [selectedTheme, setSelectedTheme] = useState<ThemeModes>(() => {

@@ -4,7 +4,7 @@ import { Outlet, useNavigation } from 'react-router-dom';
 import Loader from '@/components/loader/Loader';
 import Nav from '@/components/nav/Nav';
 import { ThemeModes } from '@/components/theme-switch/ThemeSwitch';
-import { ThemeContext } from '@/contexts/ThemeContext';
+import { ThemeContext } from '@/contexts/ThemeContext2';
 import { TimeContext } from '@/contexts/TimeContext';
 import { getUnixTime, pollingPeriod } from '@/utils/time';
 
