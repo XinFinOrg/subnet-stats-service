@@ -17,7 +17,7 @@ jobs:
     - name: Install dependencies
       run: cd backend && npm install
     - name: Run build
-      run: npm run build # Double check we can build
+      run: cd backend && npm run build # Double check we can build
     # TODO: Tests to be added
     # - name: Unit tests
     #   run: npm run test
