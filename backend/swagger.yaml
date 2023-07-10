@@ -220,7 +220,7 @@ paths:
         - confirmation
       parameters:
         name: input
-        in: path
+        in: query
         description: The block height or hash or transaction hash
         required: true
         type: string
@@ -233,7 +233,7 @@ paths:
                 properties:
                   inputType:
                     type: string
-                    enum: [BLOCK_HEIGHT, BLOCK_HASH, TRANSACTION_HASH, INVALID]
+                    enum: [BLOCK_HEIGHT, BLOCK_HASH, TRANSACTION_HASH]
                   subnet:
                     type: object
                     properties:
@@ -265,22 +265,27 @@ paths:
                   transaction:
                     type: object
                     properties:
-                      isConfirmed:
-                        type: boolean
                       from:
                         type: string
                       to:
                         type: string
+                      gas:
+                        type: integer
                       timestamp:
                         type: string
-                      gas:
-                        type: string
+                    required:
+                      - from
+                      - to
+                      - timestamp
+                      - gas
                 required:
                   - inputType
                   - subnet
                   - parentChain
         '400':
           description: 'Bad Request'
+        '404':
+          description: 'Not found'
         '500':
           description: 'Server Error'
                       

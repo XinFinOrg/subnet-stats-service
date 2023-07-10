@@ -1,15 +1,21 @@
+import { ParentChainClient } from '../client/parentchain';
 import { Service } from 'typedi';
 import * as _ from 'lodash';
 import { BlockStorage, StoredBlock, StoredLatestCommittedBlock } from '../storage/block';
 import { BlockInfo, LatestCommittedBlockInfoData } from '../interfaces/input/block.interface';
 import { BlockResponse } from '../interfaces/output/blocksResponse.interface';
+import { SubnetClient } from '../client/subnet';
 
 @Service()
 export class BlockService {
   private blockStorage: BlockStorage;
+  private subnetClient: SubnetClient;
+  private parentChainClient: ParentChainClient;
 
-  constructor() {
+  constructor(subnetClient: SubnetClient, parentChainClient: ParentChainClient) {
     this.blockStorage = new BlockStorage();
+    this.subnetClient = subnetClient;
+    this.parentChainClient = parentChainClient;
   }
 
   public async addBlock(blockData: BlockInfo): Promise<void> {
@@ -24,13 +30,13 @@ export class BlockService {
     return await this.blockStorage.getMinedBlockByHash(hash);
   }
 
-  public async getBlockStats(): Promise<any> {
+  public async getBlockStats() {
     const allBlocks = await this.blockStorage.getAllBlocks();
     let averageBlockTime = 0;
     let txThroughput = 0;
     if (allBlocks && allBlocks.length > 1) {
       allBlocks.sort((a, b) => b.timestamp - a.timestamp);
-      const timeDiff = (allBlocks[0].timestamp - allBlocks[allBlocks.length - 1].timestamp);
+      const timeDiff = allBlocks[0].timestamp - allBlocks[allBlocks.length - 1].timestamp;
       averageBlockTime = timeDiff / allBlocks.length;
 
       const totalNumOfTxs = _.reduce(
@@ -51,10 +57,7 @@ export class BlockService {
   // Get all available blocks on the same chain (sorted by block number)
   public async getRecentBlocks(): Promise<BlockResponse[]> {
     const allBlocks = await this.blockStorage.getAllBlocks();
-    const lastCommittedBlockInfo = await this.blockStorage.getLatestCommittedBlock();
-    if (!lastCommittedBlockInfo) {
-      return this.shortCircuitRecentBlocks(allBlocks);
-    }
+    const lastCommittedBlockInfo = await this.getLastSubnetCommittedBlock();
     const lastCommittedBlock = await this.blockStorage.getMinedBlockByHash(lastCommittedBlockInfo.hash);
     // Short-curcit if the committedBlock is not even recored in the system. The gap between mined and committed is too far
     if (!lastCommittedBlock) {
@@ -76,19 +79,99 @@ export class BlockService {
     });
   }
 
-  public async addLatestCommittedBlock(newCommittedBlock: LatestCommittedBlockInfoData): Promise<void> {
+  public async addLatestSubnetCommittedBlock(newCommittedBlock: LatestCommittedBlockInfoData): Promise<void> {
     const lastCommittedBlock = await this.blockStorage.getLatestCommittedBlock();
     if (!lastCommittedBlock || lastCommittedBlock.number < newCommittedBlock.number) {
-      this.blockStorage.setLatestCommittedBlock(newCommittedBlock);
+      await this.blockStorage.setLatestCommittedBlock(newCommittedBlock);
     }
   }
 
-  public async getLastCommittedBlock(): Promise<StoredLatestCommittedBlock> {
-    return await this.blockStorage.getLatestCommittedBlock();
+  // This method will get the latest committed block in subnet
+  public async getLastSubnetCommittedBlock(): Promise<StoredLatestCommittedBlock> {
+    let block = await this.blockStorage.getLatestCommittedBlock();
+    if (!block) {
+      block = await this.subnetClient.getLatestCommittedBlockInfo();
+      await this.blockStorage.setLatestCommittedBlock(block);
+    }
+    return block;
   }
 
   public async getBlockChainStatus(): Promise<boolean> {
     return await this.blockStorage.getStatus();
+  }
+
+  // Returns the block num difference between what's mined in subnet and what's submitted to parent chain
+  public async getProcessingBacklog(): Promise<{ gap: number; isProcessing: boolean }> {
+    const [lastSubnetCommittedBlock, smartContractProcessingInfo] = await Promise.all([
+      this.getLastSubnetCommittedBlock(),
+      this.getSmartContractProcessingInfo(),
+    ]);
+    return {
+      gap: lastSubnetCommittedBlock.number - smartContractProcessingInfo.processedUntil || -1,
+      isProcessing: smartContractProcessingInfo.isProcessing,
+    };
+  }
+
+  public async confirmBlockByHeight(blockToConfirmHeight: number) {
+    const result = await this.subnetClient.getBlock(blockToConfirmHeight);
+    return this.confirmBlock(result.hash);
+  }
+
+  public async confirmBlockByHash(blockToConfirmHash: string) {
+    const result = await this.subnetClient.getBlockInfoByHash(blockToConfirmHash);
+    return this.confirmBlock(blockToConfirmHash, result);
+  }
+
+  public async getTransactionInfo(hash: string) {
+    const txResult = await this.subnetClient.getTxByTransactionHash(hash);
+    if (!txResult) return undefined;
+    const { timestamp } = await this.subnetClient.getBlock(txResult.blockHash);
+    return {
+      from: txResult.from,
+      to: txResult.to,
+      gas: txResult.gas,
+      timestamp,
+      blockHash: txResult.blockHash,
+    };
+  }
+
+  // Perform confirmation operation to confirm the subnet block has been confirm on both subnet and parentchain
+  private async confirmBlock(
+    blockToConfirmHash: string,
+    subnetBlockInfo?: { subnetBlockNumber: number; committedInSubnet: boolean; proposer: string },
+  ) {
+    // Only fetch if not provided
+    if (!subnetBlockInfo) {
+      subnetBlockInfo = await this.subnetClient.getBlockInfoByHash(blockToConfirmHash);
+    }
+
+    const parentchainConfirmation = await this.parentChainClient.confirmBlock(blockToConfirmHash);
+    return {
+      subnet: {
+        committedInSubnet: subnetBlockInfo.committedInSubnet,
+        subnetBlockHeight: subnetBlockInfo.subnetBlockNumber,
+        subnetBlockHash: blockToConfirmHash,
+        proposer: subnetBlockInfo.proposer,
+      },
+      parentChain: {
+        committedInParentChain: parentchainConfirmation.isCommitted,
+        parentchainBlockHeight: parentchainConfirmation.parentChainNum,
+        parentchainBlockHash: parentchainConfirmation.parentchainHash,
+      },
+    };
+  }
+
+  private async getSmartContractProcessingInfo(): Promise<{ processedUntil: number; isProcessing: boolean }> {
+    const { smartContractHeight, smartContractCommittedHash } = await this.parentChainClient.getLastAudittedBlock();
+    const { timestamp } = await this.parentChainClient.getParentChainBlockBySubnetHash(smartContractCommittedHash);
+    let isProcessing = true;
+    const timeDiff = new Date().getTime() / 1000 - parseInt(timestamp.toString());
+    if (timeDiff > 60) isProcessing = false;
+
+    return {
+      processedUntil: smartContractHeight,
+      isProcessing,
+    };
   }
 
   /**
