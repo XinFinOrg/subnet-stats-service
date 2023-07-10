@@ -29,7 +29,7 @@ export async function appLoader() {
 export async function homeLoader() {
   async function getData() {
     const urls = [
-      `${baseUrl}/masternodes`,
+      // `${baseUrl}/masternodes`,
       `${baseUrl}/relayer`,
       `${baseUrl}/network`,
       `${baseUrl}/blocks`,
@@ -41,11 +41,24 @@ export async function homeLoader() {
 
   const data = await getData();
 
+  // return {
+  //   masterNodes: data[0],
+  //   relayer: data[1],
+  //   network: data[2],
+  //   blocks: data[3],
+  // };
   return {
-    masterNodes: data[0],
-    relayer: data[1],
-    network: data[2],
-    blocks: data[3],
+    masterNodes: {
+      summary: {
+        committee: 3,
+        activeNodes: 3,
+        inActiveNodes: 0,
+      },
+      nodes: []
+    },
+    relayer: data[0],
+    network: data[1],
+    blocks: data[2],
   };
 }
 
