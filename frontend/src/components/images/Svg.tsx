@@ -3,6 +3,7 @@ import Cross from '@/assets/cross.svg';
 import InfoDark from '@/assets/info-dark.svg';
 import Info from '@/assets/info.svg';
 import Loading from '@/assets/loading.svg';
+import Menu from '@/assets/menu.svg';
 import Miner from '@/assets/miner.svg';
 import NoResultDark from '@/assets/no-results-dark.svg';
 import NoResult from '@/assets/no-results.svg';
@@ -183,6 +184,11 @@ export default function Svg({ svgName, size, sizeClass: userDefinedSizeClass, cl
       SvgComponent = Logo;
       alt = 'XDO Logo';
       break;
+
+    case SvgNames.Menu:
+      SvgComponent = Menu;
+      alt = 'Menu';
+      break;
   }
 
   return (
@@ -214,4 +220,5 @@ export enum SvgNames {
   Info = 'Info',
   InfoDark = 'InfoDark',
   Logo = 'Logo',
+  Menu = 'Menu',
 }

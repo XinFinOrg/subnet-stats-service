@@ -86,22 +86,22 @@ export default function InfoCards() {
 
   return (
     <>
-      <div className='grid grid-cols-2 llg:grid-cols-3 gap-6'>
-        <Card>
+      <div className='grid lg:grid-cols-2 llg:grid-cols-3 gap-6'>
+        <Card className='max-w-[400px]'>
           <InfoList
             title='Network Info'
             status={mappedInfo.network.health}
             info={mappedInfo.network.data}
           />
         </Card>
-        <Card>
+        <Card className='max-w-[400px]'>
           <InfoList
             title='Relayer Info'
             status={mappedInfo.relayer.health}
             info={mappedInfo.relayer.data}
           />
         </Card>
-        <Card>
+        <Card className='max-w-[400px]'>
           <InfoList
             title='Master Nodes Info'
             status={mappedInfo.masterNodes.health}
