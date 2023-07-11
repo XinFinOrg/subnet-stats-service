@@ -1,4 +1,4 @@
-import { createContext } from 'react';
+import { createContext, PropsWithChildren, useState } from 'react';
 
 import { ThemeModes } from '@/components/theme-switch/ThemeSwitch';
 
@@ -15,3 +15,14 @@ const initialThemeContext: ThemeContextType = {
 };
 
 export const ThemeContext = createContext<ThemeContextType>(initialThemeContext);
+
+type ThemeContextProviderProps = PropsWithChildren;
+export default function ThemeContextProvider({children}: ThemeContextProviderProps) {
+  const [theme, setTheme] = useState<ThemeModes>('light');
+
+  return (
+    <ThemeContext.Provider value={{ theme, setTheme }}>
+      {children}
+    </ThemeContext.Provider>
+  )
+}
