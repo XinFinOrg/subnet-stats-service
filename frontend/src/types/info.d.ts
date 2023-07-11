@@ -2,7 +2,7 @@ export interface Info {
   [x: string]: {
     data?: Info.Data[];
     health?: InfoListHealth;
-  };
+  } | null;
 }
 
 namespace Info {
