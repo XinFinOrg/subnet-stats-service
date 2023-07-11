@@ -1,7 +1,10 @@
 import { PropsWithChildren, useContext } from 'react';
 
 import { cellWith } from '@/components/blocks-info/constants';
-import Svg, { SvgNames } from '@/components/images/Svg';
+import Svg, {
+  InlineSvg, InlineSvgColours, InlineSvgNames, SvgNames
+} from '@/components/images/Svg';
+import { ThemeContext } from '@/contexts/ThemeContext';
 import { TimeContext } from '@/contexts/TimeContext';
 import { formatHash } from '@/utils/formatter';
 
@@ -31,6 +34,7 @@ type MasterNodeRoles = 'master-node' | 'candidate' | 'penalty';
 
 export function BlocksInfoItem(data: BlocksInfoItemProps) {
   const { currentUnixTime } = useContext(TimeContext);
+  const { theme } = useContext(ThemeContext);
 
   function getTimeDiff(timestamp: number): string {
     const timeDiff = Math.floor(currentUnixTime - timestamp);
@@ -43,12 +47,25 @@ export function BlocksInfoItem(data: BlocksInfoItemProps) {
     return '>1hr';
   }
 
+  function copyToClipboard(hash: string) {
+    window.navigator.clipboard.writeText(hash);
+  }
+
   if (data.type === 'recent-block') {
 
     return (
       <div className='flex'>
         <BlockCell className={cellWith.recentBlocks.height}>{data.number}</BlockCell>
-        <BlockCell className={cellWith.recentBlocks.hash}>{formatHash(data.hash)}</BlockCell>
+        <BlockCell className={cellWith.recentBlocks.hash}>
+          <div className=''>
+            <button onClick={() => copyToClipboard(data.hash)} className='shrink-0 flex justify-between group'>
+              {formatHash(data.hash)}
+              <div className='hidden group-hover:block'>
+                <InlineSvg svgName={InlineSvgNames.Copy} colour={theme === 'light' ? InlineSvgColours.Primary : InlineSvgColours.White} />
+              </div>
+            </button>
+          </div>
+        </BlockCell>
         <BlockCell className={cellWith.recentBlocks.proposedBy}>{formatHash(data.miner)}</BlockCell>
         <BlockImageCell className={cellWith.recentBlocks.status}>
           <BlockConfirmStatus committedInSubnet={data.committedInSubnet} committedInParentChain={data.committedInParentChain} />
