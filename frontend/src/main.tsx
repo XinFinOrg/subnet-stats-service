@@ -27,7 +27,7 @@ export async function appLoader() {
 }
 
 export async function homeLoader() {
-  async function getData() {
+  async function getDataPromises() {
     const urls = [
       `${baseUrl}/masternodes`,
       `${baseUrl}/relayer`,
@@ -35,30 +35,34 @@ export async function homeLoader() {
       `${baseUrl}/blocks`,
     ];
 
-    const apiResponses = await axios.all(urls.map(url => axios.get(url)));
-    return apiResponses.map(response => response.data);
+    return urls.map(url => axios.get(url));
   }
 
-  try {
-    const data = await getData();
+  const dataPromises = await getDataPromises();
+  const apiResponses = await Promise.allSettled(dataPromises);
+  const data = apiResponses.map(response => {
+    if (response.status === 'rejected') {
+      console.error(response.reason);
+      return null;
+    }
 
-    let blocks = data[3];
-    blocks = ({
-      ...blocks, latestParentChainCommittedBlock: {
-        hash: blocks.latestParentChainCommittedBlock.hash,
-        number: blocks.latestSubnetCommittedBlock.number - 1
-      }
-    });
+    return response.value.data;
+  });
 
-    return {
-      masterNodes: data[0],
-      relayer: data[1],
-      network: data[2],
-      blocks
-    };
-  } catch (error) {
-    console.error(error);
-  }
+  let blocks = data[3];
+  blocks = ({
+    ...blocks, latestParentChainCommittedBlock: {
+      hash: blocks.latestParentChainCommittedBlock.hash,
+      number: blocks.latestSubnetCommittedBlock.number - 1
+    }
+  });
+
+  return {
+    masterNodes: data[0],
+    relayer: data[1],
+    network: data[2],
+    blocks
+  };
 }
 
 const router = createBrowserRouter([

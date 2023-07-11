@@ -69,15 +69,15 @@ export default function InfoCards() {
   }
 
   const mappedInfo: Info = {
-    network: {
+    network: loaderData.network ? {
       health: getNetworkStatus(),
       data: [
         { name: 'Block Time', value: `${loaderData.network.subnet.block.averageBlockTime}s` },
         { name: 'TX Throughput', value: `${Math.round(loaderData.network.subnet.block.txThroughput * 100) / 100} txs/s` },
         { name: 'Checkpointed to', value: loaderData.network.parentChain.name },
       ]
-    },
-    relayer: {
+    } : null,
+    relayer: loaderData.relayer ? {
       health: getRelayerStatus(),
       data: [
         { name: 'Smart Contract', value: formatHash(loaderData.relayer.account.walletAddress) },
@@ -85,14 +85,14 @@ export default function InfoCards() {
         // TODO: explore cash format
         { name: 'Remaining Balance', value: formatBalance(parseInt(loaderData.relayer.account.balance)) },
       ]
-    },
-    masterNodes: {
+    } : null,
+    masterNodes: loaderData.masterNodes ? {
       data: [
         { name: 'Current committee size', value: loaderData.masterNodes?.summary?.committee },
         { name: 'Activity(active / inactive)', value: `${loaderData.masterNodes?.summary?.activeNodes} / ${loaderData.masterNodes.summary.committee - loaderData.masterNodes?.summary?.activeNodes}` },
         { name: 'Number of standby nodes', value: loaderData.masterNodes?.summary?.inActiveNodes },
       ],
-    },
+    } : null,
   };
 
   const masterNodes = loaderData.masterNodes?.nodes?.map((v: any, i: number) => ({
@@ -119,25 +119,32 @@ export default function InfoCards() {
     <>
       <div className='grid grid-cols-2 llg:grid-cols-3 gap-6'>
         <Card>
-          <InfoList
-            title='Network Info'
-            status={mappedInfo.network.health}
-            info={mappedInfo.network.data}
-          />
+          {mappedInfo.network ? (
+            <InfoList
+              title='Network Info'
+              status={mappedInfo.network.health}
+              info={mappedInfo.network.data}
+            />) : (
+            <div>Error state</div>
+          )}
         </Card>
         <Card>
-          <InfoList
-            title='Relayer Info'
-            status={mappedInfo.relayer.health}
-            info={mappedInfo.relayer.data}
-          />
+          {mappedInfo.relayer ? (
+            <InfoList
+              title='Relayer Info'
+              status={mappedInfo.relayer.health}
+              info={mappedInfo.relayer.data}
+            />
+          ) : (<>Error state</>)}
         </Card>
         <Card>
-          <InfoList
-            title='Master Nodes Info'
-            status={mappedInfo.masterNodes.health}
-            info={mappedInfo.masterNodes.data}
-          />
+          {mappedInfo.masterNodes ? (
+            <InfoList
+              title='Master Nodes Info'
+              status={mappedInfo.masterNodes.health}
+              info={mappedInfo.masterNodes.data}
+            />
+          ) : (<>Error state</>)}
         </Card>
       </div>
 
