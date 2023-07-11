@@ -117,8 +117,8 @@ export default function InfoCards() {
 
   return (
     <>
-      <div className='grid grid-cols-2 llg:grid-cols-3 gap-6'>
-        <Card>
+      <div className='grid lg:grid-cols-2 llg:grid-cols-3 gap-6'>
+        <Card className='max-w-[400px]'>
           {mappedInfo.network ? (
             <InfoList
               title='Network Info'
@@ -128,7 +128,7 @@ export default function InfoCards() {
             <div>Error state</div>
           )}
         </Card>
-        <Card>
+        <Card className='max-w-[400px]'>
           {mappedInfo.relayer ? (
             <InfoList
               title='Relayer Info'
@@ -137,7 +137,7 @@ export default function InfoCards() {
             />
           ) : (<>Error state</>)}
         </Card>
-        <Card>
+        <Card className='max-w-[400px]'>
           {mappedInfo.masterNodes ? (
             <InfoList
               title='Master Nodes Info'
