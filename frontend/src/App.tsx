@@ -1,11 +1,11 @@
-import { useContext, useEffect, useState } from 'react';
-import { Outlet, useLocation, useNavigation } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Outlet, useNavigation } from 'react-router-dom';
 
 import Alert from '@/components/alert/Alert';
 import Loader from '@/components/loader/Loader';
 import Nav from '@/components/nav/Nav';
 import { ThemeModes } from '@/components/theme-switch/ThemeSwitch';
-import AlertProvider, { AlertContext } from '@/contexts/AlertContext';
+import AlertProvider from '@/contexts/AlertContext';
 import { ThemeContext } from '@/contexts/ThemeContext';
 import { TimeContext } from '@/contexts/TimeContext';
 import { getUnixTime, pollingPeriod } from '@/utils/time';

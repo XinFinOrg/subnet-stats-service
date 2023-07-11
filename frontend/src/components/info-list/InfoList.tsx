@@ -26,7 +26,7 @@ export default function InfoList({ title, status, info }: InfoListProps) {
         <Title title={title} />
         {status && (
           <div className='inline-flex items-center'>
-            <span>Status</span>
+            {/* <span>Status:</span> */}
             <span
               className={`ml-1 px-3 py-2.5 bg-opacity-20 rounded-3xl font-bold leading-none
                ${status === 'Normal' ? 'bg-sky-500 text-sky-500' : 'bg-warning text-warning'}`
