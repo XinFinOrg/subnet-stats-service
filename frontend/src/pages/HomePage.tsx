@@ -61,7 +61,7 @@ export default function HomePage() {
   return (
     <div className='grid gap-6 grid-col-1'>
       <Card>
-        <h1 className='pb-4 text-xl font-medium'>subnet Blockchain</h1>
+        <h1 className='pb-4 text-xl font-medium'>subnet blockchain</h1>
         <Blocks
           initialLastBlock={initialLastBlock}
           lastBlock={lastBlock}
