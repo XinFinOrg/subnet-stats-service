@@ -1,1 +1,1 @@
-export const baseUrl = 'https://devnetstats.apothem.network/stats/information';
+export const baseUrl = 'https://devnetstats.apothem.network/stats';

@@ -1,16 +1,22 @@
 import { twMerge } from 'tailwind-merge';
 
 interface ConfirmationStatusProps {
+  subnetStatus: boolean;
+  parentChainStatus: boolean;
   className?: string;
 }
 
-export default function ConfirmationStatus(props: ConfirmationStatusProps) {
+export default function ConfirmationStatus({ className, subnetStatus, parentChainStatus }: ConfirmationStatusProps) {
+  function getStatusText(status: boolean) {
+    return status ? 'Yes' : 'No';
+  }
+
   return (
-    <div className={twMerge(props.className, '')}>
+    <div className={twMerge(className, '')}>
       <ConfirmationStatusItem name='Result Type' value='Subnet Box' />
       <h2 className='text-2xl py-4 font-extrabold leading-tight dark:text-white'>Confirmation Status</h2>
-      <ConfirmationStatusItem name='@SubNet' value='Yes' />
-      <ConfirmationStatusItem className='pt-2.5' name='@Parent Chain' value='Yes' />
+      <ConfirmationStatusItem name='@SubNet' value={getStatusText(subnetStatus)} />
+      <ConfirmationStatusItem className='pt-2.5' name='@Parent Chain' value={getStatusText(parentChainStatus)} />
     </div>
   );
 }

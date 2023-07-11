@@ -15,7 +15,7 @@ import '@/index.css';
 
 export async function appLoader() {
   async function getData() {
-    const response = await axios.get(`${baseUrl}/network`);
+    const response = await axios.get(`${baseUrl}/information/network`);
     return response.data;
   }
 
@@ -29,10 +29,10 @@ export async function appLoader() {
 export async function homeLoader() {
   async function getDataPromises() {
     const urls = [
-      `${baseUrl}/masternodes`,
-      `${baseUrl}/relayer`,
-      `${baseUrl}/network`,
-      `${baseUrl}/blocks`,
+      `${baseUrl}/information/masternodes`,
+      `${baseUrl}/information/relayer`,
+      `${baseUrl}/information/network`,
+      `${baseUrl}/information/blocks`,
     ];
 
     return urls.map(url => axios.get(url));
