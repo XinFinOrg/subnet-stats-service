@@ -4,6 +4,7 @@ import { cellWith } from '@/components/blocks-info/constants';
 import Svg, {
   InlineSvg, InlineSvgColours, InlineSvgNames, SvgNames
 } from '@/components/images/Svg';
+import { AlertContext } from '@/contexts/AlertContext';
 import { ThemeContext } from '@/contexts/ThemeContext';
 import { TimeContext } from '@/contexts/TimeContext';
 import { formatHash } from '@/utils/formatter';
@@ -35,6 +36,7 @@ type MasterNodeRoles = 'master-node' | 'candidate' | 'penalty';
 export function BlocksInfoItem(data: BlocksInfoItemProps) {
   const { currentUnixTime } = useContext(TimeContext);
   const { theme } = useContext(ThemeContext);
+  const { showAlert } = useContext(AlertContext);
 
   function getTimeDiff(timestamp: number): string {
     const timeDiff = Math.floor(currentUnixTime - timestamp);
@@ -49,6 +51,7 @@ export function BlocksInfoItem(data: BlocksInfoItemProps) {
 
   function copyToClipboard(hash: string) {
     window.navigator.clipboard.writeText(hash);
+    // showAlert('Copied!');
   }
 
   if (data.type === 'recent-block') {
