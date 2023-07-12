@@ -52,43 +52,44 @@ export default function HomePage() {
   const blockNumber = isDesktopL ? WideScreenBlockNumber : StandardScreenBlockNumber;
   const loaderData = useLoaderData() as HomeLoaderData;
 
-  const [lastBlock, setLastBlock] = useState(loaderData.blocks.latestMinedBlock.number);
-  const [lastConfirmedBlock, setLastConfirmedBlock] = useState(loaderData.blocks.latestSubnetCommittedBlock.number);
-  const [lastParentConfirmedBlock, setLastParentConfirmedBlock] = useState(loaderData.blocks.latestParentChainCommittedBlock.number);
-  const [blocks, setBlocks] = useState<Block[]>(getBlocks(loaderData.blocks.latestMinedBlock.number, loaderData.blocks.latestSubnetCommittedBlock.number, blockNumber));
-  const [parentChainBlocks, setParentChainBlocks] = useState<Block[]>(getBlocks(loaderData.blocks.latestMinedBlock.number, loaderData.blocks.latestParentChainCommittedBlock.number, blockNumber));
-  const [initialLastBlock] = useState<number>(loaderData.blocks.latestMinedBlock.number);
+  const [lastSubnetBlock, setLastSubnetBlock] = useState(loaderData.blocks.subnet.latestMinedBlock.number);
+  const [lastParentBlock, setLastParentBlock] = useState(loaderData.blocks.checkpoint.latestSubmittedSubnetBlock.number);
+  const [lastSubnetConfirmedBlock, setLastSubnetConfirmedBlock] = useState(loaderData.blocks.subnet.latestCommittedBlock.number);
+  const [lastParentConfirmedBlock, setLastParentConfirmedBlock] = useState(loaderData.blocks.checkpoint.latestCommittedSubnetBlock.number);
+  const [blocks, setBlocks] = useState<Block[]>(getBlocks(loaderData.blocks.subnet.latestMinedBlock.number, loaderData.blocks.subnet.latestCommittedBlock.number, blockNumber));
+  const [parentBlocks, setParentBlocks] = useState<Block[]>(getBlocks(loaderData.blocks.checkpoint.latestSubmittedSubnetBlock.number, loaderData.blocks.checkpoint.latestCommittedSubnetBlock.number, blockNumber));
   const { currentUnixTime } = useContext(TimeContext);
 
   useEffect(() => {
     async function getData() {
-      const { data: { latestMinedBlock, latestSubnetCommittedBlock, latestParentChainCommittedBlock } } = await axios.get<HomeLoaderData.Blocks>(`${baseUrl}/information/blocks`);
-      setLastBlock(latestMinedBlock.number);
-      setLastConfirmedBlock(latestSubnetCommittedBlock.number);
-      setLastParentConfirmedBlock(latestParentChainCommittedBlock.number);
+      const { data: { subnet, checkpoint } } = await axios.get<HomeLoaderData.Blocks>(`${baseUrl}/information/blocks`);
+      setLastSubnetBlock(subnet.latestMinedBlock.number);
+      setLastSubnetConfirmedBlock(subnet.latestCommittedBlock.number);
+      setLastParentBlock(checkpoint.latestSubmittedSubnetBlock.number);
+      setLastParentConfirmedBlock(checkpoint.latestCommittedSubnetBlock.number);
 
-      const blocks = getBlocks(latestMinedBlock.number, latestSubnetCommittedBlock.number, blockNumber);
-      const parentChainBlocks = getBlocks(latestMinedBlock.number, latestParentChainCommittedBlock.number, blockNumber);
+      const blocks = getBlocks(subnet.latestMinedBlock.number, subnet.latestCommittedBlock.number, blockNumber);
+      const parentBlocks = getBlocks(checkpoint.latestSubmittedSubnetBlock.number, checkpoint.latestCommittedSubnetBlock.number, blockNumber);
       setBlocks(blocks);
-      setParentChainBlocks(parentChainBlocks);
+      setParentBlocks(parentBlocks);
     }
 
     getData();
-  }, [blockNumber, currentUnixTime, initialLastBlock]);
+  }, [blockNumber, currentUnixTime]);
 
   const mappedInfo = {
     subnet: {
       data: [{
-        name: 'Last committed block number', value: lastConfirmedBlock
+        name: 'Last committed block number', value: lastSubnetConfirmedBlock
       }, {
-        name: 'Last mined block number', value: lastBlock
+        name: 'Last mined block number', value: lastSubnetBlock
       }]
     },
     parentChain: {
       data: [{
         name: 'Last committed block number', value: lastParentConfirmedBlock
       }, {
-        name: 'Last mined block number', value: lastBlock
+        name: 'Last mined block number', value: lastSubnetBlock
       }]
     }
   };
@@ -99,8 +100,8 @@ export default function HomePage() {
         <Card>
           <h1 className='pb-4 text-xl font-medium'>subnet blockchain</h1>
           <Blocks
-            lastBlock={lastBlock}
-            lastConfirmedBlock={lastConfirmedBlock}
+            lastBlock={lastSubnetBlock}
+            lastConfirmedBlock={lastSubnetConfirmedBlock}
             blockNumber={blockNumber}
             blocks={blocks}
           />
@@ -116,10 +117,10 @@ export default function HomePage() {
         <Card>
           <h1 className='pb-4 text-xl font-medium'>checkpoints at the parent chain</h1>
           <Blocks
-            lastBlock={lastBlock}
+            lastBlock={lastParentBlock}
             lastConfirmedBlock={lastParentConfirmedBlock}
             blockNumber={blockNumber}
-            blocks={parentChainBlocks}
+            blocks={parentBlocks}
           />
         </Card>) : (
         <Card className='max-w-[400px]'>

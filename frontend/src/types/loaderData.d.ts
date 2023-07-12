@@ -20,7 +20,7 @@ export namespace HomeLoaderData {
     /** A list of existing master nodes. Sorted by nodeId */
     nodes: MasterNodes.Node[];
   }
-  
+
   namespace MasterNodes {
     interface Node {
       address: string;
@@ -31,31 +31,30 @@ export namespace HomeLoaderData {
   interface Blocks {
     /** A list of recently mined blocks. Sorted by block number */
     blocks: Blocks.Block[];
-    /** The block that was most recently mined in the subnet. regardless its confirmation status */
-    latestMinedBlock: {
-      hash: string;
-      number: number;
+
+    subnet: {
+      /** The block that was most recently mined in the subnet. regardless its confirmation status */
+      latestMinedBlock: Blocks.BaseBlock;
+      /** The block that was most recently confirm to be committed in the subnet. (Ignoring its confirmation status from parent chain) */
+      latestCommittedBlock: Blocks.BaseBlock;
     };
-    /** The block that was most recently confirm to be committed in the subnet. (Ignoring its confirmation status from parent chain) */
-    latestSubnetCommittedBlock: {
-      hash: string;
-      number: number;
-    };
-    /** The block that was most recently confirm to be committed in the parent chain. */
-    latestParentChainCommittedBlock: {
-      hash: string;
-      number: number;
+    checkpoint: {
+      latestCommittedSubnetBlock: Blocks.BaseBlock;
+      latestSubmittedSubnetBlock: Blocks.BaseBlock;
     };
     /** A simple enum to indicate whether the subnet chain is operational. i.e if blocks are mined */
     chainHealth: 'UP' | 'DOWN';
   }
-  
+
   namespace Blocks {
-    interface Block {
+    interface BaseBlock {
       /** The subnet block hash */
       hash: string;
       /** The subnet block number */
       number: number;
+    }
+
+    interface Block extends BaseBlock {
       /** The subnet block's parentHash */
       parentHash: string;
       /** The masternode address who mined this block */
@@ -64,7 +63,7 @@ export namespace HomeLoaderData {
       committedInSubnet: boolean;
       /** This boolean value is to indicate whether this block has been confirmed in the parent chain smart contract */
       committedInParentChain: boolean;
-  
+
       timestamp: number;
     }
   }
@@ -88,7 +87,7 @@ export namespace HomeLoaderData {
     };
     averageTXfee: number;
   }
-  
+
   interface Network {
     subnet: {
       name: string;
