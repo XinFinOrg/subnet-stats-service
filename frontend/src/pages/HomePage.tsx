@@ -89,7 +89,6 @@ export default function HomePage() {
             lastConfirmedBlock={lastConfirmedBlock}
             blockNumber={blockNumber}
             blocks={blocks}
-            name='subnet'
           />
         </Card>) : (
         <Card className='max-w-[400px]'>
@@ -108,7 +107,6 @@ export default function HomePage() {
             lastConfirmedBlock={lastParentConfirmedBlock}
             blockNumber={blockNumber}
             blocks={parentChainBlocks}
-            name='parent'
           />
         </Card>) : (
         <Card className='max-w-[400px]'>
