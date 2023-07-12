@@ -9,10 +9,10 @@ if (!SUBNET_URL || !PARENTCHAIN_URL) {
   process.exit(1);
 }
 
-export const { WALLET_ADDRESS, CONTRACT_ADDRESS } = process.env;
-if (!WALLET_ADDRESS || !CONTRACT_ADDRESS) {
-  logger.error('WALLET_ADDRESS and CONTRACT_ADDRESS configuration must be set!');
+export const { PARENTCHAIN_WALLET, CHECKPOINT_CONTRACT } = process.env;
+if (!PARENTCHAIN_WALLET || !CHECKPOINT_CONTRACT) {
+  logger.error('PARENTCHAIN_WALLET and CHECKPOINT_CONTRACT configuration must be set!');
   process.exit(1);
 }
 
-export const { NODE_ENV, LOG_FORMAT, WS_SECRET } = process.env;
+export const { NODE_ENV, LOG_FORMAT, STATS_SECRET } = process.env;
