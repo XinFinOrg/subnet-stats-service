@@ -7,14 +7,15 @@ import Card from '@/components/card/Card';
 import InfoCards from '@/components/info-cards/InfoCards';
 import InfoList from '@/components/info-list/InfoList';
 import {
-  FakedConfirmedBlockNumber, FakedNotConfirmedBlockNumber, StandardScreenBlockNumber,
-  WideScreenBlockNumber
+  BlockSizeWithGap, FakedConfirmedBlockNumber, FakedNotConfirmedBlockNumber,
+  StandardScreenBlockNumber, WideScreenBlockNumber
 } from '@/constants/config';
 import { baseUrl } from '@/constants/urls';
 import { TimeContext } from '@/contexts/TimeContext';
-import { useIsDesktopL, useIsTablet } from '@/hooks/useMediaQuery';
+import { useIsTablet, useWindowWidth } from '@/hooks/useMediaQuery';
 
 import type { HomeLoaderData } from '@/types/loaderData';
+
 function getBlocks(lastBlock: number, lastConfirmedBlock: number, blockNumber: number) {
   const blocks = [];
   // To allow animation when the furtherest left block move out
@@ -45,11 +46,25 @@ function getBlocks(lastBlock: number, lastConfirmedBlock: number, blockNumber: n
   return blocks;
 }
 
+function getBlockNumber(windowWidth: number) {
+  if (windowWidth >= 1440) {
+    return WideScreenBlockNumber;
+  }
+
+  if (windowWidth < 1024) {
+    const diff = 1024 - windowWidth;
+    return StandardScreenBlockNumber - Math.floor(diff / BlockSizeWithGap);
+  }
+
+  const diff = 1440 - windowWidth;
+  return WideScreenBlockNumber - Math.floor(diff / BlockSizeWithGap);
+}
+
 export default function HomePage() {
-  const isDesktopL = useIsDesktopL();
   const isTablet = useIsTablet();
-  // use 13 blocks for tablet and desktop, otherwise use 20 blocks(XL desktop)
-  const blockNumber = isDesktopL ? WideScreenBlockNumber : StandardScreenBlockNumber;
+  const windowWidth = useWindowWidth();
+
+  const blockNumber = getBlockNumber(windowWidth);
   const loaderData = useLoaderData() as HomeLoaderData;
 
   const [lastSubnetBlock, setLastSubnetBlock] = useState(loaderData.blocks.subnet.latestMinedBlock.number);

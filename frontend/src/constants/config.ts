@@ -8,6 +8,9 @@ export const FakedConfirmedBlockNumber = 10;
  */
 export const FakedNotConfirmedBlockNumber = 10;
 
-
 export const WideScreenBlockNumber = 20;
-export const StandardScreenBlockNumber = 13;
+export const StandardScreenBlockNumber = 17;
+
+export const BlockSize = 35;
+export const BlockGapSize = 16;
+export const BlockSizeWithGap = 53;

@@ -6,6 +6,12 @@ const breakpoints = {
   tablet: 768,
 };
 
+export function useWindowWidth() {
+  const { width } = useWindowDimensions();
+
+  return width;
+}
+
 export function useIsDesktopL() {
   const { width } = useWindowDimensions();
 

@@ -1,6 +1,8 @@
 import BlockConnectLine from '@/components/BlockConnectLine';
 import BlockImage from '@/components/images/block-image/BlockImage';
-import { FakedConfirmedBlockNumber, FakedNotConfirmedBlockNumber } from '@/constants/config';
+import {
+  BlockGapSize, BlockSizeWithGap, FakedConfirmedBlockNumber, FakedNotConfirmedBlockNumber
+} from '@/constants/config';
 
 export interface Block {
   number: number;
@@ -36,7 +38,7 @@ export default function Blocks({ lastBlock, lastConfirmedBlock, blockNumber, blo
   return (
     <>
       {/* Ex: 20 blocks + spacing = (35 + 18) * 20 - 18 = 1042px */}
-      <div className='pt-[60px] llg:w-[1050px] w-[678px] h-[150px] overflow-hidden relative'>
+      <div className='pt-[60px] h-[150px] overflow-hidden relative' style={{ width: `${BlockSizeWithGap * blockNumber - BlockGapSize}px` }}>
         <div className='flex relative'>
           {
             blocks.map((block, index) => {
