@@ -37,16 +37,17 @@ export default function Nav(): JSX.Element {
   if (!isDesktop) {
     if (!navOpened) {
       return (
-        <div className='z-[100] dark:bg-bg-dark-900 sticky top-0 left-0'>
+        <div className='z-[100] dark:bg-bg-dark-900 bg-white sticky top-0 left-0 flex justify-between'>
           <button className='p-6' onClick={openNav}>
             <Svg svgName={SvgNames.Menu} />
           </button>
+          <ThemeSwitch />
         </div>
       );
     }
 
     return (
-      <nav className='z-[100] sticky top-0 left-0 dark:bg-bg-dark-1000 grow shadow-grey flex flex-col justify-between rounded-b-xl'>
+      <nav className='z-[100] sticky top-0 left-0 dark:bg-bg-dark-1000 bg-white grow shadow-grey flex flex-col justify-between rounded-b-xl'>
         <div>
           <div className='flex items-center flex-col border-text-white dark:border-border-light relative'>
             <button className='absolute left-0 top-0 p-6 text-3xl' onClick={closeNav} >
@@ -63,7 +64,6 @@ export default function Nav(): JSX.Element {
           <NavItem Image={CheckerImage} text='Confirmation Checker' page='checker' />
           <NavItem Image={ManagementImage} text='Management' page='management' />
         </div>
-        <ThemeSwitch />
       </nav>
     );
   }
