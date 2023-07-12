@@ -1,10 +1,17 @@
 export interface SearchResult {
-  status?: number;
-  data?: SearchResult.Data[];
+  status: number;
+  statusText?: string;
+  data?: {
+    inputType: string;
+    parentChain: SearchResult.Chain;
+    subnet: SearchResult.Chain;
+  }
 }
 
 namespace SearchResult {
-  interface Data {
-    value: string;
+  interface Chain {
+    blockHash: string;
+    blockHeight: string;
+    isConfirmed: boolean;
   }
 }
