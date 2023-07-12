@@ -62,7 +62,7 @@ export default function HomePage() {
 
   useEffect(() => {
     async function getData() {
-      const { data: { latestMinedBlock, latestSubnetCommittedBlock, latestParentChainCommittedBlock } } = await axios.get<HomeLoaderData.Blocks>(`${baseUrl}/blocks`);
+      const { data: { latestMinedBlock, latestSubnetCommittedBlock, latestParentChainCommittedBlock } } = await axios.get<HomeLoaderData.Blocks>(`${baseUrl}/information/blocks`);
       setLastBlock(latestMinedBlock.number);
       setLastConfirmedBlock(latestSubnetCommittedBlock.number);
       setLastParentConfirmedBlock(latestParentChainCommittedBlock.number);
