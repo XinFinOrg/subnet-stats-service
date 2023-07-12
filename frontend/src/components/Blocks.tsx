@@ -27,7 +27,7 @@ export default function Blocks({ lastBlock, lastConfirmedBlock, blockNumber, blo
   function getConfirmedBlocksMidIndex() {
     if (allBlocksNotConfirmed) {
       // a number that will certainly hide 'confirmed' text
-      return -1;
+      return -100;
     }
 
     return (confirmedNumber - 1) / 2;
