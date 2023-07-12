@@ -6,54 +6,69 @@ import Blocks, { Block } from '@/components/Blocks';
 import Card from '@/components/card/Card';
 import InfoCards from '@/components/info-cards/InfoCards';
 import InfoList from '@/components/info-list/InfoList';
+import {
+  FakedConfirmedBlockNumber, FakedNotConfirmedBlockNumber, StandardScreenBlockNumber,
+  WideScreenBlockNumber
+} from '@/constants/config';
 import { baseUrl } from '@/constants/urls';
 import { TimeContext } from '@/contexts/TimeContext';
-import { useIsDesktop, useIsDesktopL, useIsTablet } from '@/hooks/useMediaQuery';
+import { useIsDesktopL, useIsTablet } from '@/hooks/useMediaQuery';
 
 import type { HomeLoaderData } from '@/types/loaderData';
 function getBlocks(lastBlock: number, lastConfirmedBlock: number, blockNumber: number) {
   const blocks = [];
+  // To allow animation when the furtherest left block move out
+  const allBlockNumber = blockNumber + FakedConfirmedBlockNumber;
+  const unconfirmedCount = lastBlock - lastConfirmedBlock;
+  const confirmedCount = allBlockNumber - unconfirmedCount > 0 ? allBlockNumber - unconfirmedCount : 0;
+  const firstBlockHeight = lastBlock - allBlockNumber + 1;
+
+  if (lastBlock - lastConfirmedBlock > blockNumber + FakedConfirmedBlockNumber) {
+    // unconfirmed blocks
+    for (let i = 0; i < blockNumber + FakedConfirmedBlockNumber + FakedNotConfirmedBlockNumber; i++) {
+      blocks.push({ number: firstBlockHeight + confirmedCount + i, confirmed: false });
+    }
+
+    return blocks;
+  }
 
   // confirmed blocks
-  for (let blockHeight = lastBlock - blockNumber + 1; blockHeight <= lastConfirmedBlock; blockHeight++) {
-    blocks.push({ number: blockHeight, confirmed: true });
+  for (let i = 0; i < confirmedCount; i++) {
+    blocks.push({ number: firstBlockHeight + i, confirmed: true });
   }
 
   // unconfirmed blocks
-  for (let blockHeight = lastConfirmedBlock + 1; blockHeight <= lastBlock; blockHeight++) {
-    blocks.push({ number: blockHeight, confirmed: false });
+  for (let i = 0; i < unconfirmedCount + FakedNotConfirmedBlockNumber; i++) {
+    blocks.push({ number: firstBlockHeight + confirmedCount + i, confirmed: false });
   }
 
   return blocks;
 }
+
 export default function HomePage() {
   const isDesktopL = useIsDesktopL();
-  const isDesktop = useIsDesktop();
   const isTablet = useIsTablet();
   // use 13 blocks for tablet and desktop, otherwise use 20 blocks(XL desktop)
-  const blockNumber = isDesktopL ? 20 : isDesktop ? 13 : 13;
+  const blockNumber = isDesktopL ? WideScreenBlockNumber : StandardScreenBlockNumber;
   const loaderData = useLoaderData() as HomeLoaderData;
 
   const [lastBlock, setLastBlock] = useState(loaderData.blocks.latestMinedBlock.number);
   const [lastConfirmedBlock, setLastConfirmedBlock] = useState(loaderData.blocks.latestSubnetCommittedBlock.number);
   const [lastParentConfirmedBlock, setLastParentConfirmedBlock] = useState(loaderData.blocks.latestParentChainCommittedBlock.number);
   const [blocks, setBlocks] = useState<Block[]>(getBlocks(loaderData.blocks.latestMinedBlock.number, loaderData.blocks.latestSubnetCommittedBlock.number, blockNumber));
-  const [parentChainBlocks, setParentChainBlocks] = useState<Block[]>(getBlocks(loaderData.blocks.latestMinedBlock.number, loaderData.blocks.latestSubnetCommittedBlock.number, blockNumber));
+  const [parentChainBlocks, setParentChainBlocks] = useState<Block[]>(getBlocks(loaderData.blocks.latestMinedBlock.number, loaderData.blocks.latestParentChainCommittedBlock.number, blockNumber));
   const [initialLastBlock] = useState<number>(loaderData.blocks.latestMinedBlock.number);
   const { currentUnixTime } = useContext(TimeContext);
 
   useEffect(() => {
     async function getData() {
-      // const { data: { latestMinedBlock, latestSubnetCommittedBlock, latestParentChainCommittedBlock } } = await axios.get(`${baseUrl}/blocks`);
-      const { data: { latestMinedBlock, latestSubnetCommittedBlock } } = await axios.get(`${baseUrl}/blocks`);
+      const { data: { latestMinedBlock, latestSubnetCommittedBlock, latestParentChainCommittedBlock } } = await axios.get<HomeLoaderData.Blocks>(`${baseUrl}/blocks`);
       setLastBlock(latestMinedBlock.number);
       setLastConfirmedBlock(latestSubnetCommittedBlock.number);
-      setLastParentConfirmedBlock(latestSubnetCommittedBlock.number - 1);
+      setLastParentConfirmedBlock(latestParentChainCommittedBlock.number);
 
-      const newBlockNumber = latestMinedBlock.number - initialLastBlock + blockNumber;
-      const blocks = getBlocks(latestMinedBlock.number, latestSubnetCommittedBlock.number, newBlockNumber);
-      // Mock
-      const parentChainBlocks = getBlocks(latestMinedBlock.number, latestSubnetCommittedBlock.number - 1, newBlockNumber);
+      const blocks = getBlocks(latestMinedBlock.number, latestSubnetCommittedBlock.number, blockNumber);
+      const parentChainBlocks = getBlocks(latestMinedBlock.number, latestParentChainCommittedBlock.number, blockNumber);
       setBlocks(blocks);
       setParentChainBlocks(parentChainBlocks);
     }
@@ -84,7 +99,6 @@ export default function HomePage() {
         <Card>
           <h1 className='pb-4 text-xl font-medium'>subnet blockchain</h1>
           <Blocks
-            initialLastBlock={initialLastBlock}
             lastBlock={lastBlock}
             lastConfirmedBlock={lastConfirmedBlock}
             blockNumber={blockNumber}
@@ -102,7 +116,6 @@ export default function HomePage() {
         <Card>
           <h1 className='pb-4 text-xl font-medium'>checkpoints at the parent chain</h1>
           <Blocks
-            initialLastBlock={initialLastBlock}
             lastBlock={lastBlock}
             lastConfirmedBlock={lastParentConfirmedBlock}
             blockNumber={blockNumber}

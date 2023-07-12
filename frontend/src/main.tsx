@@ -49,19 +49,11 @@ export async function homeLoader() {
     return response.value.data;
   });
 
-  let blocks = data[3];
-  blocks = ({
-    ...blocks, latestParentChainCommittedBlock: {
-      hash: blocks.latestParentChainCommittedBlock.hash,
-      number: blocks.latestSubnetCommittedBlock.number - 1
-    }
-  });
-
   return {
     masterNodes: data[0],
     relayer: data[1],
     network: data[2],
-    blocks
+    blocks: data[3]
   };
 }
 

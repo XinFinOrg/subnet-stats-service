@@ -1,7 +1,6 @@
-import { Fragment } from 'react';
-
 import BlockConnectLine from '@/components/BlockConnectLine';
 import BlockImage from '@/components/images/block-image/BlockImage';
+import { FakedConfirmedBlockNumber, FakedNotConfirmedBlockNumber } from '@/constants/config';
 
 export interface Block {
   number: number;
@@ -9,37 +8,49 @@ export interface Block {
 }
 
 interface BlocksProps {
-  initialLastBlock: number;
   lastBlock: number;
   lastConfirmedBlock: number;
   blockNumber: number;
   blocks: Block[];
 }
 
-export default function Blocks({ initialLastBlock, lastBlock, lastConfirmedBlock, blockNumber, blocks }: BlocksProps) {
+export default function Blocks({ lastBlock, lastConfirmedBlock, blockNumber, blocks }: BlocksProps) {
   {/* n * block-width + (n - 1) * spacing */ }
-  const blockSize = 35 + 17.99;
-  const translateAmount = initialLastBlock ? -((lastBlock - initialLastBlock) * blockSize) : 0;
-  const unConfirmedNumber = lastBlock - lastConfirmedBlock;
+  const blockSize = 35 + 18;
+  const allBlocksNotConfirmed = lastBlock - lastConfirmedBlock > blockNumber + FakedConfirmedBlockNumber;
+  const unConfirmedNumber = allBlocksNotConfirmed ? blockNumber : lastBlock - lastConfirmedBlock;
   const confirmedNumber = blockNumber - unConfirmedNumber;
   // Definition: From left to right, the first visible index is 0
-  const confirmedBlocksMidIndex = (confirmedNumber - 1) / 2;
+  const confirmedBlocksMidIndex = getConfirmedBlocksMidIndex();
   const notConfirmedBlocksMidIndex = confirmedNumber + (unConfirmedNumber / 2);
+
+  function getConfirmedBlocksMidIndex() {
+    if (allBlocksNotConfirmed) {
+      // a number that will certainly hide 'confirmed' text
+      return -1;
+    }
+
+    return (confirmedNumber - 1) / 2;
+  }
 
   return (
     <>
       {/* Ex: 20 blocks + spacing = (35 + 18) * 20 - 18 = 1042px */}
-      <div className='pt-[60px] llg:w-[1060px] w-[685px] h-[150px] overflow-hidden relative'>
-        <div className='flex items-center transition duration-1000' style={{ transform: `translateX(${translateAmount}px)` }}>
+      <div className='pt-[60px] llg:w-[1050px] w-[678px] h-[150px] overflow-hidden relative'>
+        <div className='flex relative'>
           {
             blocks.map((block, index) => {
               const isFirstVisibleConfirmed = block.number === (lastBlock - blockNumber + 1);
-              const isLastConfirmed = block.number === lastConfirmedBlock;
+              const isLastConfirmed = allBlocksNotConfirmed ? false : block.number === lastConfirmedBlock;
               const isFirstUnConfirmed = block.number === (lastConfirmedBlock + 1);
-              const isLast = index === blocks.length - 1;
+              const isLast = index === blocks.length - FakedNotConfirmedBlockNumber - 1;
 
               return (
-                <Fragment key={block.number}>
+                <div
+                  key={block.number}
+                  className='flex items-center transition-left duration-[2s] absolute top-0'
+                  style={{ left: `${blockSize * (index - FakedConfirmedBlockNumber)}px` }}
+                >
                   <BlockImage
                     block={block}
                     isFirstConfirmed={isFirstVisibleConfirmed}
@@ -58,7 +69,7 @@ export default function Blocks({ initialLastBlock, lastBlock, lastConfirmedBlock
                     )
                   }
 
-                </Fragment>
+                </div>
               );
             })
           }

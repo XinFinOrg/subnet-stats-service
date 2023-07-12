@@ -28,13 +28,6 @@ export default function BlockImage(props: BlockImageProps) {
   const { theme } = useContext(ThemeContext);
   const isDarkMode = theme === 'dark';
 
-  // Save some render
-  if (props.blockNumber > 40 && props.index <= 20) {
-    return (
-      <div className='shrink-0 w-[35px]' />
-    );
-  }
-
   return (
     <div className='shrink-0 relative w-[35px] h-[37.82px] text-lg leading-none'>
       {isDarkMode ? (
