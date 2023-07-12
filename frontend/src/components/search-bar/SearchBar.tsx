@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import debounce from 'lodash.debounce';
 import { useEffect, useMemo } from 'react';
 
@@ -9,7 +9,7 @@ import { SearchResult } from '@/types/searchResult';
 interface SearchBarProps {
   searchText: string;
   setSearchText: (text: string) => void;
-  setSearchResult: (result?: SearchResult) => void;
+  setSearchResult: (result?: AxiosResponse<SearchResult>) => void;
 }
 
 const url = `${baseUrl}/confirmation`;
@@ -19,16 +19,14 @@ export default function SearchBar({ searchText, setSearchText, setSearchResult }
     () => debounce(async (searchText) => {
       setSearchResult(undefined);
       try {
-        const response = await axios.get(`${url}?input=${searchText}`, {
-          validateStatus: function (_status) {
-            // TODO: explore why status aren't exist
-            return true;
-          },
-        });
+        const response = await axios.get<SearchResult>(`${url}?input=${searchText}`);
         setSearchResult(response);
       } catch (error) {
-        // TODO: explore the response for 404
-        setSearchResult({ status: 400 });
+        if (!axios.isAxiosError<SearchResult>(error)) {
+          return;
+        }
+
+        setSearchResult(error.response);
       }
     }, 1000),
     [setSearchResult]
