@@ -267,6 +267,8 @@ paths:
                         type: integer
                       blockHash:
                         type: string
+                      proposer:
+                        type: string
                     required:
                       - isConfirmed
                       - blockHeight
