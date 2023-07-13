@@ -139,7 +139,7 @@ interface InfoListCardProps {
   info?: InfoItemBaseProps[];
 }
 
-function InfoListCard({ info }: InfoListCardProps) {
+function InfoListCard({ title, info }: InfoListCardProps) {
   if (!info) {
     return <></>;
   }
@@ -147,7 +147,7 @@ function InfoListCard({ info }: InfoListCardProps) {
   return (
     <Card className={info ? '' : 'border-none px-0 py-0'}>
       <InfoList
-        title='Subnet Block Info'
+        title={title}
         info={info}
       />
     </Card>
