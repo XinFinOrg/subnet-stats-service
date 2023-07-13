@@ -41,7 +41,7 @@ export default function Nav(): JSX.Element {
           <button className='p-6' onClick={openNav}>
             <Svg svgName={SvgNames.Menu} />
           </button>
-          <ThemeSwitch />
+          <ThemeSwitch isMobile />
         </div>
       );
     }
