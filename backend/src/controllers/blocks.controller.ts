@@ -122,6 +122,7 @@ export class BlocksController {
             isConfirmed: subnet.committedInSubnet,
             blockHeight: subnet.subnetBlockHeight,
             blockHash: subnet.subnetBlockHash,
+            proposer: subnet.proposer,
           },
           parentChain: {
             isConfirmed: parentChain.committedInParentChain,
@@ -138,6 +139,7 @@ export class BlocksController {
             isConfirmed: subnet.committedInSubnet,
             blockHeight: subnet.subnetBlockHeight,
             blockHash: subnet.subnetBlockHash,
+            proposer: subnet.proposer,
           },
           parentChain: {
             isConfirmed: parentChain.committedInParentChain,
