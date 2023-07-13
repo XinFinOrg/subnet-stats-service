@@ -3,7 +3,6 @@ import { useLoaderData, useLocation } from 'react-router-dom';
 
 import CheckerImage from '@/components/images/CheckerImage';
 import HouseImage from '@/components/images/HouseImage';
-import ManagementImage from '@/components/images/ManagementImage';
 import Svg, { SvgNames } from '@/components/images/Svg';
 import NavItem from '@/components/nav-item/NavItem';
 import ThemeSwitch from '@/components/theme-switch/ThemeSwitch';
