@@ -21,16 +21,16 @@ interface RecentBlock {
   timestamp: number;
 }
 
-interface MasterNode {
+export interface MasterNode {
   type: 'master-node';
   number: number;
   account: string;
   role: MasterNodeRoles;
-  activity: boolean;
-  latestParticipateBlock: number;
+  // activity: boolean;
+  // latestParticipateBlock: number;
 }
 
-type MasterNodeRoles = 'master-node' | 'candidate' | 'penalty';
+type MasterNodeRoles = 'MASTERNODE' | 'CANDIDATE' | 'PENALTY';
 
 export function BlocksInfoItem(data: BlocksInfoItemProps) {
   const { currentUnixTime } = useContext(TimeContext);
@@ -123,10 +123,10 @@ interface MasterNodeRoleProps {
 }
 
 function MasterNodeRole({ role }: MasterNodeRoleProps) {
-  if (role === 'candidate') {
+  if (role === 'CANDIDATE') {
     return <Svg svgName={SvgNames.Standby} />;
   }
-  else if (role === 'penalty') {
+  else if (role === 'PENALTY') {
     return <Svg svgName={SvgNames.Penalty} />;
   }
 

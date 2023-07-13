@@ -24,7 +24,7 @@ export namespace HomeLoaderData {
   namespace MasterNodes {
     interface Node {
       address: string;
-      type: 'CANDIDATE', 'MASTERNODE', 'PENALTY';
+      role: 'CANDIDATE', 'MASTERNODE', 'PENALTY';
     }
   }
 

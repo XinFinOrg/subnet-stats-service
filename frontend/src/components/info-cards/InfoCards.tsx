@@ -95,7 +95,7 @@ export default function InfoCards() {
     } : null,
   };
 
-  const masterNodes = loaderData.masterNodes?.nodes?.map((v: any, i: number) => ({
+  const masterNodes = loaderData.masterNodes?.nodes?.map<MasterNode>((v, i: number) => ({
     ...v,
     type: 'master-node',
     account: formatHash(v.address),
@@ -108,7 +108,7 @@ export default function InfoCards() {
     }
 
     // TODO: From api
-    const data: any = [];
+    const data: MasterNode[] = [];
 
     setRecentBlocks(recentBlocks => {
       return [...recentBlocks, ...data];
