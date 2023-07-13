@@ -44,7 +44,7 @@ export default function InfoList({ title, status, info }: InfoListProps) {
   );
 }
 
-interface InfoItemBaseProps {
+export interface InfoItemBaseProps {
   name: string;
   value: number | string;
 }

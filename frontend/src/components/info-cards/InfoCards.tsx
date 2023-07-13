@@ -1,13 +1,15 @@
 import { useState } from 'react';
 import { useLoaderData } from 'react-router-dom';
 
-import { BlocksInfoItem } from '@/components/blocks-info/blocks-info-item/BlocksInfoItem';
+import {
+    BlocksInfoItem, MasterNode
+} from '@/components/blocks-info/blocks-info-item/BlocksInfoItem';
 import BlocksInfo from '@/components/blocks-info/BlocksInfo';
 import Card from '@/components/card/Card';
 import InfoList from '@/components/info-list/InfoList';
 import { Info, InfoListHealth } from '@/types/info';
 import { HomeLoaderData } from '@/types/loaderData';
-import { formatHash } from '@/utils/formatter';
+import { formatHash, formatMoney } from '@/utils/formatter';
 
 export default function InfoCards() {
   const loaderData = useLoaderData() as HomeLoaderData;
@@ -37,37 +39,6 @@ export default function InfoCards() {
     }));
   }
 
-  function formatBalance(balance: number) {
-    const abbreTable = [{
-      name: 'Septillion', pow: 24,
-    }, {
-      name: 'Sextillion', pow: 21,
-    }, {
-      name: 'Quintillion', pow: 18,
-    }, {
-      name: 'Quadrillion', pow: 15,
-    }, {
-      name: 'Trillion', pow: 12,
-    }, {
-      name: 'B', pow: 9,
-    }, {
-      name: 'M', pow: 6,
-    }, {
-      name: 'K', pow: 3,
-    }];
-
-    for (let i = 0; i < abbreTable.length; i++) {
-      const { name, pow } = abbreTable[i];
-      const base = Math.pow(10, pow);
-
-      if (balance / base > 0) {
-        return `${Math.floor(((balance / base) * 100)) / 100} ${name}`;
-      }
-    }
-
-    return balance;
-  }
-
   const mappedInfo: Info = {
     network: loaderData.network ? {
       health: getNetworkStatus(),
@@ -82,8 +53,7 @@ export default function InfoCards() {
       data: [
         { name: 'Smart Contract', value: formatHash(loaderData.relayer.account.walletAddress) },
         { name: 'Backlog', value: `${loaderData.relayer.backlog} Subnet Headers` },
-        // TODO: explore cash format
-        { name: 'Remaining Balance', value: formatBalance(parseInt(loaderData.relayer.account.balance)) },
+        { name: 'Remaining Balance', value: formatMoney(parseInt(loaderData.relayer.account.balance)) },
       ]
     } : null,
     masterNodes: loaderData.masterNodes ? {
