@@ -71,7 +71,7 @@ function getMappedInfo(searchResult: SearchResult) {
         value: formatHash(parentChain.blockHash)
       }, {
         name: 'Proposer',
-        value: ''
+        value: formatHash(parentChain.proposer)
       }]
     };
   }

@@ -10,6 +10,7 @@ namespace SearchResult {
     blockHash: string;
     blockHeight: string;
     isConfirmed: boolean;
+    proposer: string;
   }
 
   export interface Transaction {
