@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 
 import { cellWith } from '@/components/blocks-info/constants';
 import Svg, { SvgNames } from '@/components/images/Svg';
-import { ThemeContext } from '@/contexts/ThemeContext';
 import { TimeContext } from '@/contexts/TimeContext';
 import { formatHash } from '@/utils/formatter';
 

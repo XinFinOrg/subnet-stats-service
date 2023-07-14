@@ -1,6 +1,6 @@
 import { AxiosResponse } from 'axios';
 import { useState } from 'react';
-import { useLocation, useMatch } from 'react-router-dom';
+import { useMatch } from 'react-router-dom';
 
 import Card from '@/components/card/Card';
 import ConfirmationStatus from '@/components/confirmation-status/ConfirmationStatus';
