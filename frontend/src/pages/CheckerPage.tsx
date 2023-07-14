@@ -1,5 +1,6 @@
 import { AxiosResponse } from 'axios';
 import { useState } from 'react';
+import { useLocation, useMatch } from 'react-router-dom';
 
 import Card from '@/components/card/Card';
 import ConfirmationStatus from '@/components/confirmation-status/ConfirmationStatus';
@@ -13,7 +14,8 @@ import type { Info, InfoItem } from '@/types/info';
 import type { SearchResult } from '@/types/searchResult';
 
 export default function CheckerPage() {
-  const [searchText, setSearchText] = useState('');
+  const match = useMatch('/checker/:id');
+  const [searchText, setSearchText] = useState(match?.params.id ?? '');
   const [searchResult, setSearchResult] = useState<AxiosResponse<SearchResult>>();
 
   return (

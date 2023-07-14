@@ -1,9 +1,8 @@
 import { PropsWithChildren, useContext } from 'react';
+import { Link } from 'react-router-dom';
 
 import { cellWith } from '@/components/blocks-info/constants';
-import Svg, {
-  InlineSvg, InlineSvgColours, InlineSvgNames, SvgNames
-} from '@/components/images/Svg';
+import Svg, { SvgNames } from '@/components/images/Svg';
 import { ThemeContext } from '@/contexts/ThemeContext';
 import { TimeContext } from '@/contexts/TimeContext';
 import { formatHash } from '@/utils/formatter';
@@ -34,7 +33,6 @@ type MasterNodeRoles = 'MASTERNODE' | 'CANDIDATE' | 'PENALTY';
 
 export function BlocksInfoItem(data: BlocksInfoItemProps) {
   const { currentUnixTime } = useContext(TimeContext);
-  const { theme } = useContext(ThemeContext);
 
   function getTimeDiff(timestamp: number): string {
     const timeDiff = Math.floor(currentUnixTime - timestamp);
@@ -47,11 +45,6 @@ export function BlocksInfoItem(data: BlocksInfoItemProps) {
     return '>1hr';
   }
 
-  function copyToClipboard(hash: string) {
-    window.navigator.clipboard.writeText(hash);
-    // showAlert('Copied!');
-  }
-
   if (data.type === 'recent-block') {
 
     return (
@@ -59,12 +52,9 @@ export function BlocksInfoItem(data: BlocksInfoItemProps) {
         <BlockCell className={cellWith.recentBlocks.height}>{data.number}</BlockCell>
         <BlockCell className={cellWith.recentBlocks.hash}>
           <div className=''>
-            <button onClick={() => copyToClipboard(data.hash)} className='shrink-0 flex justify-between group'>
+            <Link to={`/checker/${data.hash}`}>
               {formatHash(data.hash)}
-              <div className='hidden group-hover:block'>
-                <InlineSvg svgName={InlineSvgNames.Copy} colour={theme === 'light' ? InlineSvgColours.Primary : InlineSvgColours.White} />
-              </div>
-            </button>
+            </Link>
           </div>
         </BlockCell>
         <BlockCell className={cellWith.recentBlocks.proposedBy}>{formatHash(data.miner)}</BlockCell>
