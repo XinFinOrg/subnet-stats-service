@@ -3,6 +3,7 @@ import {
 } from '@/components/blocks-info/blocks-info-item/BlocksInfoItem';
 import { cellWith } from '@/components/blocks-info/constants';
 import { MasterNodeTitle } from '@/components/blocks-info/master-node-title/MasterNodeTitle';
+import ErrorState from '@/components/error-state/ErrorState';
 import InfiniteList from '@/components/infinite-list/InfiniteList';
 import Title from '@/components/title/Title';
 
@@ -10,14 +11,14 @@ import Title from '@/components/title/Title';
 
 interface BlocksInfoProps {
   title: string;
-  data: BlocksInfoItem[];
+  data?: BlocksInfoItem[];
   fetchMoreData?: () => void;
   enableInfinite?: boolean;
 }
 
 export default function BlocksInfo({ title, data, fetchMoreData }: BlocksInfoProps) {
   if (!data || !data.length) {
-    return <></>;
+    return <ErrorState title={title} />;
   }
 
   return (

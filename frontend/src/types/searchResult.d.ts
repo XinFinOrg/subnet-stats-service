@@ -1,8 +1,8 @@
 export interface SearchResult {
-  inputType: SearchResult.InputType;
-  parentChain: SearchResult.Chain;
-  subnet: SearchResult.Chain;
-  transaction: SearchResult.Transaction;
+  inputType?: SearchResult.InputType;
+  parentChain?: SearchResult.Chain;
+  subnet?: SearchResult.Chain;
+  transaction?: SearchResult.Transaction;
 }
 
 namespace SearchResult {

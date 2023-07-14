@@ -3,9 +3,9 @@ import { twMerge } from 'tailwind-merge';
 import { SearchResult } from '@/types/searchResult';
 
 interface ConfirmationStatusProps {
-  subnetStatus: boolean;
-  parentChainStatus: boolean;
-  inputType: SearchResult.InputType;
+  subnetStatus?: boolean;
+  parentChainStatus?: boolean;
+  inputType?: SearchResult.InputType;
   className?: string;
 }
 
@@ -20,6 +20,10 @@ export default function ConfirmationStatus({ className, inputType, subnetStatus,
       default:
         return 'Unknown';
     }
+  }
+
+  if (!(inputType && subnetStatus && parentChainStatus)) {
+    return <></>;
   }
 
   return (

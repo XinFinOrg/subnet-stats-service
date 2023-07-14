@@ -43,7 +43,7 @@ export async function homeLoader() {
   const data = apiResponses.map(response => {
     if (response.status === 'rejected') {
       console.error(response.reason);
-      return null;
+      return undefined;
     }
 
     return response.value.data;

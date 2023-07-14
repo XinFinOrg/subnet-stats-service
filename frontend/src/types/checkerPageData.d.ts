@@ -4,7 +4,7 @@ export interface CheckerPageData {
 }
 
 namespace CheckerPageData {
-  interface Data {
+  export interface Data {
     value: string;
   }
 }

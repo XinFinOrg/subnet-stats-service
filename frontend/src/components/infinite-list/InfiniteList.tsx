@@ -31,7 +31,7 @@ export default function InfiniteList({ fetchData, children }: InfiniteListProps)
         observer.unobserve(currentTarget);
       }
     };
-  }, [observerTarget]);
+  }, [fetchData, observerTarget]);
 
   return (
     <>

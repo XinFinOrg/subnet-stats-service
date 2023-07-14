@@ -1,15 +1,17 @@
-export interface Info {
-  [x: string]: {
-    data?: Info.Data[];
-    health?: InfoListHealth;
-  } | null;
+export type Info = Partial<Record<InfoNames, InfoItem | undefined>>;
+
+interface InfoItem {
+  data?: InfoItem.Data[];
+  health?: InfoListHealth;
 }
 
-namespace Info {
-  interface Data {
+namespace InfoItem {
+  export interface Data {
     name: string;
-    value: string | number;
+    value?: string | number;
   }
 }
 
 export type InfoListHealth = 'Normal' | 'Abnormal';
+
+export type InfoNames = 'masterNodes' | 'relayer' | 'network' | 'parentChain' | 'transaction' | 'subnetBlock' | 'subnet';

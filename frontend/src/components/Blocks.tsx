@@ -10,13 +10,18 @@ export interface Block {
 }
 
 interface BlocksProps {
-  lastBlock: number;
-  lastConfirmedBlock: number;
+  name: string;
   blockNumber: number;
   blocks: Block[];
+  lastBlock?: number;
+  lastConfirmedBlock?: number;
 }
 
-export default function Blocks({ lastBlock, lastConfirmedBlock, blockNumber, blocks }: BlocksProps) {
+export default function Blocks({ lastBlock, lastConfirmedBlock, blockNumber, blocks, name }: BlocksProps) {
+  if (!(lastBlock && lastConfirmedBlock && blocks)) {
+    return <h1 className='text-xl'>Failed to load blocks data</h1>;
+  }
+
   {/* n * block-width + (n - 1) * spacing */ }
   const blockSize = 35 + 18;
   const allBlocksNotConfirmed = lastBlock - lastConfirmedBlock > blockNumber + FakedConfirmedBlockNumber;
@@ -37,6 +42,7 @@ export default function Blocks({ lastBlock, lastConfirmedBlock, blockNumber, blo
 
   return (
     <>
+      <h1 className='pb-4 text-xl font-medium'>{name}</h1>
       {/* Ex: 20 blocks + spacing = (35 + 18) * 20 - 18 = 1042px */}
       <div className='pt-[60px] h-[150px] overflow-hidden relative' style={{ width: `${BlockSizeWithGap * blockNumber - BlockGapSize}px` }}>
         <div className='flex relative'>

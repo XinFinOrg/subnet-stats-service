@@ -3,13 +3,13 @@ import { useState } from 'react';
 
 import Card from '@/components/card/Card';
 import ConfirmationStatus from '@/components/confirmation-status/ConfirmationStatus';
-import InfoList, { InfoItemBaseProps } from '@/components/info-list/InfoList';
+import InfoList from '@/components/info-list/InfoList';
 import Loader from '@/components/loader/Loader';
 import SearchBar from '@/components/search-bar/SearchBar';
 import SearchNotFound from '@/components/search-not-found/SearchNotFound';
 import { formatHash, formatMoney, formatTime } from '@/utils/formatter';
 
-import type { Info } from '@/types/info';
+import type { Info, InfoItem } from '@/types/info';
 import type { SearchResult } from '@/types/searchResult';
 
 export default function CheckerPage() {
@@ -112,22 +112,22 @@ function SearchResult({ searchText, searchResult }: SearchResultProps) {
     <>
       <ConfirmationStatus
         className='pt-8'
-        subnetStatus={subnet.isConfirmed}
-        parentChainStatus={parentChain.isConfirmed}
+        subnetStatus={subnet?.isConfirmed}
+        parentChainStatus={parentChain?.isConfirmed}
         inputType={inputType}
       />
       <div className='pt-8 grid grid-cols-2 llg:grid-cols-3 gap-6'>
         <InfoListCard
           title='Transaction Info'
-          info={mappedInfo.transaction?.data}
+          info={mappedInfo.transaction}
         />
         <InfoListCard
           title='Subnet Block Info'
-          info={mappedInfo.subnetBlock?.data}
+          info={mappedInfo.subnetBlock}
         />
         <InfoListCard
           title='Checkpointing parent chain block'
-          info={mappedInfo.parentChain?.data}
+          info={mappedInfo.parentChain}
         />
       </div>
     </>
@@ -136,7 +136,7 @@ function SearchResult({ searchText, searchResult }: SearchResultProps) {
 
 interface InfoListCardProps {
   title: string;
-  info?: InfoItemBaseProps[];
+  info?: InfoItem;
 }
 
 function InfoListCard({ title, info }: InfoListCardProps) {

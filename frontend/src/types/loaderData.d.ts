@@ -3,14 +3,14 @@ export interface AppLoaderData {
 }
 
 export interface HomeLoaderData {
-  masterNodes: HomeLoaderData.MasterNodes;
-  blocks: HomeLoaderData.Blocks;
-  network: HomeLoaderData.Network;
-  relayer: HomeLoaderData.Relayer;
+  masterNodes?: HomeLoaderData.MasterNodes;
+  blocks?: HomeLoaderData.Blocks;
+  network?: HomeLoaderData.Network;
+  relayer?: HomeLoaderData.Relayer;
 }
 
 export namespace HomeLoaderData {
-  interface MasterNodes {
+  export interface MasterNodes {
     summary: {
       committee: number;
       activeNodes: number;
@@ -22,13 +22,13 @@ export namespace HomeLoaderData {
   }
 
   namespace MasterNodes {
-    interface Node {
+    export interface Node {
       address: string;
       role: 'CANDIDATE', 'MASTERNODE', 'PENALTY';
     }
   }
 
-  interface Blocks {
+  export interface Blocks {
     /** A list of recently mined blocks. Sorted by block number */
     blocks: Blocks.Block[];
 
@@ -54,7 +54,7 @@ export namespace HomeLoaderData {
       number: number;
     }
 
-    interface Block extends BaseBlock {
+    export interface Block extends BaseBlock {
       /** The subnet block's parentHash */
       parentHash: string;
       /** The masternode address who mined this block */
@@ -68,7 +68,7 @@ export namespace HomeLoaderData {
     }
   }
 
-  interface Relayer {
+  export interface Relayer {
     /** The admin/super account information */
     account: {
       /** The super/admin account remaining balance in XDC */
@@ -76,7 +76,7 @@ export namespace HomeLoaderData {
       /** The wallet address of the account */
       walletAddress: string;
     };
-    /** The current gap between audited block in smartcontract (parent chain) and latest minded block in subnet */
+    /** The current gap between audited block in smart contract (parent chain) and latest minded block in subnet */
     backlog: number;
     contractAddress: string;
     health: {
@@ -88,7 +88,7 @@ export namespace HomeLoaderData {
     averageTXfee: number;
   }
 
-  interface Network {
+  export interface Network {
     subnet: {
       name: string;
       /** block metadata, such as mining frequency */

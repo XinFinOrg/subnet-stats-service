@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useLoaderData } from 'react-router-dom';
 
 import {
-    BlocksInfoItem, MasterNode
+  BlocksInfoItem, MasterNode
 } from '@/components/blocks-info/blocks-info-item/BlocksInfoItem';
 import BlocksInfo from '@/components/blocks-info/BlocksInfo';
 import Card from '@/components/card/Card';
@@ -14,10 +14,10 @@ import { formatHash, formatMoney } from '@/utils/formatter';
 export default function InfoCards() {
   const loaderData = useLoaderData() as HomeLoaderData;
 
-  const [recentBlocks, setRecentBlocks] = useState<BlocksInfoItem[]>(getInitRecentBlocks());
+  const [recentBlocks, setRecentBlocks] = useState<BlocksInfoItem[] | undefined>(getInitRecentBlocks());
 
   function getNetworkStatus(): InfoListHealth {
-    if (loaderData.network.health.status === 'UP') {
+    if (loaderData.network?.health.status === 'UP') {
       return 'Normal';
     }
 
@@ -25,45 +25,21 @@ export default function InfoCards() {
   }
 
   function getRelayerStatus(): InfoListHealth {
-    if (loaderData.relayer.health.status === 'UP') {
+    if (loaderData.relayer?.health.status === 'UP') {
       return 'Normal';
     }
 
     return 'Abnormal';
   }
 
-  function getInitRecentBlocks(): BlocksInfoItem[] {
-    return loaderData.blocks.blocks.sort((a, b) => b.number - a.number).map<BlocksInfoItem>(block => ({
+  function getInitRecentBlocks(): BlocksInfoItem[] | undefined {
+    return loaderData.blocks?.blocks.sort((a, b) => b.number - a.number).map<BlocksInfoItem>(block => ({
       type: 'recent-block',
       ...block
     }));
   }
 
-  const mappedInfo: Info = {
-    network: loaderData.network ? {
-      health: getNetworkStatus(),
-      data: [
-        { name: 'Block Time', value: `${loaderData.network.subnet.block.averageBlockTime}s` },
-        { name: 'TX Throughput', value: `${Math.round(loaderData.network.subnet.block.txThroughput * 100) / 100} txs/s` },
-        { name: 'Checkpointed to', value: loaderData.network.parentChain.name },
-      ]
-    } : null,
-    relayer: loaderData.relayer ? {
-      health: getRelayerStatus(),
-      data: [
-        { name: 'Smart Contract', value: formatHash(loaderData.relayer.account.walletAddress) },
-        { name: 'Backlog', value: `${loaderData.relayer.backlog} Subnet Headers` },
-        { name: 'Remaining Balance', value: formatMoney(parseInt(loaderData.relayer.account.balance)) },
-      ]
-    } : null,
-    masterNodes: loaderData.masterNodes ? {
-      data: [
-        { name: 'Current committee size', value: loaderData.masterNodes?.summary?.committee },
-        { name: 'Activity(active / inactive)', value: `${loaderData.masterNodes?.summary?.activeNodes} / ${loaderData.masterNodes.summary.committee - loaderData.masterNodes?.summary?.activeNodes}` },
-        { name: 'Number of standby nodes', value: loaderData.masterNodes?.summary?.inActiveNodes },
-      ],
-    } : null,
-  };
+  const mappedInfo: Info = getMappedInfo(loaderData, getNetworkStatus, getRelayerStatus);
 
   const masterNodes = loaderData.masterNodes?.nodes?.map<MasterNode>((v, i: number) => ({
     ...v,
@@ -81,7 +57,7 @@ export default function InfoCards() {
     const data: MasterNode[] = [];
 
     setRecentBlocks(recentBlocks => {
-      return [...recentBlocks, ...data];
+      return [...recentBlocks ?? [], ...data];
     });
   };
 
@@ -89,32 +65,22 @@ export default function InfoCards() {
     <>
       <div className='grid lg:grid-cols-2 llg:grid-cols-3 gap-6'>
         <Card className='max-w-[400px]'>
-          {mappedInfo.network ? (
-            <InfoList
-              title='Network Info'
-              status={mappedInfo.network.health}
-              info={mappedInfo.network.data}
-            />) : (
-            <div>Error state</div>
-          )}
+          <InfoList
+            title='Network Info'
+            info={mappedInfo.network}
+          />
         </Card>
         <Card className='max-w-[400px]'>
-          {mappedInfo.relayer ? (
-            <InfoList
-              title='Relayer Info'
-              status={mappedInfo.relayer.health}
-              info={mappedInfo.relayer.data}
-            />
-          ) : (<>Error state</>)}
+          <InfoList
+            title='Relayer Info'
+            info={mappedInfo.relayer}
+          />
         </Card>
         <Card className='max-w-[400px]'>
-          {mappedInfo.masterNodes ? (
-            <InfoList
-              title='Master Nodes Info'
-              status={mappedInfo.masterNodes.health}
-              info={mappedInfo.masterNodes.data}
-            />
-          ) : (<>Error state</>)}
+          <InfoList
+            title='Master Nodes Info'
+            info={mappedInfo.masterNodes}
+          />
         </Card>
       </div>
 
@@ -122,10 +88,46 @@ export default function InfoCards() {
         <Card className='max-w-[565px]'>
           <BlocksInfo title='Recent Blocks' data={recentBlocks} fetchMoreData={fetchMoreRecentBlocks} enableInfinite />
         </Card>
-        {masterNodes && <Card className='max-w-[565px]'>
+        {<Card className='max-w-[565px]'>
           <BlocksInfo title='Master Nodes' data={masterNodes} />
         </Card>}
       </div>
     </>
   );
 }
+function getMappedInfo(loaderData: HomeLoaderData, getNetworkStatus: () => InfoListHealth, getRelayerStatus: () => InfoListHealth): Info {
+  const info: Info = {};
+
+  if (loaderData.network) {
+    info.network = {
+      health: getNetworkStatus(),
+      data: [
+        { name: 'Block Time', value: `${loaderData.network.subnet.block.averageBlockTime}s` },
+        { name: 'TX Throughput', value: `${Math.round(loaderData.network.subnet.block.txThroughput * 100) / 100} txs/s` },
+        { name: 'Checkpointed to', value: loaderData.network.parentChain.name },
+      ]
+    };
+  }
+  if (loaderData.relayer) {
+    info.relayer = {
+      health: getRelayerStatus(),
+      data: [
+        { name: 'Smart Contract', value: formatHash(loaderData.relayer.account.walletAddress) },
+        { name: 'Backlog', value: `${loaderData.relayer.backlog} Subnet Headers` },
+        { name: 'Remaining Balance', value: formatMoney(parseInt(loaderData.relayer.account.balance)) },
+      ]
+    };
+  }
+  if (loaderData.masterNodes) {
+    info.masterNodes = {
+      data: [
+        { name: 'Current committee size', value: loaderData.masterNodes?.summary?.committee },
+        { name: 'Activity(active / inactive)', value: `${loaderData.masterNodes?.summary?.activeNodes} / ${loaderData.masterNodes.summary.committee - loaderData.masterNodes?.summary?.activeNodes}` },
+        { name: 'Number of standby nodes', value: loaderData.masterNodes?.summary?.inActiveNodes },
+      ],
+    };
+  }
+
+  return info;
+}
+
