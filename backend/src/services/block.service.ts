@@ -177,6 +177,7 @@ export class BlockService {
         committedInParentChain: parentchainConfirmation.isCommitted,
         parentchainBlockHeight: parentchainConfirmation.parentChainNum,
         parentchainBlockHash: parentchainConfirmation.parentchainHash,
+        proposer: parentchainConfirmation.proposer,
       },
     };
   }
