@@ -22,7 +22,7 @@ export default function ConfirmationStatus({ className, inputType, subnetStatus,
     }
   }
 
-  if (!(inputType && subnetStatus && parentChainStatus)) {
+  if (!inputType || subnetStatus === undefined || parentChainStatus === undefined) {
     return <></>;
   }
 

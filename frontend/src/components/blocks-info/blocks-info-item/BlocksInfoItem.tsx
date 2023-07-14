@@ -48,13 +48,11 @@ export function BlocksInfoItem(data: BlocksInfoItemProps) {
 
     return (
       <div className='flex'>
-        <BlockCell className={cellWith.recentBlocks.height}>{data.number}</BlockCell>
+        <BlockCell className={cellWith.recentBlocks.height}>
+          <Link to={`/checker/${data.number}`}>{data.number}</Link>
+        </BlockCell>
         <BlockCell className={cellWith.recentBlocks.hash}>
-          <div className=''>
-            <Link to={`/checker/${data.hash}`}>
-              {formatHash(data.hash)}
-            </Link>
-          </div>
+          <Link to={`/checker/${data.hash}`}>{formatHash(data.hash)}</Link>
         </BlockCell>
         <BlockCell className={cellWith.recentBlocks.proposedBy}>{formatHash(data.miner)}</BlockCell>
         <BlockImageCell className={cellWith.recentBlocks.status}>
