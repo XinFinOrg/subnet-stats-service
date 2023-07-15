@@ -17,6 +17,7 @@ export interface FetchedV2BlockInfo {
   EncodedRLP: string;
   Error: string;
   Miner: string;
+  Timestamp: number;
 }
 
 interface MasternodesInfo {

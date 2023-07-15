@@ -52,7 +52,7 @@ export class SubnetClient {
   }
 
   async getBlockInfoByHash(hash: string) {
-    const { Hash, Number, Committed, Miner } = await this.web3.xdcSubnet.getV2BlockByHash(hash);
+    const { Hash, Number, Committed, Miner, Timestamp } = await this.web3.xdcSubnet.getV2BlockByHash(hash);
     if (!Hash || !Number) {
       logger.warn(`Invalid block hash or height or ParentHash received, hash: ${hash}, number: ${Number}`);
       throw new HttpException(404, 'No such block exit in subnet');
@@ -62,6 +62,7 @@ export class SubnetClient {
       subnetBlockNumber: Number,
       committedInSubnet: Committed,
       proposer: Miner,
+      timestamp: Timestamp,
     };
   }
 

@@ -5,6 +5,7 @@ import { BlockStorage, StoredBlock, StoredLatestCommittedBlock } from '../storag
 import { BlockInfo, LatestCommittedBlockInfoData } from '../interfaces/input/block.interface';
 import { BlockResponse } from '../interfaces/output/blocksResponse.interface';
 import { SubnetClient } from '../client/subnet';
+import { HttpException } from '@/exceptions/httpException';
 
 @Service()
 export class BlockService {
@@ -134,23 +135,31 @@ export class BlockService {
 
   public async confirmBlockByHeight(blockToConfirmHeight: number) {
     const result = await this.subnetClient.getBlock(blockToConfirmHeight);
+    if (!result) {
+      throw new HttpException(404, 'No such block exit in subnet');
+    }
     return this.confirmBlock(result.hash);
   }
 
   public async confirmBlockByHash(blockToConfirmHash: string) {
     const result = await this.subnetClient.getBlockInfoByHash(blockToConfirmHash);
+    if (!result) {
+      throw new HttpException(404, 'No such block exit in subnet');
+    }
     return this.confirmBlock(blockToConfirmHash, result);
   }
 
   public async getTransactionInfo(hash: string) {
     const txResult = await this.subnetClient.getTxByTransactionHash(hash);
-    if (!txResult) return undefined;
+    if (!txResult) {
+      return undefined;
+    }
     const { timestamp } = await this.subnetClient.getBlock(txResult.blockHash);
     return {
       from: txResult.from,
       to: txResult.to,
       gas: txResult.gas,
-      timestamp,
+      timestamp: timestamp.toString(),
       blockHash: txResult.blockHash,
     };
   }
@@ -158,7 +167,7 @@ export class BlockService {
   // Perform confirmation operation to confirm the subnet block has been confirm on both subnet and parentchain
   private async confirmBlock(
     blockToConfirmHash: string,
-    subnetBlockInfo?: { subnetBlockNumber: number; committedInSubnet: boolean; proposer: string },
+    subnetBlockInfo?: { subnetBlockNumber: number; committedInSubnet: boolean; proposer: string; timestamp: number },
   ) {
     // Only fetch if not provided
     if (!subnetBlockInfo) {
@@ -172,12 +181,14 @@ export class BlockService {
         subnetBlockHeight: subnetBlockInfo.subnetBlockNumber,
         subnetBlockHash: blockToConfirmHash,
         proposer: subnetBlockInfo.proposer,
+        timestamp: subnetBlockInfo.timestamp,
       },
       parentChain: {
         committedInParentChain: parentchainConfirmation.isCommitted,
         parentchainBlockHeight: parentchainConfirmation.parentChainNum,
         parentchainBlockHash: parentchainConfirmation.parentchainHash,
         proposer: parentchainConfirmation.proposer,
+        timestamp: parentchainConfirmation.timestamp,
       },
     };
   }
