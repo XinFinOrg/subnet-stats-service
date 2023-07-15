@@ -158,7 +158,7 @@ export class BlockService {
   // Perform confirmation operation to confirm the subnet block has been confirm on both subnet and parentchain
   private async confirmBlock(
     blockToConfirmHash: string,
-    subnetBlockInfo?: { subnetBlockNumber: number; committedInSubnet: boolean; proposer: string },
+    subnetBlockInfo?: { subnetBlockNumber: number; committedInSubnet: boolean; proposer: string; timestamp: number },
   ) {
     // Only fetch if not provided
     if (!subnetBlockInfo) {
@@ -172,12 +172,14 @@ export class BlockService {
         subnetBlockHeight: subnetBlockInfo.subnetBlockNumber,
         subnetBlockHash: blockToConfirmHash,
         proposer: subnetBlockInfo.proposer,
+        timestamp: subnetBlockInfo.timestamp,
       },
       parentChain: {
         committedInParentChain: parentchainConfirmation.isCommitted,
         parentchainBlockHeight: parentchainConfirmation.parentChainNum,
         parentchainBlockHash: parentchainConfirmation.parentchainHash,
         proposer: parentchainConfirmation.proposer,
+        timestamp: parentchainConfirmation.timestamp,
       },
     };
   }

@@ -269,10 +269,13 @@ paths:
                         type: string
                       proposer:
                         type: string
+                      timestamp:
+                        type: string
                     required:
                       - isConfirmed
                       - blockHeight
                       - blockHash
+                      - timestamp
                   parentChain:
                     type: object
                     properties:
@@ -284,10 +287,13 @@ paths:
                         type: string
                       proposer:
                         type: string
+                      timestamp:
+                        type: string
                     required:
                       - isConfirmed
                       - blockHeight
                       - blockHash
+                      - timestamp
                   transaction:
                     type: object
                     properties:

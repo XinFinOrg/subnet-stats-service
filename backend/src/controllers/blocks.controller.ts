@@ -123,11 +123,13 @@ export class BlocksController {
             blockHeight: subnet.subnetBlockHeight,
             blockHash: subnet.subnetBlockHash,
             proposer: subnet.proposer,
+            timestamp: subnet.timestamp.toString(),
           },
           parentChain: {
             isConfirmed: parentChain.committedInParentChain,
             blockHash: parentChain.parentchainBlockHash,
             blockHeight: parentChain.parentchainBlockHeight,
+            timestamp: subnet.timestamp.toString(),
           },
         };
       } else if (parseInt(input)) {
@@ -140,12 +142,14 @@ export class BlocksController {
             blockHeight: subnet.subnetBlockHeight,
             blockHash: subnet.subnetBlockHash,
             proposer: subnet.proposer,
+            timestamp: subnet.timestamp.toString(),
           },
           parentChain: {
             isConfirmed: parentChain.committedInParentChain,
             blockHash: parentChain.parentchainBlockHash,
             blockHeight: parentChain.parentchainBlockHeight,
             proposer: parentChain.proposer,
+            timestamp: subnet.timestamp.toString(),
           },
         };
       } else {
@@ -170,12 +174,14 @@ interface ConfirmationResponse {
     blockHeight: number;
     blockHash: string;
     proposer?: string;
+    timestamp?: string;
   };
   parentChain: {
     isConfirmed: boolean;
     blockHeight: number;
     blockHash: string;
     proposer?: string;
+    timestamp?: string;
   };
   transaction?: {
     from: string;

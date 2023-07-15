@@ -84,12 +84,13 @@ export class ParentChainClient {
    */
   async confirmBlock(subnetHash: string) {
     const { finalized, mainnet_num } = await this.smartContractInstance.methods.getHeader(subnetHash).call();
-    const { Committed, Hash, Miner } = await this.web3.xdcSubnet.getV2BlockByNumber(Web3.utils.numberToHex(mainnet_num));
+    const { Committed, Hash, Miner, Timestamp } = await this.web3.xdcSubnet.getV2BlockByNumber(Web3.utils.numberToHex(mainnet_num));
     return {
       isCommitted: Committed && finalized,
       parentchainHash: Hash,
       parentChainNum: mainnet_num,
       proposer: Miner,
+      timestamp: Timestamp,
     };
   }
 }
