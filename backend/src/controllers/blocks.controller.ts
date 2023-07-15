@@ -173,15 +173,15 @@ interface ConfirmationResponse {
     isConfirmed: boolean;
     blockHeight: number;
     blockHash: string;
-    proposer?: string;
-    timestamp?: string;
+    proposer: string;
+    timestamp: string;
   };
   parentChain: {
     isConfirmed: boolean;
     blockHeight: number;
     blockHash: string;
-    proposer?: string;
-    timestamp?: string;
+    proposer: string;
+    timestamp: string;
   };
   transaction?: {
     from: string;
