@@ -129,6 +129,7 @@ export class BlocksController {
             isConfirmed: parentChain.committedInParentChain,
             blockHash: parentChain.parentchainBlockHash,
             blockHeight: parentChain.parentchainBlockHeight,
+            proposer: parentChain.proposer,
             timestamp: subnet.timestamp.toString(),
           },
         };
