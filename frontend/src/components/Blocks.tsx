@@ -1,7 +1,7 @@
 import BlockConnectLine from '@/components/BlockConnectLine';
 import BlockImage from '@/components/images/block-image/BlockImage';
 import {
-  BlockGapSize, BlockSizeWithGap, FakedConfirmedBlockNumber, FakedNotConfirmedBlockNumber
+    BlockGapSize, BlockSizeWithGap, FakedConfirmedBlockNumber, FakedNotConfirmedBlockNumber
 } from '@/constants/config';
 
 export interface Block {
@@ -38,6 +38,10 @@ export default function Blocks({ lastBlock, lastConfirmedBlock, blockNumber, blo
     }
 
     return (confirmedNumber - 1) / 2;
+  }
+
+  if (blocks.length === 0) {
+    return <h1 className='pb-4 text-xl font-medium'>There is an error in {name}</h1>;
   }
 
   return (

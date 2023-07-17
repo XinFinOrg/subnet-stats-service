@@ -6,8 +6,8 @@ import Blocks, { Block } from '@/components/Blocks';
 import Card from '@/components/card/Card';
 import InfoList from '@/components/info-list/InfoList';
 import {
-  BlockSizeWithGap, FakedConfirmedBlockNumber, FakedNotConfirmedBlockNumber,
-  StandardScreenBlockNumber, WideScreenBlockNumber
+    BlockSizeWithGap, FakedConfirmedBlockNumber, FakedNotConfirmedBlockNumber,
+    StandardScreenBlockNumber, WideScreenBlockNumber
 } from '@/constants/config';
 import { baseUrl } from '@/constants/urls';
 import { TimeContext } from '@/contexts/TimeContext';
@@ -27,6 +27,15 @@ function getBlocks(lastBlock: number | undefined, lastConfirmedBlock: number | u
   const confirmedCount = allBlockNumber - unconfirmedCount > 0 ? allBlockNumber - unconfirmedCount : 0;
   const firstBlockHeight = lastBlock - allBlockNumber + 1;
 
+  /**
+   * abnormal cases 
+   **/
+  if (lastConfirmedBlock - lastBlock > 0) {
+    // This can't happen
+    return [];
+  }
+
+  // handle huge gap between last mined and last confirmed block
   if (lastBlock - lastConfirmedBlock > blockNumber + FakedConfirmedBlockNumber) {
     // unconfirmed blocks
     for (let i = 0; i < blockNumber + FakedConfirmedBlockNumber + FakedNotConfirmedBlockNumber; i++) {
@@ -36,6 +45,9 @@ function getBlocks(lastBlock: number | undefined, lastConfirmedBlock: number | u
     return blocks;
   }
 
+  /**
+   * normal cases 
+   **/
   // confirmed blocks
   for (let i = 0; i < confirmedCount; i++) {
     blocks.push({ number: firstBlockHeight + i, confirmed: true });
