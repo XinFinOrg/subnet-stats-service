@@ -5,11 +5,11 @@ import * as _ from 'lodash';
 import { logger } from '../utils/logger';
 import { HelloEventData } from '../interfaces/input/hello.interface';
 import { NodeInfo } from '../interfaces/input/node.interface';
-import { MAX_NUM_OF_BLOCKS_IN_HISTORY, WS_SECRET } from '../config';
+import { MAX_NUM_OF_BLOCKS_IN_HISTORY, STATS_SECRET } from '../config';
 import { BlockEventData, BlockInfo } from '../interfaces/input/block.interface';
 import { Services, getService } from '../services';
 
-const websocketSecret = WS_SECRET || 'subnet-stats-server';
+const websocketSecret = STATS_SECRET || 'subnet-stats-server';
 
 export class EventsHandler {
   private services: Services;
