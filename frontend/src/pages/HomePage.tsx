@@ -3,6 +3,7 @@ import { useContext, useEffect, useState } from 'react';
 import { useLoaderData } from 'react-router-dom';
 
 import { Block } from '@/components/Blocks';
+import { BlocksInfoItem } from '@/components/blocks-info/blocks-info-item/BlocksInfoItem';
 import InfoCards from '@/components/info-cards/InfoCards';
 import BlockCards from '@/components/info-list/components/block-cards/BlockCards';
 import {
@@ -12,9 +13,9 @@ import {
 import { baseUrl } from '@/constants/urls';
 import { TimeContext } from '@/contexts/TimeContext';
 import { useWindowWidth } from '@/hooks/useMediaQuery';
+import { getSortedRecentBlocks } from '@/pages/utils/BlockHelper';
 
 import type { HomeLoaderData } from '@/types/loaderData';
-
 function getBlockNumber(windowWidth: number) {
   if (windowWidth >= 1440) {
     return WideScreenBlockNumber;
@@ -84,26 +85,32 @@ export default function HomePage() {
   const [lastParentBlock, setLastParentBlock] = useState(loaderData.blocks?.checkpoint.latestSubmittedSubnetBlock.number);
   const [lastSubnetConfirmedBlock, setLastSubnetConfirmedBlock] = useState(loaderData.blocks?.subnet.latestCommittedBlock.number);
   const [lastParentConfirmedBlock, setLastParentConfirmedBlock] = useState(loaderData.blocks?.checkpoint.latestCommittedSubnetBlock.number);
-  const [blocks, setBlocks] = useState<Block[]>(getBlocks(loaderData.blocks?.subnet.latestMinedBlock.number, loaderData.blocks?.subnet.latestCommittedBlock.number, blockNumber));
+  const [subnetBlocks, setSubnetBlocks] = useState<Block[]>(getBlocks(loaderData.blocks?.subnet.latestMinedBlock.number, loaderData.blocks?.subnet.latestCommittedBlock.number, blockNumber));
   const [parentBlocks, setParentBlocks] = useState<Block[]>(getBlocks(loaderData.blocks?.checkpoint.latestSubmittedSubnetBlock.number, loaderData.blocks?.checkpoint.latestCommittedSubnetBlock.number, blockNumber));
+  const [recentBlocks, setRecentBlocks] = useState<BlocksInfoItem[]>(getSortedRecentBlocks(loaderData.blocks?.blocks));
   const { currentUnixTime } = useContext(TimeContext);
 
   useEffect(() => {
     async function getData() {
-      const { data: { subnet, checkpoint } } = await axios.get<HomeLoaderData.Blocks>(`${baseUrl}/information/blocks`);
+      const { data: { subnet, checkpoint, blocks } } = await axios.get<HomeLoaderData.Blocks>(`${baseUrl}/information/blocks`);
       setLastSubnetBlock(subnet.latestMinedBlock.number);
       setLastParentBlock(checkpoint.latestSubmittedSubnetBlock.number);
       setLastSubnetConfirmedBlock(subnet.latestCommittedBlock.number);
       setLastParentConfirmedBlock(checkpoint.latestCommittedSubnetBlock.number);
 
-      const blocks = getBlocks(subnet.latestMinedBlock.number, subnet.latestCommittedBlock.number, blockNumber);
+      const subnetBlocks = getBlocks(subnet.latestMinedBlock.number, subnet.latestCommittedBlock.number, blockNumber);
       const parentBlocks = getBlocks(checkpoint.latestSubmittedSubnetBlock.number, checkpoint.latestCommittedSubnetBlock.number, blockNumber);
-      setBlocks(blocks);
+      setSubnetBlocks(subnetBlocks);
       setParentBlocks(parentBlocks);
+
+      const newRecentBlocks = [...recentBlocks, ...getSortedRecentBlocks(blocks)];
+      setRecentBlocks(newRecentBlocks);
     }
 
     getData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [blockNumber, currentUnixTime]);
+
   return (
     <div className='grid gap-6 grid-col-1'>
       <BlockCards
@@ -112,10 +119,10 @@ export default function HomePage() {
         lastSubnetConfirmedBlock={lastSubnetConfirmedBlock}
         lastParentConfirmedBlock={lastParentConfirmedBlock}
         blockNumber={blockNumber}
-        blocks={blocks}
+        subnetBlocks={subnetBlocks}
         parentBlocks={parentBlocks}
       />
-      <InfoCards />
+      <InfoCards recentBlocks={recentBlocks} setRecentBlocks={setRecentBlocks} />
     </div>
   );
 }

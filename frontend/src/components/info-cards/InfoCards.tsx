@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useLoaderData } from 'react-router-dom';
 
 import {
@@ -7,14 +6,19 @@ import {
 import BlocksInfo from '@/components/blocks-info/BlocksInfo';
 import Card from '@/components/card/Card';
 import InfoList from '@/components/info-list/InfoList';
+import { getSortedRecentBlocks } from '@/pages/utils/BlockHelper';
 import { Info, InfoListHealth } from '@/types/info';
 import { HomeLoaderData } from '@/types/loaderData';
 import { formatHash, formatMoney } from '@/utils/formatter';
 
-export default function InfoCards() {
-  const loaderData = useLoaderData() as HomeLoaderData;
+interface InfoCardsProps {
+  recentBlocks: BlocksInfoItem[];
+  setRecentBlocks: React.Dispatch<React.SetStateAction<BlocksInfoItem[]>>;
+}
 
-  const [recentBlocks, setRecentBlocks] = useState<BlocksInfoItem[] | undefined>(getInitRecentBlocks());
+export default function InfoCards(props: InfoCardsProps) {
+  const { recentBlocks, setRecentBlocks } = props;
+  const loaderData = useLoaderData() as HomeLoaderData;
 
   function getNetworkStatus(): InfoListHealth {
     if (loaderData.network?.health.status === 'UP') {
@@ -32,13 +36,6 @@ export default function InfoCards() {
     return 'Abnormal';
   }
 
-  function getInitRecentBlocks(): BlocksInfoItem[] | undefined {
-    return loaderData.blocks?.blocks.sort((a, b) => b.number - a.number).map<BlocksInfoItem>(block => ({
-      type: 'recent-block',
-      ...block
-    }));
-  }
-
   const mappedInfo: Info = getMappedInfo(loaderData, getNetworkStatus, getRelayerStatus);
 
   const masterNodes = loaderData.masterNodes?.nodes?.map<MasterNode>((v, i: number) => ({
@@ -54,10 +51,11 @@ export default function InfoCards() {
     }
 
     // TODO: From api
-    const data: MasterNode[] = [];
+    const data: HomeLoaderData.Blocks.Block[] = [];
 
-    setRecentBlocks(recentBlocks => {
-      return [...recentBlocks ?? [], ...data];
+    // concat data from api in the end of list since it would be the 'previous' data
+    setRecentBlocks((recentBlocks: BlocksInfoItem[]) => {
+      return [...recentBlocks, ...getSortedRecentBlocks(data)];
     });
   };
 

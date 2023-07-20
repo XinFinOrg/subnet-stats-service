@@ -6,9 +6,9 @@ import { useIsTablet } from '@/hooks/useMediaQuery';
 import type { Info } from '@/types/info';
 
 interface BlockCardsProps {
-  blocks: Block[];
-  parentBlocks: Block[];
   blockNumber: number;
+  subnetBlocks: Block[];
+  parentBlocks: Block[];
   lastSubnetConfirmedBlock?: number;
   lastSubnetBlock?: number;
   lastParentConfirmedBlock?: number;
@@ -17,12 +17,12 @@ interface BlockCardsProps {
 
 export default function BlockCards(props: BlockCardsProps) {
   const {
-    lastSubnetConfirmedBlock,
-    lastSubnetBlock,
-    lastParentConfirmedBlock,
-    lastParentBlock,
     blockNumber,
-    blocks,
+    lastSubnetBlock,
+    lastParentBlock,
+    lastSubnetConfirmedBlock,
+    lastParentConfirmedBlock,
+    subnetBlocks,
     parentBlocks
   } = props;
   const isTablet = useIsTablet();
@@ -53,7 +53,7 @@ export default function BlockCards(props: BlockCardsProps) {
               lastBlock={lastSubnetBlock}
               lastConfirmedBlock={lastSubnetConfirmedBlock}
               blockNumber={blockNumber}
-              blocks={blocks}
+              blocks={subnetBlocks}
               name='subnet blockchain'
             />
           </Card >) : (
