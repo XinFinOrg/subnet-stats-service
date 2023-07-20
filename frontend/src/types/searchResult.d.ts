@@ -11,8 +11,9 @@ namespace SearchResult {
     blockHeight: string;
     isConfirmed: boolean;
     proposer: string;
+    timestamp: number;
   }
-
+  
   export interface Transaction {
     from: string;
     to: string;

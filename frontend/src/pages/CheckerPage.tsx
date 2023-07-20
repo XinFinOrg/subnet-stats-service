@@ -72,6 +72,9 @@ function getMappedInfo(searchResult: SearchResult) {
       }, {
         name: 'Proposer',
         value: formatHash(parentChain.proposer)
+      }, {
+        name: 'Timestamp',
+        value: formatTime(parentChain.timestamp)
       }]
     };
   }
@@ -86,7 +89,10 @@ function getMappedInfo(searchResult: SearchResult) {
         value: formatHash(subnet.blockHash)
       }, {
         name: 'Proposer',
-        value: ''
+        value: formatHash(subnet.proposer)
+      }, {
+        name: 'Timestamp',
+        value: formatTime(subnet.timestamp)
       }]
     };
   }
