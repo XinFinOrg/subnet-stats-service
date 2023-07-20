@@ -13,7 +13,7 @@ import {
 import { baseUrl } from '@/constants/urls';
 import { TimeContext } from '@/contexts/TimeContext';
 import { useWindowWidth } from '@/hooks/useMediaQuery';
-import { getSortedRecentBlocks } from '@/pages/utils/BlockHelper';
+import { getSortedRecentBlocks, uniqReplaceByName } from '@/pages/utils/BlockHelper';
 
 import type { HomeLoaderData } from '@/types/loaderData';
 function getBlockNumber(windowWidth: number) {
@@ -103,7 +103,7 @@ export default function HomePage() {
       setSubnetBlocks(subnetBlocks);
       setParentBlocks(parentBlocks);
 
-      const newRecentBlocks = [...recentBlocks, ...getSortedRecentBlocks(blocks)];
+      const newRecentBlocks = uniqReplaceByName(recentBlocks, getSortedRecentBlocks(blocks));
       setRecentBlocks(newRecentBlocks);
     }
 

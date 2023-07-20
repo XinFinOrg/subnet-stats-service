@@ -6,7 +6,9 @@ import {
 import BlocksInfo from '@/components/blocks-info/BlocksInfo';
 import Card from '@/components/card/Card';
 import InfoList from '@/components/info-list/InfoList';
-import { getSortedRecentBlocks } from '@/pages/utils/BlockHelper';
+import {
+  getSortedRecentBlocks, uniqReplaceByName as uniqReplaceByName
+} from '@/pages/utils/BlockHelper';
 import { Info, InfoListHealth } from '@/types/info';
 import { HomeLoaderData } from '@/types/loaderData';
 import { formatHash, formatMoney } from '@/utils/formatter';
@@ -55,7 +57,7 @@ export default function InfoCards(props: InfoCardsProps) {
 
     // concat data from api in the end of list since it would be the 'previous' data
     setRecentBlocks((recentBlocks: BlocksInfoItem[]) => {
-      return [...recentBlocks, ...getSortedRecentBlocks(data)];
+      return uniqReplaceByName(recentBlocks, getSortedRecentBlocks(data));
     });
   };
 
