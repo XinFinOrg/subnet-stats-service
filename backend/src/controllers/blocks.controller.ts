@@ -14,9 +14,13 @@ export class BlocksController {
   }
 
   public loadRecentBlocks = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const blockNumIndex = req.query.blockNumIndex? Number(req.query.blockNumIndex) : -1;
+    console.log("Liam loadRecentBlocks",blockNumIndex)
+
     try {
-      const [recentBlocks, chainStatus, lastSubnetCommittedBlock, parentchainSubnetBlock] = await Promise.all([
-        this.blockService.getRecentBlocks(),
+      const [latestMinedBlock, recentBlocks, chainStatus, lastSubnetCommittedBlock, parentchainSubnetBlock] = await Promise.all([
+        this.blockService.getLastMinedBlocks(),
+        this.blockService.getRecentBlocks(blockNumIndex),
         this.blockService.getBlockChainStatus(),
         this.blockService.getLastSubnetCommittedBlock(),
         this.blockService.getLastParentchainSubnetBlock(),
@@ -24,13 +28,6 @@ export class BlocksController {
 
       const { committed, submitted } = parentchainSubnetBlock;
 
-      const latestMinedBlock =
-        recentBlocks && recentBlocks.length
-          ? {
-              hash: recentBlocks[recentBlocks.length - 1].hash,
-              number: recentBlocks[recentBlocks.length - 1].number,
-            }
-          : {};
       const data: BlocksResponse = {
         blocks: recentBlocks,
         subnet: {

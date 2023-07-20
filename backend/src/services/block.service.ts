@@ -3,9 +3,13 @@ import { Service } from 'typedi';
 import * as _ from 'lodash';
 import { BlockStorage, StoredBlock, StoredLatestCommittedBlock } from '../storage/block';
 import { BlockInfo, LatestCommittedBlockInfoData } from '../interfaces/input/block.interface';
-import { BlockResponse } from '../interfaces/output/blocksResponse.interface';
+import { BaseBlockResponse, BlockResponse } from '../interfaces/output/blocksResponse.interface';
 import { SubnetClient } from '../client/subnet';
 import { HttpException } from '@/exceptions/httpException';
+import { BlocksController } from '@/controllers/blocks.controller';
+import { NUM_OF_BLOCKS_RETURN } from '../config';
+import { length } from 'class-validator';
+import { start } from 'repl';
 
 @Service()
 export class BlockService {
@@ -55,17 +59,38 @@ export class BlockService {
     };
   }
 
+  public async getLastMinedBlocks(): Promise<BaseBlockResponse> {
+    const allBlocks = await this.blockStorage.getAllBlocks();
+    const latestMinedBlock =
+    allBlocks && allBlocks.length
+      ? {
+          hash: allBlocks[allBlocks.length - 1].hash,
+          number: allBlocks[allBlocks.length - 1].number,
+        }
+      : {
+        hash: "",
+        number: 0
+      };
+    return latestMinedBlock;
+  }
+
   // Get all available blocks on the same chain (sorted by block number)
-  public async getRecentBlocks(): Promise<BlockResponse[]> {
+  public async getRecentBlocks(blockIndex: number): Promise<BlockResponse[]> {
     const allBlocks = await this.blockStorage.getAllBlocks();
     const lastCommittedBlockInfo = await this.getLastSubnetCommittedBlock();
     const lastCommittedBlock = await this.blockStorage.getMinedBlockByHash(lastCommittedBlockInfo.hash);
+    console.log("Liam", blockIndex)
+    const endIndex = blockIndex != -1? allBlocks.findIndex((block) => block.number == blockIndex) : allBlocks.length-1;
+    const startIndex = endIndex - NUM_OF_BLOCKS_RETURN >= 0 ? endIndex - NUM_OF_BLOCKS_RETURN : 0;
+    const selectedBlocks = allBlocks.slice(startIndex, endIndex+1)
+    console.log("Liam", blockIndex, startIndex, endIndex, allBlocks.length, selectedBlocks.length)
+
     // Short-curcit if the committedBlock is not even recored in the system. The gap between mined and committed is too far
     if (!lastCommittedBlock) {
-      return this.shortCircuitRecentBlocks(allBlocks);
+      return this.shortCircuitRecentBlocks(selectedBlocks);
     }
 
-    const sameChainBlocks = this.filterOutForksBeforeStartingBlock(allBlocks, lastCommittedBlock);
+    const sameChainBlocks = this.filterOutForksBeforeStartingBlock(selectedBlocks, lastCommittedBlock);
     const { committed } = await this.getLastParentchainSubnetBlock();
 
     return sameChainBlocks.map(b => {
@@ -236,9 +261,11 @@ export class BlockService {
       return chainToFilter;
     }
 
-    const startingPointer = startingBlock ? startingBlock : chainToFilter[chainToFilter.length - 1];
+    const lastBLock = chainToFilter[chainToFilter.length - 1];
+    const startingPointer = startingBlock && startingBlock.number <= lastBLock.number? startingBlock : lastBLock;
+    console.log("Liam starting pointer", startingBlock.number, startingPointer.number)
     const onChainHash = [startingPointer.hash];
-    let parentHashPointer = startingBlock.parentHash;
+    let parentHashPointer = startingPointer.parentHash;
     // Track back through the parentChain hash, if found then mark them as on the same chain
     while (parentHashPointer) {
       const parentBlock = chainToFilter.find(b => b.hash === parentHashPointer);
