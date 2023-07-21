@@ -81,7 +81,7 @@ export class BlockService {
     const lastCommittedBlock = await this.blockStorage.getMinedBlockByHash(lastCommittedBlockInfo.hash);
     const endIndex = blockIndex != -1? allBlocks.findIndex((block) => block.number == blockIndex) : allBlocks.length-1;
     const startIndex = endIndex - NUM_OF_BLOCKS_RETURN >= 0 ? endIndex - NUM_OF_BLOCKS_RETURN : 0;
-    const selectedBlocks = allBlocks.slice(startIndex, endIndex+1)
+    const selectedBlocks = allBlocks.slice(startIndex, endIndex)
 
     // Short-curcit if the committedBlock is not even recored in the system. The gap between mined and committed is too far
     if (!lastCommittedBlock) {
