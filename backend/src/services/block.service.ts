@@ -79,11 +79,9 @@ export class BlockService {
     const allBlocks = await this.blockStorage.getAllBlocks();
     const lastCommittedBlockInfo = await this.getLastSubnetCommittedBlock();
     const lastCommittedBlock = await this.blockStorage.getMinedBlockByHash(lastCommittedBlockInfo.hash);
-    console.log("Liam", blockIndex)
     const endIndex = blockIndex != -1? allBlocks.findIndex((block) => block.number == blockIndex) : allBlocks.length-1;
     const startIndex = endIndex - NUM_OF_BLOCKS_RETURN >= 0 ? endIndex - NUM_OF_BLOCKS_RETURN : 0;
     const selectedBlocks = allBlocks.slice(startIndex, endIndex+1)
-    console.log("Liam", blockIndex, startIndex, endIndex, allBlocks.length, selectedBlocks.length)
 
     // Short-curcit if the committedBlock is not even recored in the system. The gap between mined and committed is too far
     if (!lastCommittedBlock) {
@@ -263,7 +261,6 @@ export class BlockService {
 
     const lastBLock = chainToFilter[chainToFilter.length - 1];
     const startingPointer = startingBlock && startingBlock.number <= lastBLock.number? startingBlock : lastBLock;
-    console.log("Liam starting pointer", startingBlock.number, startingPointer.number)
     const onChainHash = [startingPointer.hash];
     let parentHashPointer = startingPointer.parentHash;
     // Track back through the parentChain hash, if found then mark them as on the same chain
