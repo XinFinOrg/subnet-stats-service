@@ -1,4 +1,6 @@
-import { HomeLoaderData } from '@/types/loaderData';
+import { BlocksInfoItem } from '@/components/blocks-info/blocks-info-item/BlocksInfoItem';
+
+import type { HomeLoaderData } from '@/types/loaderData';
 
 /**
  * Iterate each item in new array
