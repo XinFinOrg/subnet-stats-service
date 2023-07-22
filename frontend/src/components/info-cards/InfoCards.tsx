@@ -102,7 +102,7 @@ function getMappedInfo(loaderData: HomeLoaderData, getNetworkStatus: () => InfoL
     info.network = {
       health: getNetworkStatus(),
       data: [
-        { name: 'Block Time', value: `${loaderData.network.subnet.block.averageBlockTime}s` },
+        { name: 'Block Time', value: `${Math.floor(loaderData.network.subnet.block.averageBlockTime * 100) / 100}s` },
         { name: 'TX Throughput', value: `${Math.round(loaderData.network.subnet.block.txThroughput * 100) / 100} txs/s` },
         { name: 'Checkpointed to', value: loaderData.network.parentChain.name },
       ]

@@ -1,3 +1,7 @@
+export function formatHashFromNonZero(hash: string): string {
+  return formatHash(hash.replace(/0x[0]*/, 'xdc'));
+}
+
 export function formatHash(hash: string): string {
   if (hash?.length >= 15) {
     return `${hash.slice(0, 6)}...${hash.slice(-6)}`;

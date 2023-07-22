@@ -8,7 +8,7 @@ import InfoList from '@/components/info-list/InfoList';
 import Loader from '@/components/loader/Loader';
 import SearchBar from '@/components/search-bar/SearchBar';
 import SearchNotFound from '@/components/search-not-found/SearchNotFound';
-import { formatHash, formatMoney, formatTime } from '@/utils/formatter';
+import { formatHash, formatHashFromNonZero, formatMoney, formatTime } from '@/utils/formatter';
 
 import type { Info, InfoItem } from '@/types/info';
 import type { SearchResult } from '@/types/searchResult';
@@ -71,11 +71,10 @@ function getMappedInfo(searchResult: SearchResult) {
         value: formatHash(parentChain.blockHash)
       }, {
         name: 'Proposer',
-        value: formatHash(parentChain.proposer)
+        value: formatHashFromNonZero(parentChain.proposer)
       }]
     };
   }
-
   if (subnet) {
     mappedInfo.subnetBlock = {
       data: [{
@@ -86,7 +85,7 @@ function getMappedInfo(searchResult: SearchResult) {
         value: formatHash(subnet.blockHash)
       }, {
         name: 'Proposer',
-        value: ''
+        value: formatHashFromNonZero(subnet.proposer)
       }]
     };
   }
