@@ -13,7 +13,7 @@ import {
 import { baseUrl } from '@/constants/urls';
 import { TimeContext } from '@/contexts/TimeContext';
 import { useWindowWidth } from '@/hooks/useMediaQuery';
-import { getSortedRecentBlocks, uniqReplaceByName } from '@/pages/utils/BlockHelper';
+import { getSortedRecentBlocks } from '@/pages/utils/BlockHelper';
 
 import type { HomeLoaderData } from '@/types/loaderData';
 function getBlockNumber(windowWidth: number) {
@@ -92,7 +92,7 @@ export default function HomePage() {
 
   useEffect(() => {
     async function getData() {
-      const { data: { subnet, checkpoint, blocks } } = await axios.get<HomeLoaderData.Blocks>(`${baseUrl}/information/blocks`);
+      const { data: { subnet, checkpoint } } = await axios.get<HomeLoaderData.Blocks>(`${baseUrl}/information/blocks`);
       setLastSubnetBlock(subnet.latestMinedBlock.number);
       setLastParentBlock(checkpoint.latestSubmittedSubnetBlock.number);
       setLastSubnetConfirmedBlock(subnet.latestCommittedBlock.number);
@@ -102,9 +102,6 @@ export default function HomePage() {
       const parentBlocks = getBlocks(checkpoint.latestSubmittedSubnetBlock.number, checkpoint.latestCommittedSubnetBlock.number, blockNumber);
       setSubnetBlocks(subnetBlocks);
       setParentBlocks(parentBlocks);
-
-      const newRecentBlocks = uniqReplaceByName(recentBlocks, getSortedRecentBlocks(blocks));
-      setRecentBlocks(newRecentBlocks);
     }
 
     getData();
