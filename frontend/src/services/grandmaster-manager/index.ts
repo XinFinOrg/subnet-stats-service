@@ -19,7 +19,7 @@ export class GrandMasterManager {
    * * This method will detect XDC-Pay and verify if customer has alraedy loggin.
    * @returns Account details will be returned if all good, otherwise, relevant error message and type will be returned such as WALLET_NOT_LOGIN
    */
-  login(): AccountDetails | ManagerError {
+  async login(): Promise<AccountDetails | ManagerError> {
     return {
       accountAddress: "xdc888c073313b36cf03cf1f739f39443551ff12bbe",
       balance: "123",
@@ -32,7 +32,7 @@ export class GrandMasterManager {
    * @param address The master node to be removed
    * @returns If transaction is successful, return. Otherwise, an error details will be returned
    */
-  removeMasterNode(address: string): true | ManagerError {
+  async removeMasterNode(address: string): Promise<true | ManagerError> {
     return true;
   }
   
@@ -41,7 +41,7 @@ export class GrandMasterManager {
    * @param address The master node to be added
    * @returns If transaction is successful, return. Otherwise, an error details will be returned
    */
-  addNewMasterNode(address: string): true | ManagerError {
+  async addNewMasterNode(address: string): Promise<true | ManagerError> {
     return true;
   }
   
@@ -51,7 +51,7 @@ export class GrandMasterManager {
    * @param value The xdc value that will be applied to the targeted address. Postive number means increase power, negative means decrease the power
    * @returns If transaction is successful, return. Otherwise, an error details will be returned
    */
-  changeVote(address: string, value: number): true | ManagerError {
+  async changeVote(address: string, value: number): Promise<true | ManagerError> {
     return true;
   }
   
@@ -65,5 +65,36 @@ export class GrandMasterManager {
     // TODO: 2. Handle the chain change via chainChanged. This could happen if switch from testnet to mainnet etc.
   }
   
+  /**
+   * A method to return subnet candidates and its status.
+   * @returns The address and its current status and stake.
+   * 'MASTERNODE' means it's one of the mining masternode
+   * 'PROPOSED' means it just been proposed, but waiting for have enough vote in order to be the masternode.
+   * 'SLASHED' means it's been taken out from the masternode list
+   */
+  async getCandidates(): Promise<{[address: string]: { capacity: number, status: 'MASTERNODE' | 'PROPOSED' | 'SLASHED'}}> {
+    return {
+      "xdc25B4CBb9A7AE13feadC3e9F29909833D19D16dE5": {
+        "capacity": 5e+22,
+        "status": "MASTERNODE"
+      },
+      "xdc2af0Cacf84899F504a6dC95e6205547bDfe28c2c": {
+          "capacity": 5e+22,
+          "status": "MASTERNODE"
+      },
+      "xdc30f21E514A66732DA5Dff95340624fa808048601": {
+          "capacity": 5e+22,
+          "status": "MASTERNODE"
+      },
+      "xdc3C03a0aBaC1DA8f2f419a59aFe1c125F90B506c5": {
+          "capacity": 5e+22,
+          "status": "SLASHED"
+      },
+      "xdc3D9fd0c76BB8B3B4929ca861d167f3e05926CB68": {
+          "capacity": 5e+22,
+          "status": "PROPOSED"
+      }
+    }
+  }
 }
 
