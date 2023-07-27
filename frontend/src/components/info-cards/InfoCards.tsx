@@ -1,3 +1,5 @@
+import axios from 'axios';
+import { useState } from 'react';
 import { useLoaderData } from 'react-router-dom';
 
 import {
@@ -6,21 +8,24 @@ import {
 import BlocksInfo from '@/components/blocks-info/BlocksInfo';
 import Card from '@/components/card/Card';
 import InfoList from '@/components/info-list/InfoList';
-import {
-  getSortedRecentBlocks, uniqReplaceByName as uniqReplaceByName
-} from '@/pages/utils/BlockHelper';
+import { baseUrl } from '@/constants/urls';
+import { getSortedRecentBlocks, uniqReplaceByName } from '@/pages/utils/BlockHelper';
 import { Info, InfoListHealth } from '@/types/info';
 import { HomeLoaderData } from '@/types/loaderData';
 import { formatHash, formatMoney } from '@/utils/formatter';
 
 interface InfoCardsProps {
+  nextFetchRecentBlocksIndex: number;
+  setNextFetchRecentBlocksIndex: React.Dispatch<React.SetStateAction<number>>;
   recentBlocks: BlocksInfoItem[];
   setRecentBlocks: React.Dispatch<React.SetStateAction<BlocksInfoItem[]>>;
 }
 
 export default function InfoCards(props: InfoCardsProps) {
-  const { recentBlocks, setRecentBlocks } = props;
+  const { nextFetchRecentBlocksIndex, setNextFetchRecentBlocksIndex, recentBlocks, setRecentBlocks } = props;
   const loaderData = useLoaderData() as HomeLoaderData;
+
+  const [isFetchingMoreRecentBlocks, setIsLoadingMoreRecentBlocks] = useState(false);
 
   function getNetworkStatus(): InfoListHealth {
     if (loaderData.network?.health.status === 'UP') {
@@ -47,17 +52,25 @@ export default function InfoCards(props: InfoCardsProps) {
     number: i + 1
   }));
 
-  const fetchMoreRecentBlocks = () => {
+  const fetchMoreRecentBlocks = async () => {
     if (!recentBlocks) {
       return;
     }
 
-    // TODO: From api
-    const data: HomeLoaderData.Blocks.Block[] = [];
+    setIsLoadingMoreRecentBlocks(true);
+    const { data } = await axios.get<HomeLoaderData.Blocks>(`${baseUrl}/information/blocks?blockNumIndex=${nextFetchRecentBlocksIndex}`);
+
+    if (!data.blocks[0].number) {
+      return;
+    }
+
+    setNextFetchRecentBlocksIndex(data.blocks[0].number);
 
     // concat data from api in the end of list since it would be the 'previous' data
     setRecentBlocks((recentBlocks: BlocksInfoItem[]) => {
-      return uniqReplaceByName(recentBlocks, getSortedRecentBlocks(data));
+      const newRecentBlocks = uniqReplaceByName(recentBlocks, getSortedRecentBlocks(data.blocks));
+      setIsLoadingMoreRecentBlocks(false);
+      return newRecentBlocks;
     });
   };
 
@@ -86,7 +99,13 @@ export default function InfoCards(props: InfoCardsProps) {
 
       <div className='grid grid-cols-1 llg:grid-cols-2 gap-6'>
         <Card className='max-w-[565px]'>
-          <BlocksInfo title='Recent Blocks' data={recentBlocks} fetchMoreData={fetchMoreRecentBlocks} enableInfinite />
+          <BlocksInfo
+            title='Recent Blocks'
+            data={recentBlocks}
+            fetchMoreData={fetchMoreRecentBlocks}
+            isFetchingMoreRecentBlocks={isFetchingMoreRecentBlocks}
+            enableInfinite
+          />
         </Card>
         {<Card className='max-w-[565px]'>
           <BlocksInfo title='Master Nodes' data={masterNodes} />

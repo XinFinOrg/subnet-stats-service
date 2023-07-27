@@ -88,6 +88,7 @@ export default function HomePage() {
   const [subnetBlocks, setSubnetBlocks] = useState<Block[]>(getBlocks(loaderData.blocks?.subnet.latestMinedBlock.number, loaderData.blocks?.subnet.latestCommittedBlock.number, blockNumber));
   const [parentBlocks, setParentBlocks] = useState<Block[]>(getBlocks(loaderData.blocks?.checkpoint.latestSubmittedSubnetBlock.number, loaderData.blocks?.checkpoint.latestCommittedSubnetBlock.number, blockNumber));
   const [recentBlocks, setRecentBlocks] = useState<BlocksInfoItem[]>(getSortedRecentBlocks(loaderData.blocks?.blocks));
+  const [nextFetchRecentBlocksIndex, setNextFetchRecentBlocksIndex] = useState(loaderData.blocks ? loaderData.blocks.subnet.latestMinedBlock.number - 50 : 0);
   const { currentUnixTime } = useContext(TimeContext);
 
   useEffect(() => {
@@ -119,7 +120,11 @@ export default function HomePage() {
         subnetBlocks={subnetBlocks}
         parentBlocks={parentBlocks}
       />
-      <InfoCards recentBlocks={recentBlocks} setRecentBlocks={setRecentBlocks} />
+      <InfoCards
+        nextFetchRecentBlocksIndex={nextFetchRecentBlocksIndex}
+        setNextFetchRecentBlocksIndex={setNextFetchRecentBlocksIndex}
+        recentBlocks={recentBlocks}
+        setRecentBlocks={setRecentBlocks} />
     </div>
   );
 }

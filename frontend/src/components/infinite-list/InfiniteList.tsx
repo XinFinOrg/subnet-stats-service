@@ -5,9 +5,10 @@ import { BlocksInfoItem } from '@/components/blocks-info/blocks-info-item/Blocks
 interface InfiniteListProps extends PropsWithChildren {
   data: BlocksInfoItem[];
   fetchData: () => void;
+  isFetchingMoreRecentBlocks?: boolean;
 }
 
-export default function InfiniteList({ fetchData, children }: InfiniteListProps) {
+export default function InfiniteList({ fetchData, children, isFetchingMoreRecentBlocks }: InfiniteListProps) {
   const observerTarget = useRef(null);
 
   useEffect(() => {
@@ -15,7 +16,7 @@ export default function InfiniteList({ fetchData, children }: InfiniteListProps)
 
     const observer = new IntersectionObserver(
       entries => {
-        if (entries[0].isIntersecting) {
+        if (entries[0].isIntersecting && !isFetchingMoreRecentBlocks) {
           fetchData();
         }
       },
@@ -31,13 +32,16 @@ export default function InfiniteList({ fetchData, children }: InfiniteListProps)
         observer.unobserve(currentTarget);
       }
     };
-  }, [fetchData, observerTarget]);
+  }, [fetchData, observerTarget, isFetchingMoreRecentBlocks]);
 
   return (
     <>
       {children}
+      {isFetchingMoreRecentBlocks && (
+        <div className='text-bg-dark-800 dark:text-white p-5 pl-0'>Loading more data...</div>
+      )}
       <div ref={observerTarget}></div>
-      {/* An extra div is essential for infinitely scrolling */}
+      {/* The following extra div is essential for infinitely scrolling */}
       <div className='dark:text-bg-dark-800 text-white'>End of list</div>
     </ >
   );

@@ -1,5 +1,5 @@
 import {
-  BlockCell, BlocksInfoItem
+    BlockCell, BlocksInfoItem
 } from '@/components/blocks-info/blocks-info-item/BlocksInfoItem';
 import { cellWith } from '@/components/blocks-info/constants';
 import { MasterNodeTitle } from '@/components/blocks-info/master-node-title/MasterNodeTitle';
@@ -14,9 +14,10 @@ interface BlocksInfoProps {
   data?: BlocksInfoItem[];
   fetchMoreData?: () => void;
   enableInfinite?: boolean;
+  isFetchingMoreRecentBlocks?: boolean;
 }
 
-export default function BlocksInfo({ title, data, fetchMoreData }: BlocksInfoProps) {
+export default function BlocksInfo({ title, data, fetchMoreData, isFetchingMoreRecentBlocks }: BlocksInfoProps) {
   if (!data || !data.length) {
     return <ErrorState title={title} />;
   }
@@ -32,7 +33,7 @@ export default function BlocksInfo({ title, data, fetchMoreData }: BlocksInfoPro
         <>
           <BlocksInfoHeading type={data[0].type} />
           {fetchMoreData ? (
-            <InfiniteList data={data} fetchData={fetchMoreData}>
+            <InfiniteList data={data} fetchData={fetchMoreData} isFetchingMoreRecentBlocks={isFetchingMoreRecentBlocks}>
               <BlocksInfoItems data={data} title={title} />
             </InfiniteList>
           ) : (
