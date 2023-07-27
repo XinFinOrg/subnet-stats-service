@@ -5,11 +5,12 @@ import { BlocksInfoItem } from '@/components/blocks-info/blocks-info-item/Blocks
 interface InfiniteListProps extends PropsWithChildren {
   data: BlocksInfoItem[];
   fetchData: () => void;
-  isFetchingMoreRecentBlocks?: boolean;
-  isReachApiEndOfRecentBlocks?: boolean;
+  isLoading?: boolean;
+  isFetchingMore?: boolean;
+  isReachApiEnd?: boolean;
 }
 
-export default function InfiniteList({ fetchData, children, isFetchingMoreRecentBlocks, isReachApiEndOfRecentBlocks }: InfiniteListProps) {
+export default function InfiniteList({ fetchData, children, isFetchingMore, isReachApiEnd, isLoading }: InfiniteListProps) {
   const observerTarget = useRef(null);
 
   useEffect(() => {
@@ -17,7 +18,7 @@ export default function InfiniteList({ fetchData, children, isFetchingMoreRecent
 
     const observer = new IntersectionObserver(
       entries => {
-        if (entries[0].isIntersecting && !isFetchingMoreRecentBlocks) {
+        if (entries[0].isIntersecting && !isFetchingMore) {
           fetchData();
         }
       },
@@ -33,15 +34,21 @@ export default function InfiniteList({ fetchData, children, isFetchingMoreRecent
         observer.unobserve(currentTarget);
       }
     };
-  }, [fetchData, observerTarget, isFetchingMoreRecentBlocks]);
+  }, [fetchData, observerTarget, isFetchingMore]);
+
+  if (isLoading) {
+    return (
+      <div className='pt-20 text-center'>Loading...</div>
+    );
+  }
 
   return (
     <>
       {children}
-      {(isReachApiEndOfRecentBlocks || isFetchingMoreRecentBlocks) && (
+      {(isReachApiEnd || isFetchingMore) && (
         <div className='text-bg-dark-800 dark:text-white p-5 pl-0'>
-          {isFetchingMoreRecentBlocks && <>Loading more data...</>}
-          {isReachApiEndOfRecentBlocks && <>The end of list...</>}
+          {isFetchingMore && <>Loading more data...</>}
+          {isReachApiEnd && <>The end of list...</>}
         </div>
       )}
       <div ref={observerTarget}></div>

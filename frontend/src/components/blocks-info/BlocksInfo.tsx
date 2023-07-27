@@ -1,24 +1,27 @@
 import {
-  BlockCell, BlocksInfoItem
+    BlockCell, BlocksInfoItem
 } from '@/components/blocks-info/blocks-info-item/BlocksInfoItem';
 import { cellWith } from '@/components/blocks-info/constants';
 import { MasterNodeTitle } from '@/components/blocks-info/master-node-title/MasterNodeTitle';
+import RecentBlocksTitle from '@/components/blocks-info/recent-blocks-title/RecentBlocksTitle';
 import ErrorState from '@/components/error-state/ErrorState';
 import InfiniteList from '@/components/infinite-list/InfiniteList';
-import Title from '@/components/title/Title';
 
 // import Tooltip from '@/components/tooltip/Tooltip';
 
 interface BlocksInfoProps {
   title: string;
   data?: BlocksInfoItem[];
+  setData?: React.Dispatch<React.SetStateAction<BlocksInfoItem[]>>;
   fetchMoreData?: () => void;
   enableInfinite?: boolean;
-  isFetchingMoreRecentBlocks?: boolean;
-  isReachApiEndOfRecentBlocks?: boolean;
+  isFetchingMore?: boolean;
+  isReachApiEnd?: boolean;
+  isLoading?: boolean;
+  setIsLoading?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export default function BlocksInfo({ title, data, fetchMoreData, isFetchingMoreRecentBlocks, isReachApiEndOfRecentBlocks }: BlocksInfoProps) {
+export default function BlocksInfo({ title, data, setData, fetchMoreData, isFetchingMore, isReachApiEnd, isLoading, setIsLoading }: BlocksInfoProps) {
   if (!data || !data.length) {
     return <ErrorState title={title} />;
   }
@@ -28,7 +31,11 @@ export default function BlocksInfo({ title, data, fetchMoreData, isFetchingMoreR
       {(title === 'Master Nodes') ? (
         <MasterNodeTitle title={title} />
       ) : (
-        <Title title={title} />
+        <RecentBlocksTitle
+          title={title}
+          setData={setData}
+          setIsLoading={setIsLoading}
+        />
       )}
       <div className='mt-0 h-[400px] overflow-hidden hover:overflow-auto relative dark:text-text-dark-100'>
         <>
@@ -37,8 +44,9 @@ export default function BlocksInfo({ title, data, fetchMoreData, isFetchingMoreR
             <InfiniteList
               data={data}
               fetchData={fetchMoreData}
-              isFetchingMoreRecentBlocks={isFetchingMoreRecentBlocks}
-              isReachApiEndOfRecentBlocks={isReachApiEndOfRecentBlocks}
+              isFetchingMore={isFetchingMore}
+              isReachApiEnd={isReachApiEnd}
+              isLoading={isLoading}
             >
               <BlocksInfoItems data={data} title={title} />
             </InfiniteList>

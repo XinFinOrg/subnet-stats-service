@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useLoaderData } from 'react-router-dom';
 
 import {
-    BlocksInfoItem, MasterNode
+  BlocksInfoItem, MasterNode
 } from '@/components/blocks-info/blocks-info-item/BlocksInfoItem';
 import BlocksInfo from '@/components/blocks-info/BlocksInfo';
 import Card from '@/components/card/Card';
@@ -19,10 +19,19 @@ interface InfoCardsProps {
   setNextFetchRecentBlocksIndex: React.Dispatch<React.SetStateAction<number>>;
   recentBlocks: BlocksInfoItem[];
   setRecentBlocks: React.Dispatch<React.SetStateAction<BlocksInfoItem[]>>;
+  isLoadingRecentBlocks: boolean;
+  setIsLoadingRecentBlocks: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function InfoCards(props: InfoCardsProps) {
-  const { nextFetchRecentBlocksIndex, setNextFetchRecentBlocksIndex, recentBlocks, setRecentBlocks } = props;
+  const {
+    nextFetchRecentBlocksIndex
+    , setNextFetchRecentBlocksIndex
+    , recentBlocks
+    , setRecentBlocks
+    , isLoadingRecentBlocks
+    , setIsLoadingRecentBlocks
+  } = props;
   const loaderData = useLoaderData() as HomeLoaderData;
 
   const [veryFirstSubnetBlock] = useState(loaderData.blocks?.blocks[0].number);
@@ -112,9 +121,12 @@ export default function InfoCards(props: InfoCardsProps) {
           <BlocksInfo
             title='Recent Blocks'
             data={recentBlocks}
+            setData={setRecentBlocks}
             fetchMoreData={fetchMoreRecentBlocks}
-            isReachApiEndOfRecentBlocks={isReachApiEndOfRecentBlocks}
-            isFetchingMoreRecentBlocks={isFetchingMoreRecentBlocks}
+            isReachApiEnd={isReachApiEndOfRecentBlocks}
+            isFetchingMore={isFetchingMoreRecentBlocks}
+            isLoading={isLoadingRecentBlocks}
+            setIsLoading={setIsLoadingRecentBlocks}
             enableInfinite
           />
         </Card>

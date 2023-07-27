@@ -7,8 +7,8 @@ import { BlocksInfoItem } from '@/components/blocks-info/blocks-info-item/Blocks
 import InfoCards from '@/components/info-cards/InfoCards';
 import BlockCards from '@/components/info-list/components/block-cards/BlockCards';
 import {
-    BlockSizeWithGap, FakedConfirmedBlockNumber, FakedNotConfirmedBlockNumber,
-    StandardScreenBlockNumber, WideScreenBlockNumber
+  BlockSizeWithGap, FakedConfirmedBlockNumber, FakedNotConfirmedBlockNumber,
+  StandardScreenBlockNumber, WideScreenBlockNumber
 } from '@/constants/config';
 import { baseUrl } from '@/constants/urls';
 import { TimeContext } from '@/contexts/TimeContext';
@@ -88,6 +88,7 @@ export default function HomePage() {
   const [subnetBlocks, setSubnetBlocks] = useState<Block[]>(getBlocks(loaderData.blocks?.subnet.latestMinedBlock.number, loaderData.blocks?.subnet.latestCommittedBlock.number, blockNumber));
   const [parentBlocks, setParentBlocks] = useState<Block[]>(getBlocks(loaderData.blocks?.checkpoint.latestSubmittedSubnetBlock.number, loaderData.blocks?.checkpoint.latestCommittedSubnetBlock.number, blockNumber));
   const [recentBlocks, setRecentBlocks] = useState<BlocksInfoItem[]>(getSortedRecentBlocks(loaderData.blocks?.blocks));
+  const [isLoadingRecentBlocks, setIsLoadingRecentBlocks] = useState(false);
   const [nextFetchRecentBlocksIndex, setNextFetchRecentBlocksIndex] = useState(loaderData.blocks ? loaderData.blocks.subnet.latestMinedBlock.number - 50 : 0);
   const { currentUnixTime } = useContext(TimeContext);
 
@@ -124,7 +125,10 @@ export default function HomePage() {
         nextFetchRecentBlocksIndex={nextFetchRecentBlocksIndex}
         setNextFetchRecentBlocksIndex={setNextFetchRecentBlocksIndex}
         recentBlocks={recentBlocks}
-        setRecentBlocks={setRecentBlocks} />
+        setRecentBlocks={setRecentBlocks}
+        isLoadingRecentBlocks={isLoadingRecentBlocks}
+        setIsLoadingRecentBlocks={setIsLoadingRecentBlocks}
+      />
     </div>
   );
 }
