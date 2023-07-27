@@ -47,8 +47,8 @@ export default function InfiniteList({ fetchData, children, isFetchingMore, isRe
       {children}
       {(isReachApiEnd || isFetchingMore) && (
         <div className='text-bg-dark-800 dark:text-white p-5 pl-0'>
-          {isFetchingMore && <>Loading more data...</>}
-          {isReachApiEnd && <>The end of list...</>}
+          {isFetchingMore && !isReachApiEnd && <>Loading more data...</>}
+          {isReachApiEnd && <>The end of list</>}
         </div>
       )}
       <div ref={observerTarget}></div>
