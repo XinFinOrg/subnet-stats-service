@@ -7,8 +7,8 @@ import { BlocksInfoItem } from '@/components/blocks-info/blocks-info-item/Blocks
 import InfoCards from '@/components/info-cards/InfoCards';
 import BlockCards from '@/components/info-list/components/block-cards/BlockCards';
 import {
-  BlockSizeWithGap, FakedConfirmedBlockNumber, FakedNotConfirmedBlockNumber,
-  StandardScreenBlockNumber, WideScreenBlockNumber
+    BlockSizeWithGap, FakedConfirmedBlockNumber, FakedNotConfirmedBlockNumber,
+    StandardScreenBlockNumber, WideScreenBlockNumber
 } from '@/constants/config';
 import { baseUrl } from '@/constants/urls';
 import { TimeContext } from '@/contexts/TimeContext';

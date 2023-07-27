@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useLoaderData } from 'react-router-dom';
 
 import {
-  BlocksInfoItem, MasterNode
+    BlocksInfoItem, MasterNode
 } from '@/components/blocks-info/blocks-info-item/BlocksInfoItem';
 import BlocksInfo from '@/components/blocks-info/BlocksInfo';
 import Card from '@/components/card/Card';
@@ -25,7 +25,9 @@ export default function InfoCards(props: InfoCardsProps) {
   const { nextFetchRecentBlocksIndex, setNextFetchRecentBlocksIndex, recentBlocks, setRecentBlocks } = props;
   const loaderData = useLoaderData() as HomeLoaderData;
 
+  const [veryFirstSubnetBlock] = useState(loaderData.blocks?.blocks[0].number);
   const [isFetchingMoreRecentBlocks, setIsLoadingMoreRecentBlocks] = useState(false);
+  const [isReachApiEndOfRecentBlocks, setIsReachApiEndOfRecentBlocks] = useState(false);
 
   function getNetworkStatus(): InfoListHealth {
     if (loaderData.network?.health.status === 'UP') {
@@ -53,23 +55,31 @@ export default function InfoCards(props: InfoCardsProps) {
   }));
 
   const fetchMoreRecentBlocks = async () => {
-    if (!recentBlocks) {
+    if (!recentBlocks || !veryFirstSubnetBlock) {
       return;
     }
 
     setIsLoadingMoreRecentBlocks(true);
     const { data } = await axios.get<HomeLoaderData.Blocks>(`${baseUrl}/information/blocks?blockNumIndex=${nextFetchRecentBlocksIndex}`);
 
-    if (!data.blocks[0].number) {
+    const firstBlockNumber = data.blocks[0].number;
+
+    if (!firstBlockNumber) {
       return;
     }
 
-    setNextFetchRecentBlocksIndex(data.blocks[0].number);
+    setNextFetchRecentBlocksIndex(firstBlockNumber);
 
     // concat data from api in the end of list since it would be the 'previous' data
     setRecentBlocks((recentBlocks: BlocksInfoItem[]) => {
       const newRecentBlocks = uniqReplaceByName(recentBlocks, getSortedRecentBlocks(data.blocks));
       setIsLoadingMoreRecentBlocks(false);
+
+      // Reach API limit
+      if (veryFirstSubnetBlock - firstBlockNumber >= 251) {
+        setIsReachApiEndOfRecentBlocks(true);
+      }
+
       return newRecentBlocks;
     });
   };
@@ -103,6 +113,7 @@ export default function InfoCards(props: InfoCardsProps) {
             title='Recent Blocks'
             data={recentBlocks}
             fetchMoreData={fetchMoreRecentBlocks}
+            isReachApiEndOfRecentBlocks={isReachApiEndOfRecentBlocks}
             isFetchingMoreRecentBlocks={isFetchingMoreRecentBlocks}
             enableInfinite
           />
@@ -114,6 +125,7 @@ export default function InfoCards(props: InfoCardsProps) {
     </>
   );
 }
+
 function getMappedInfo(loaderData: HomeLoaderData, getNetworkStatus: () => InfoListHealth, getRelayerStatus: () => InfoListHealth): Info {
   const info: Info = {};
 

@@ -6,9 +6,10 @@ interface InfiniteListProps extends PropsWithChildren {
   data: BlocksInfoItem[];
   fetchData: () => void;
   isFetchingMoreRecentBlocks?: boolean;
+  isReachApiEndOfRecentBlocks?: boolean;
 }
 
-export default function InfiniteList({ fetchData, children, isFetchingMoreRecentBlocks }: InfiniteListProps) {
+export default function InfiniteList({ fetchData, children, isFetchingMoreRecentBlocks, isReachApiEndOfRecentBlocks }: InfiniteListProps) {
   const observerTarget = useRef(null);
 
   useEffect(() => {
@@ -37,12 +38,15 @@ export default function InfiniteList({ fetchData, children, isFetchingMoreRecent
   return (
     <>
       {children}
-      {isFetchingMoreRecentBlocks && (
-        <div className='text-bg-dark-800 dark:text-white p-5 pl-0'>Loading more data...</div>
+      {(isReachApiEndOfRecentBlocks || isFetchingMoreRecentBlocks) && (
+        <div className='text-bg-dark-800 dark:text-white p-5 pl-0'>
+          {isFetchingMoreRecentBlocks && <>Loading more data...</>}
+          {isReachApiEndOfRecentBlocks && <>The end of list...</>}
+        </div>
       )}
       <div ref={observerTarget}></div>
       {/* The following extra div is essential for infinitely scrolling */}
-      <div className='dark:text-bg-dark-800 text-white'>End of list</div>
+      <div className='dark:text-bg-dark-800 text-white'>Detection helper</div>
     </ >
   );
 }
