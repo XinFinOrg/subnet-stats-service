@@ -13,7 +13,7 @@ import {
 import { baseUrl } from '@/constants/urls';
 import { TimeContext } from '@/contexts/TimeContext';
 import { useWindowWidth } from '@/hooks/useMediaQuery';
-import { getSortedRecentBlocks } from '@/pages/utils/BlockHelper';
+import { getSortedRecentBlocks } from '@/utils/blockHelper';
 
 import type { HomeLoaderData } from '@/types/loaderData';
 function getBlockNumber(windowWidth: number) {

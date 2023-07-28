@@ -4,8 +4,8 @@ import { BlocksInfoItem } from '@/components/blocks-info/blocks-info-item/Blocks
 import Svg, { SvgNames } from '@/components/images/Svg';
 import Title from '@/components/title/Title';
 import { baseUrl } from '@/constants/urls';
-import { getSortedRecentBlocks } from '@/pages/utils/BlockHelper';
 import { HomeLoaderData } from '@/types/loaderData';
+import { getSortedRecentBlocks } from '@/utils/blockHelper';
 
 interface RecentBlocksTitleProps {
   title: string;
