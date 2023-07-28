@@ -3,13 +3,16 @@ import { useLoaderData, useLocation } from 'react-router-dom';
 
 import CheckerImage from '@/components/images/CheckerImage';
 import HouseImage from '@/components/images/HouseImage';
+import ManagementImage from '@/components/images/ManagementImage';
+import ManagementLoginImage from '@/components/images/ManagementLoginImage';
+import ManagementMasterCommitteeImage from '@/components/images/ManagementMasterCommitteeImage';
 import Svg, { SvgNames } from '@/components/images/Svg';
-import NavItem from '@/components/nav-item/NavItem';
+import { NavItem, NavItemParent } from '@/components/nav-item/NavItem';
 import ThemeSwitch from '@/components/theme-switch/ThemeSwitch';
 import { useIsDesktop, useIsDesktopL } from '@/hooks/useMediaQuery';
 
 import type { AppLoaderData } from '@/types/loaderData';
-export type Pages = 'home' | 'checker' | 'management';
+export type Page = 'home' | 'checker' | 'managementLogin' | 'managementMasterCommittee';
 
 export default function Nav(): JSX.Element {
   const loaderData = useLoaderData() as AppLoaderData;
@@ -73,6 +76,8 @@ interface BaseNavItemsProps extends PropsWithChildren {
 }
 
 function BaseNavItems({ name, children }: BaseNavItemsProps) {
+  const [isManagementGroupOpen, setIsManagementGroupOpen] = useState(false);
+
   return (
     <>
       <div className='flex items-center flex-col border-text-white dark:border-border-light'>
@@ -86,7 +91,22 @@ function BaseNavItems({ name, children }: BaseNavItemsProps) {
       </div>
       <NavItem Image={HouseImage} text='Home' className='pt-2' page='home' />
       <NavItem Image={CheckerImage} text='Confirmation Checker' page='checker' />
-      {/* <NavItem Image={ManagementImage} text='Management' page='management' /> */}
+
+      {/* Management group */}
+      <NavItemParent
+        Image={ManagementImage}
+        text='Management'
+        isParentGroupOpen={isManagementGroupOpen}
+        setIsParentGroupOpen={setIsManagementGroupOpen}
+      />
+      {isManagementGroupOpen && (
+        <div className='pl-7'>
+          <div className='border-l-4 border-text-dark-400/50'>
+            <NavItem Image={ManagementLoginImage} text='Login' page='managementLogin' />
+            <NavItem Image={ManagementMasterCommitteeImage} text='Master Committee' page='managementMasterCommittee' />
+          </div>
+        </div>
+      )}
     </>
   );
 }

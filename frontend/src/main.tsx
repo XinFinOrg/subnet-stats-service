@@ -75,7 +75,10 @@ const router = createBrowserRouter([
       path: 'checker/:id',
       element: <CheckerPage />,
     }, {
-      path: 'management',
+      path: 'managementLogin',
+      element: <ManagementPage />,
+    }, {
+      path: 'managementMasterCommittee',
       element: <ManagementPage />,
     }, {
       path: '*',

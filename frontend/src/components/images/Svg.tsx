@@ -16,6 +16,7 @@ import Logo from '@/assets/xdc-logo.svg';
 
 interface GeneralSvgProps {
   colour: string;
+  strokeColour?: string;
 }
 
 function Fallback({ colour }: GeneralSvgProps) {
@@ -60,13 +61,29 @@ function Copy({ colour }: GeneralSvgProps) {
   );
 }
 
+function Arrow({ strokeColour }: GeneralSvgProps) {
+  return (
+    <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" transform="rotate(180)">
+      <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+      <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
+      <g id="SVGRepo_iconCarrier">
+        <path
+          d="M5 15L10 9.84985C10.2563 9.57616 10.566 9.35814 10.9101 9.20898C11.2541 9.05983 11.625 8.98291 12 8.98291C12.375 8.98291 12.7459 9.05983 13.0899 9.20898C13.434 9.35814 13.7437 9.57616 14 9.84985L19 15"
+          className={strokeColour} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        </path>
+      </g>
+    </svg>
+  );
+}
+
 interface InlineSvgProps {
   svgName: InlineSvgNames;
   colour?: InlineSvgColours;
+  strokeColour?: InlineSvgStrokeColours;
   className?: string;
 }
 
-export function InlineSvg({ svgName, colour, className }: InlineSvgProps) {
+export function InlineSvg({ svgName, colour, className, strokeColour }: InlineSvgProps) {
   let SvgComponent: (props: GeneralSvgProps) => JSX.Element;
 
   switch (svgName) {
@@ -82,10 +99,23 @@ export function InlineSvg({ svgName, colour, className }: InlineSvgProps) {
       SvgComponent = Copy;
       break;
 
+    case InlineSvgNames.Arrow:
+      SvgComponent = Arrow;
+      break;
+
     default:
       SvgComponent = Fallback;
       break;
 
+  }
+
+  let strokeColourClass = '';
+
+  switch (strokeColour) {
+    case (InlineSvgStrokeColours.Default): {
+      strokeColourClass = 'stroke-text-dark-600 dark:stroke-text-white';
+      break;
+    }
   }
 
   let fillColour = '';
@@ -103,15 +133,11 @@ export function InlineSvg({ svgName, colour, className }: InlineSvgProps) {
       fillColour = 'fill-text-white';
       break;
     }
-    default: {
-      console.debug('warning: define fill colour');
-      break;
-    }
   }
 
   return (
     <div className={className ? className : ''}>
-      <SvgComponent colour={fillColour} />
+      <SvgComponent colour={fillColour} strokeColour={strokeColourClass} />
     </div>
   );
 }
@@ -228,10 +254,15 @@ export enum InlineSvgColours {
   White = 'White',
 }
 
+export enum InlineSvgStrokeColours {
+  Default = 'Default',
+}
+
 export enum InlineSvgNames {
   Moon = 'Moon',
   Sun = 'Sun',
   Copy = 'Copy',
+  Arrow = 'Arrow',
 }
 
 export enum SvgNames {
