@@ -1,6 +1,6 @@
 import { NavLink } from 'react-router-dom';
 
-import { InlineSvg, InlineSvgNames, InlineSvgStrokeColours } from '@/components/images/Svg';
+import { InlineSvg, InlineSvgColours, InlineSvgNames } from '@/components/images/Svg';
 import { Page } from '@/components/nav/Nav';
 
 export interface NavImageProps {
@@ -32,8 +32,8 @@ export function NavItemParent({ text, Image, isParentGroupOpen, setIsParentGroup
         </div>
         <InlineSvg
           svgName={InlineSvgNames.Arrow}
-          className={`${isParentGroupOpen ? 'rotate-180' : ''} transition-transform ease`}
-          strokeColour={InlineSvgStrokeColours.Default}
+          className={`${isParentGroupOpen ? '' : 'rotate-180'} transition-transform ease`}
+          colour={InlineSvgColours.Default}
         />
       </div>
     </button>
