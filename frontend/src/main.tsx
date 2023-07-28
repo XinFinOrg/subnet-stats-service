@@ -7,7 +7,7 @@ import { baseUrl } from '@/constants/urls.ts';
 import CheckerPage from '@/pages/CheckerPage.tsx';
 import ErrorPage from '@/pages/ErrorPage.tsx';
 import HomePage from '@/pages/HomePage.tsx';
-import ManagementLoginPage from '@/pages/ManagementLoginPage.tsx';
+import ManagementLoginPage from '@/pages/management-login-page/ManagementLoginPage.tsx';
 import ManagementMasterCommitteePage from '@/pages/ManagementMasterCommitteePage.tsx';
 
 import App from './App.tsx';

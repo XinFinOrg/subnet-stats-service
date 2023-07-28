@@ -7,7 +7,11 @@ import InfoList from '@/components/info-list/InfoList';
 
 import type { InfoListInfo } from '@/types/info';
 
-export default function ManagementLoginPage() {
+interface LoginErrorProps {
+  errorState: number;
+}
+
+export default function LoginError({ errorState }: LoginErrorProps) {
   const networkInfo = {
     data: [
       { name: 'Network ID:', value: 'tXDC' },
@@ -19,11 +23,7 @@ export default function ManagementLoginPage() {
   return (
     <>
       <h1 className='text-2xl font-extrabold'>Login in Portal</h1>
-      <Card className='mt-8 text-lg'>
-        Metamask not installed. Please
-        <NavLink className='dark:bg-primary bg-primary-300 rounded-3xl px-2 py-[2px] mx-1' to={'/installMetaMask'}>click here</NavLink>
-        to install Metamask, and then follow the instructions below to login
-      </Card>
+      <ErrorStateCard errorState={errorState} />
       <Card className='mt-8'>
         <div className='text-2xl font-bold border-b dark:border-text-dark-600 border-text-white-600 py-4'>
           <h2 className='pl-4'>How to Log In correctly?</h2>
@@ -61,5 +61,22 @@ function ManagementLoginPageNetworkInfo({ className, info }: ManagementLoginPage
     <div className={twMerge(className, 'w-[300px] mt-8')}>
       <InfoList info={info} noIcon />
     </div>
+  );
+}
+
+interface ErrorStateCardProps {
+  errorState: number;
+}
+
+function ErrorStateCard({ errorState }: ErrorStateCardProps) {
+  // TODO:
+  errorState;
+
+  return (
+    <Card className='mt-8 text-lg'>
+      Metamask not installed. Please
+      <NavLink className='dark:bg-primary bg-primary-300 rounded-3xl px-2 py-[2px] mx-1' to={'/installMetaMask'}>click here</NavLink>
+      to install Metamask, and then follow the instructions below to login
+    </Card>
   );
 }
