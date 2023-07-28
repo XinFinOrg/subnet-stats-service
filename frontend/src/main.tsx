@@ -8,7 +8,7 @@ import CheckerPage from '@/pages/CheckerPage.tsx';
 import ErrorPage from '@/pages/ErrorPage.tsx';
 import HomePage from '@/pages/HomePage.tsx';
 import ManagementLoginPage from '@/pages/management-login-page/ManagementLoginPage.tsx';
-import ManagementMasterCommitteePage from '@/pages/ManagementMasterCommitteePage.tsx';
+import ManagementMasterCommitteePage from '@/pages/management-master-committee-page/ManagementMasterCommitteePage.tsx';
 
 import App from './App.tsx';
 

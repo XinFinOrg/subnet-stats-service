@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+import Button from '@/components/button/Button';
 import Card from '@/components/card/Card';
 import InfoList from '@/components/info-list/InfoList';
 import LoginError from '@/pages/management-login-page/components/LoginError';
@@ -38,14 +39,14 @@ export default function ManagementLoginPage() {
             <div>
               <InfoList info={walletInfo} noIcon />
             </div>
-            <button className='self-end font-bold mt-6 rounded-3xl dark:bg-primary bg-primary-200 py-1.5 px-6'>Redeem</button>
+            <Button variant='submit' className='self-end mt-6'>Redeem</Button>
           </div>
           <div>
             <InfoList info={networkInfo} noIcon />
           </div>
         </div>
         <div className='border-t border-text-dark-400 col-2 mt-6'>
-          <button className='mt-6 font-bold rounded-3xl dark:bg-bg-dark-600 bg-text-white-300 py-1.5 px-6'>Log out</button>
+          <Button variant='action' className='mt-6 '>Log out</Button>
         </div>
       </Card>
     </>
