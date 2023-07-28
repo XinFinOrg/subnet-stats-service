@@ -78,7 +78,8 @@ export default {
         '2xl': ['26px']
       },
       transition: {
-        'left': 'left'
+        'left': 'left',
+        'height': 'height'
       },
       aspectRatio: {
         '4/3': '4 / 3',
