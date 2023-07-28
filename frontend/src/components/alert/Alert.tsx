@@ -7,7 +7,7 @@ export default function Alert() {
 
   return show ?
     (
-      <div className='px-5 p-3 fixed right-0 left-0 w-[100px] m-auto top-5 dark:bg-primary bg-slate-200 rounded-xl'>
+      <div className='px-5 p-3 fixed z-[100] right-0 left-0 w-[100px] m-auto top-5 dark:bg-primary bg-slate-200 rounded-xl'>
         {alertText}
       </div>
     )

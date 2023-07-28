@@ -59,7 +59,7 @@ export default function InfoCards(props: InfoCardsProps) {
   const masterNodes = loaderData.masterNodes?.nodes?.map<MasterNode>((v, i: number) => ({
     ...v,
     type: 'master-node',
-    account: formatHash(v.address),
+    account: v.address,
     number: i + 1
   }));
 

@@ -29,7 +29,7 @@ export default function AlertProvider({ children }: AlertProviderProps) {
     setShow(true);
   }
 
-  function test() {
+  function hideAlert() {
     setAlertText('');
     setShow(false);
   }
@@ -45,7 +45,7 @@ export default function AlertProvider({ children }: AlertProviderProps) {
   }, [show]);
 
   return (
-    <AlertContext.Provider value={{ show, alertText, showAlert, hideAlert: test }}>
+    <AlertContext.Provider value={{ show, alertText, showAlert, hideAlert }}>
       {children}
     </AlertContext.Provider>
   );
