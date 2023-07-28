@@ -6,7 +6,7 @@ import { ThemeContext } from '@/contexts/ThemeContext';
 import styles from './error-state.module.scss';
 
 interface InfoListErrorProps {
-  title: string;
+  title?: string;
 }
 
 export default function ErrorState({ title }: InfoListErrorProps) {
@@ -16,7 +16,7 @@ export default function ErrorState({ title }: InfoListErrorProps) {
   return (
     <div className='h-[319px] bg-white dark:bg-bg-dark-800 rounded-b-3xl flex flex-col items-center justify-center'>
       <Svg svgName={svgName} className={`rounded-full ${styles.svgFilter}`} sizeClass='w-[75px] h-[75px]' />
-      <p className='dark:text-text-white text-text-dark text-xl pt-9'>Failed to load {title.toLowerCase()}</p>
+      <p className='dark:text-text-white text-text-dark text-xl pt-9'>Failed to load {title?.toLowerCase() ?? 'data'}</p>
     </div>
   );
 }
