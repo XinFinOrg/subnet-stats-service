@@ -17,10 +17,10 @@ export default function ManagementLoginPage() {
         <div className='text-2xl font-bold border-b dark:border-text-dark-600 border-text-white-600 py-4'>
           <h2 className='pl-6'>How to Log In correctly?</h2>
         </div>
-        <div className='mt-8 grid grid-cols-3 gap-6'>
-          <div><img className='p-5' src={XDCPlaceholder} alt='' /></div>
-          <div><img className='p-5' src={XDCPlaceholder} alt='' /></div>
-          <div><img className='p-5' src={XDCPlaceholder} alt='' /></div>
+        <div className='mt-8 grid gap-6 grid-cols-[repeat(auto-fill,minmax(330px,1fr))]'>
+          <ImagePlaceholder />
+          <ImagePlaceholder />
+          <ImagePlaceholder />
         </div>
         <p className='mt-8'>
           Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
@@ -33,6 +33,12 @@ export default function ManagementLoginPage() {
         </p>
       </Card>
     </>
+  );
+}
+
+function ImagePlaceholder() {
+  return (
+    <img loading='lazy' className='p-5' width='330' height='330' src={XDCPlaceholder} alt='placeholder' />
   );
 }
 
