@@ -1,6 +1,5 @@
-// import Web3 from 'web3';
-
-import { ErrorTypes, ManagerError } from '@/services/grandmaster-manager/errors';
+import Web3 from "web3";
+import { ErrorTypes, ManagerError } from "@/services/grandmaster-manager/errors";
 
 export interface AccountDetails {
   accountAddress: string;
@@ -20,62 +19,75 @@ export interface CandidateDetails {
 export type CandidateDetailsStatus = 'MASTERNODE' | 'PROPOSED' | 'SLASHED';
 
 export class GrandMasterManager {
-  // private _web3Client: any;
-
-  // public get web3Client() {
-  //   return this._web3Client;
-  // }
-
-  // public set web3Client(value) {
-  //   this._web3Client = value;
-  // }
-
-  // constructor() {
-  //   const win = window as any;
-  //   this.web3Client = new Web3(win.xdc ? win.xdc : win.ethereum);
-  // }
-
-  /**
-   * * This method will detect XDC-Pay and verify if customer has alraedy loggin.
-   * @returns Account details will be returned if all good, otherwise, relevant error message and type will be returned such as WALLET_NOT_LOGIN
-   */
-  async login(): Promise<AccountDetails | ManagerError> {
-    const mockError: ManagerError = {
-      errorStatus: 404,
-      errorType: ErrorTypes.NOT_GRANDMASTER
-    };
-    return mockError;
-
-    const chainId = 551;
+  private web3Client;
+  constructor() {
+    const win = window as any;
+    this.web3Client = new Web3(win.xdc ? win.xdc : win.ethereum);
+  }
+  
+  private isXdcWalletInstalled() {
+    if (this.web3Client.currentProvider && (window as any).xdc) {
+      return true;
+    }
+    return false;
+  }
+  
+  private async getAccountDetails() {
+    const accounts = await this.web3Client.eth.getAccounts();
+    if (!accounts || !accounts.length || !accounts[0].length) {
+      throw new Error("No wallet address found, have you logged in?");
+    }
+    const accountAddress = accounts[0];
+    const balance = await this.web3Client.eth.getBalance(accountAddress);
+    const networkId = await this.web3Client.eth.getChainId();
+    // TODO: Get denom, rpcAddress
     return {
-      accountAddress: "xdc888c073313b36cf03cf1f739f39443551ff12bbe",
-      balance: "123",
-      networkId: chainId,
-      denom: "hxdc",
-      rpcAddress: "https://devnetstats.apothem.network/subnet"
-    };
+      accountAddress, balance, networkId
+    }
+  }
+  
+  /**
+   * This method will detect XDC-Pay and verify if customer has alraedy loggin.
+   * @returns Account details will be returned if all good
+   * @throws ManagerError with type of "WALLET_NOT_INSTALLED" || "CONFLICT_WITH_METAMASK" || "WALLET_NOT_LOGIN"
+   */
+  async login(): Promise<AccountDetails> {
+    if (!this.isXdcWalletInstalled) {
+      throw new ManagerError("XDC Pay Not Installed", ErrorTypes.WALLET_NOT_INSTALLED)
+    }
+    if ((this.web3Client.currentProvider as any).chainId) {
+      throw new ManagerError("Metamask need to be disabled", ErrorTypes.CONFLICT_WITH_METAMASK)
+    }
+    
+    try {
+      const { accountAddress, balance, networkId } = await this.getAccountDetails();
+      return {
+        accountAddress,
+        balance,
+        networkId,
+        denom: "hxdc",
+        rpcAddress: "https://devnetstats.apothem.network/subnet"
+      }
+    } catch (err: any) {
+      throw new ManagerError(err.message, ErrorTypes.WALLET_NOT_LOGIN)
+    }
   }
 
   /**
    * Remove a masternode from the manager view list
    * @param address The master node to be removed
-   * @returns If transaction is successful, return. Otherwise, an error details will be returned
+   * @returns If transaction is successful, return. Otherwise, an error details will be thrown
    */
-  async removeMasterNode(_address: string): Promise<true | ManagerError> {
-    // const mockError: ManagerError = {
-    //   errorStatus: 1,
-    //   errorType: ErrorTypes.INTERNAL_ERROR
-    // };
-    // return mockError;
+  async removeMasterNode(address: string): Promise<true> {
     return true;
   }
 
   /**
    * Propose to add a new masternode for being a mining candidate from the next epoch
    * @param address The master node to be added
-   * @returns If transaction is successful, return. Otherwise, an error details will be returned
+   * @returns If transaction is successful, return. Otherwise, an error details will be thrown
    */
-  async addNewMasterNode(_address: string): Promise<true | ManagerError> {
+  async addNewMasterNode(address: string): Promise<true> {
     return true;
   }
 
@@ -83,9 +95,9 @@ export class GrandMasterManager {
    * Change the voting/ranking power/order of a particular masternode.
    * @param address The targeted masternode
    * @param value The xdc value that will be applied to the targeted address. Postive number means increase power, negative means decrease the power
-   * @returns If transaction is successful, return. Otherwise, an error details will be returned
+   * @returns If transaction is successful, return. Otherwise, an error details will be thrown
    */
-  async changeVote(_address: string, _value: number): Promise<true | ManagerError> {
+  async changeVote(address: string, value: number): Promise<true> {
     return true;
   }
 
