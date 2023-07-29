@@ -39,14 +39,14 @@ export default function ManagementLoginPage() {
             <div>
               <InfoList info={walletInfo} noIcon />
             </div>
-            <Button variant='submit' className='self-end mt-6'>Redeem</Button>
+            <Button colour='primary' className='self-end mt-6'>Redeem</Button>
           </div>
           <div>
             <InfoList info={networkInfo} noIcon />
           </div>
         </div>
         <div className='border-t border-text-dark-400 col-2 mt-6'>
-          <Button variant='action' className='mt-6 '>Log out</Button>
+          <Button colour='secondary' className='mt-6'>Log out</Button>
         </div>
       </Card>
     </>
