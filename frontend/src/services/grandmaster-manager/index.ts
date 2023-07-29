@@ -1,10 +1,19 @@
 import Web3 from "web3";
-import { ManagerError } from "./errors";
+import { ManagerError } from "@/services/grandmaster-manager/errors";
 
 interface AccountDetails {
   accountAddress: string;
   balance: string;
-  chainId: number;
+  networkId: number;
+  rpcAddress: string;
+  denom: string;
+}
+
+interface CandidateDetails {
+  address: string;
+  delegation: number;
+  rank: number;
+  status: 'MASTERNODE' | 'PROPOSED' | 'SLASHED'
 }
 
 
@@ -20,10 +29,13 @@ export class GrandMasterManager {
    * @returns Account details will be returned if all good, otherwise, relevant error message and type will be returned such as WALLET_NOT_LOGIN
    */
   async login(): Promise<AccountDetails | ManagerError> {
+    const chainId = 551;
     return {
       accountAddress: "xdc888c073313b36cf03cf1f739f39443551ff12bbe",
       balance: "123",
-      chainId: 551
+      networkId: chainId,
+      denom: "hxdc",
+      rpcAddress: "https://devnetstats.apothem.network/subnet"
     }
   }
   
@@ -72,29 +84,38 @@ export class GrandMasterManager {
    * 'PROPOSED' means it just been proposed, but waiting for have enough vote in order to be the masternode.
    * 'SLASHED' means it's been taken out from the masternode list
    */
-  async getCandidates(): Promise<{[address: string]: { capacity: number, status: 'MASTERNODE' | 'PROPOSED' | 'SLASHED'}}> {
-    return {
-      "xdc25B4CBb9A7AE13feadC3e9F29909833D19D16dE5": {
-        "capacity": 5e+22,
-        "status": "MASTERNODE"
+  async getCandidates(): Promise<CandidateDetails[]> {
+    return [
+      {
+        address: "xdc25B4CBb9A7AE13feadC3e9F29909833D19D16dE5",
+        delegation: 5e+22,
+        rank: 0,
+        status: "MASTERNODE"
       },
-      "xdc2af0Cacf84899F504a6dC95e6205547bDfe28c2c": {
-          "capacity": 5e+22,
-          "status": "MASTERNODE"
+      {
+        address: "xdc2af0Cacf84899F504a6dC95e6205547bDfe28c2c",
+        delegation: 5e+22,
+        rank: 1,
+        status: "MASTERNODE"
       },
-      "xdc30f21E514A66732DA5Dff95340624fa808048601": {
-          "capacity": 5e+22,
-          "status": "MASTERNODE"
+      {
+        address: "xdc30f21E514A66732DA5Dff95340624fa808048601",
+        delegation: 5e+22,
+        rank: 2,
+        status: "MASTERNODE"
       },
-      "xdc3C03a0aBaC1DA8f2f419a59aFe1c125F90B506c5": {
-          "capacity": 5e+22,
-          "status": "SLASHED"
+      {
+        address: "xdc3C03a0aBaC1DA8f2f419a59aFe1c125F90B506c5",
+        delegation: 5e+22,
+        rank: 3,
+        status: "PROPOSED"
       },
-      "xdc3D9fd0c76BB8B3B4929ca861d167f3e05926CB68": {
-          "capacity": 5e+22,
-          "status": "PROPOSED"
+      {
+        address: "xdc3D9fd0c76BB8B3B4929ca861d167f3e05926CB68",
+        delegation: 5e+22,
+        rank: 4,
+        status: "SLASHED"
       }
-    }
+    ];
   }
 }
-
