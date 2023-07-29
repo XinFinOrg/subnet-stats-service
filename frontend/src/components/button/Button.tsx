@@ -2,29 +2,87 @@ import { PropsWithChildren } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 interface ButtonProps extends PropsWithChildren {
-  variant: 'submit' | 'action';
+  variant?: 'contained' | 'outlined';
+  colour?: 'primary' | 'secondary' | 'success' | 'warning' | 'danger';
   className?: string;
 }
-export default function Button({ children, variant, className }: ButtonProps) {
+export default function Button({ children, colour = 'secondary', variant = 'contained', className }: ButtonProps) {
   function getColourClass() {
     let colourClass = '';
 
-    switch (variant) {
-      case 'submit': {
-        colourClass = 'dark:bg-primary bg-primary-200';
+    switch (colour) {
+      case 'primary': {
+        switch (variant) {
+          case 'contained':
+            colourClass = 'dark:bg-primary bg-primary-200';
+            break;
+          case 'outlined':
+            colourClass = 'border border-primary';
+            break;
+        }
+
         break;
       }
-      case 'action': {
-        colourClass = 'dark:bg-bg-dark-600 bg-text-white-300 ';
+
+      case 'secondary': {
+        switch (variant) {
+          case 'contained':
+            colourClass = 'dark:bg-bg-dark-600 bg-text-white-300';
+            break;
+          case 'outlined':
+            colourClass = 'border border-secondary';
+            break;
+        }
+
+        break;
+      }
+
+      case 'success': {
+        switch (variant) {
+          case 'contained':
+            colourClass = 'bg-green-400';
+            break;
+          case 'outlined':
+            colourClass = 'border border-green-400';
+            break;
+        }
+
+        break;
+      }
+
+      case 'warning': {
+        switch (variant) {
+          case 'contained':
+            colourClass = 'bg-amber-400';
+            break;
+          case 'outlined':
+            colourClass = 'border border-amber-400';
+            break;
+        }
+
+        break;
+      }
+
+      case 'danger': {
+        switch (variant) {
+          case 'contained':
+            colourClass = 'bg-red-500';
+            break;
+          case 'outlined':
+            colourClass = 'border border-red-500';
+            break;
+        }
+
         break;
       }
     }
+
     return colourClass;
   }
 
   const colourClass = getColourClass();
 
   return (
-    <button className={`${twMerge(className, `${colourClass} font-bold rounded-3xl py-1.5 px-6`)}`}>{children}</button>
+    <button className={`${twMerge(`${colourClass} font-bold rounded-3xl py-1.5 px-6`, className)}`}>{children}</button>
   );
 }
