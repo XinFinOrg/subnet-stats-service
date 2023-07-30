@@ -4,7 +4,7 @@ import { Db } from './base';
 const TYPE = 'BLOCK';
 // In case of no new blocks in 60s, we declare the block componenet of the system is not operational
 const STATUS_KEY = 'BLOCK_STATUS';
-const STATUS_TTL = 60;
+const TTL = 60;
 
 const LATEST_COMMITTEDBLOCK_KEY = 'LATEST_COMMITTED_BLOCK';
 
@@ -36,7 +36,7 @@ export class BlockStorage {
       this.minedBlockPool.shift();
     }
 
-    return this.db.set(STATUS_KEY, true, STATUS_TTL);
+    return this.db.set(STATUS_KEY, true, TTL);
   }
 
   async getMinedBlockByHash(hash: string): Promise<StoredBlock> {
@@ -52,7 +52,7 @@ export class BlockStorage {
   }
 
   async setLatestCommittedBlock(block: StoredLatestCommittedBlock): Promise<boolean> {
-    return this.db.set(LATEST_COMMITTEDBLOCK_KEY, block);
+    return this.db.set(LATEST_COMMITTEDBLOCK_KEY, block, TTL);
   }
 
   async getStatus(): Promise<boolean> {

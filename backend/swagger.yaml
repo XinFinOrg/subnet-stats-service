@@ -35,31 +35,52 @@ paths:
                     type: array
                     items:
                       $ref: '#/definitions/Block'
-                  latestMinedBlock:
-                    description: The block that was most recently mined in the subnet. regardless its confirmation status
+                  subnet:
+                    type: object
                     properties:
-                      hash:
-                        type: string
-                      number:
-                        type: number
-                  latestSubnetCommittedBlock:
-                    description: The block that was most recently confirm to be committed in the subnet. (Ignoring its confirmation status from parent chain)
+                      latestMinedBlock:
+                        description: The block that was most recently mined in the subnet. regardless its confirmation status
+                        properties:
+                          hash:
+                            type: string
+                          number:
+                            type: number
+                      latestCommittedBlock:
+                        description: The block that was most recently confirm to be committed in the subnet. (Ignoring its confirmation status from parent chain)
+                        properties:
+                          hash:
+                            type: string
+                          number:
+                            type: number
+                  checkpoint:
+                    type: object
                     properties:
-                      hash:
-                        type: string
-                      number:
-                        type: number
-                  latestParentChainCommittedBlock:
-                    description: The block that was most recently confirm to be committed in the parent chain.
+                      latestCommittedSubnetBlock:
+                        description: The block that was most recently confirm to be committed in the parent chain.
+                        properties:
+                          hash:
+                            type: string
+                          number:
+                            type: number
+                      latestSubmittedSubnetBlock:
+                        description: The block that was most recently submitted in the parent chain for comfirmation, but not yet confirmed
+                        properties:
+                          hash:
+                            type: string
+                          number:
+                            type: number
+                  health:
+                    type: object
                     properties:
-                      hash:
+                      status:
+                        description: A simple enum to indicate whether the subnet chain is operational. i.e if blocks are mined
                         type: string
-                      number:
-                        type: number
-                  chainHealth:
-                    description: A simple enum to indicate whether the subnet chain is operational. i.e if blocks are mined
-                    type: string
-                    enum: [UP, DOWN]
+                        enum: [UP, DOWN]
+                      details:
+                        description: A short description about the current running status when there is an issue. E.g System is running but very low
+                        type: string
+                    required:
+                      - status
                     
         '400':
           description: 'Bad Request'
@@ -171,6 +192,9 @@ paths:
                   subnet:
                     type: object
                     properties:
+                      name:
+                        description: Subnet Chain name
+                        type: string
                       block:
                         description: block metadata, such as mining frequency
                         type: object
@@ -220,7 +244,7 @@ paths:
         - confirmation
       parameters:
         name: input
-        in: path
+        in: query
         description: The block height or hash or transaction hash
         required: true
         type: string
@@ -233,7 +257,7 @@ paths:
                 properties:
                   inputType:
                     type: string
-                    enum: [BLOCK_HEIGHT, BLOCK_HASH, TRANSACTION_HASH, INVALID]
+                    enum: [BLOCK_HEIGHT, BLOCK_HASH, TRANSACTION_HASH]
                   subnet:
                     type: object
                     properties:
@@ -243,10 +267,15 @@ paths:
                         type: integer
                       blockHash:
                         type: string
+                      proposer:
+                        type: string
+                      timestamp:
+                        type: string
                     required:
                       - isConfirmed
                       - blockHeight
                       - blockHash
+                      - timestamp
                   parentChain:
                     type: object
                     properties:
@@ -258,29 +287,37 @@ paths:
                         type: string
                       proposer:
                         type: string
+                      timestamp:
+                        type: string
                     required:
                       - isConfirmed
                       - blockHeight
                       - blockHash
+                      - timestamp
                   transaction:
                     type: object
                     properties:
-                      isConfirmed:
-                        type: boolean
                       from:
                         type: string
                       to:
                         type: string
+                      gas:
+                        type: integer
                       timestamp:
                         type: string
-                      gas:
-                        type: string
+                    required:
+                      - from
+                      - to
+                      - timestamp
+                      - gas
                 required:
                   - inputType
                   - subnet
                   - parentChain
         '400':
           description: 'Bad Request'
+        '404':
+          description: 'Not found'
         '500':
           description: 'Server Error'
                       
