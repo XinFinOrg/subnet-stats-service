@@ -14,7 +14,7 @@ export default function Button({ children, colour = 'secondary', variant = 'cont
       case 'primary': {
         switch (variant) {
           case 'contained':
-            colourClass = 'dark:bg-primary bg-primary-200';
+            colourClass = 'dark:bg-primary bg-primary text-white';
             break;
           case 'outlined':
             colourClass = 'border border-primary';
