@@ -123,7 +123,7 @@ function SearchResult({ searchText, searchResult }: SearchResultProps) {
         parentChainStatus={parentChain?.isConfirmed}
         inputType={inputType}
       />
-      <div className='pt-8 grid grid-cols-2 llg:grid-cols-3 gap-6'>
+      <div className='pt-8 grid md:grid-cols-2 llg:grid-cols-3 gap-6'>
         <InfoListCard
           title='Transaction Info'
           info={mappedInfo.transaction}

@@ -60,7 +60,7 @@ function InfoListInfo({ name, value, isFirst, noIcon }: InfoItemProps) {
         {!noIcon && <Svg svgName={SvgNames.Rhombus} size='sm' />}
         <div className='pl-1.5 dark:text-text-dark-100'>{name}</div>
       </div>
-      <div className='font-bold text-sm leading-[120%]'>{value}</div>
+      <div className='font-bold text-sm leading-[120%] text-right'>{value}</div>
     </div>
   );
 }
