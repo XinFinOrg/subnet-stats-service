@@ -34,7 +34,7 @@ export default function ManagementLoginPage() {
     <>
       <h1 className='text-xl font-extrabold'>Successfully logged in as the grand master</h1>
       <Card className='mt-8'>
-        <div className='grid gap-12 grid-cols-2'>
+        <div className='grid gap-12 grid-cols-1 md:grid-cols-2'>
           <div className='flex flex-col'>
             <div>
               <InfoList info={walletInfo} noIcon />
