@@ -1,5 +1,6 @@
-import Web3 from "web3";
-import { ManagerError } from "@/services/grandmaster-manager/errors";
+import Web3 from 'web3';
+
+import { ManagerError } from '@/services/grandmaster-manager/errors';
 
 interface AccountDetails {
   accountAddress: string;
@@ -13,17 +14,23 @@ interface CandidateDetails {
   address: string;
   delegation: number;
   rank: number;
-  status: 'MASTERNODE' | 'PROPOSED' | 'SLASHED'
+  status: 'MASTERNODE' | 'PROPOSED' | 'SLASHED';
 }
 
 
 export class GrandMasterManager {
-  private web3Client;
+  private _web3Client: any;
+  public get web3Client() {
+    return this._web3Client;
+  }
+  public set web3Client(value) {
+    this._web3Client = value;
+  }
   constructor() {
     const win = window as any;
     this.web3Client = new Web3(win.xdc ? win.xdc : win.ethereum);
   }
-  
+
   /**
    * * This method will detect XDC-Pay and verify if customer has alraedy loggin.
    * @returns Account details will be returned if all good, otherwise, relevant error message and type will be returned such as WALLET_NOT_LOGIN
@@ -36,37 +43,37 @@ export class GrandMasterManager {
       networkId: chainId,
       denom: "hxdc",
       rpcAddress: "https://devnetstats.apothem.network/subnet"
-    }
+    };
   }
-  
+
   /**
    * Remove a masternode from the manager view list
    * @param address The master node to be removed
    * @returns If transaction is successful, return. Otherwise, an error details will be returned
    */
-  async removeMasterNode(address: string): Promise<true | ManagerError> {
+  async removeMasterNode(_address: string): Promise<true | ManagerError> {
     return true;
   }
-  
+
   /**
    * Propose to add a new masternode for being a mining candidate from the next epoch
    * @param address The master node to be added
    * @returns If transaction is successful, return. Otherwise, an error details will be returned
    */
-  async addNewMasterNode(address: string): Promise<true | ManagerError> {
+  async addNewMasterNode(_address: string): Promise<true | ManagerError> {
     return true;
   }
-  
+
   /**
    * Change the voting/ranking power/order of a particular masternode.
    * @param address The targeted masternode
    * @param value The xdc value that will be applied to the targeted address. Postive number means increase power, negative means decrease the power
    * @returns If transaction is successful, return. Otherwise, an error details will be returned
    */
-  async changeVote(address: string, value: number): Promise<true | ManagerError> {
+  async changeVote(_address: string, _value: number): Promise<true | ManagerError> {
     return true;
   }
-  
+
   /**
    * A event listener on wallet account. If user switch to a different account, this method will update notify the provided handler
    * @param changeHandler The handler function to process when the accounts changed. The provided value will be the new wallet address.
@@ -76,7 +83,7 @@ export class GrandMasterManager {
     // TODO: 1. Handle the account change via accountsChanged
     // TODO: 2. Handle the chain change via chainChanged. This could happen if switch from testnet to mainnet etc.
   }
-  
+
   /**
    * A method to return subnet candidates and its status.
    * @returns The address and its current status and stake.
