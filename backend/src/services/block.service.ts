@@ -1,15 +1,26 @@
+import { ParentChainClient } from '../client/parentchain';
 import { Service } from 'typedi';
 import * as _ from 'lodash';
 import { BlockStorage, StoredBlock, StoredLatestCommittedBlock } from '../storage/block';
 import { BlockInfo, LatestCommittedBlockInfoData } from '../interfaces/input/block.interface';
-import { BlockResponse } from '../interfaces/output/blocksResponse.interface';
+import { BaseBlockResponse, BlockResponse } from '../interfaces/output/blocksResponse.interface';
+import { SubnetClient } from '../client/subnet';
+import { HttpException } from '@/exceptions/httpException';
+import { BlocksController } from '@/controllers/blocks.controller';
+import { NUM_OF_BLOCKS_RETURN } from '../config';
+import { length } from 'class-validator';
+import { start } from 'repl';
 
 @Service()
 export class BlockService {
   private blockStorage: BlockStorage;
+  private subnetClient: SubnetClient;
+  private parentChainClient: ParentChainClient;
 
-  constructor() {
+  constructor(subnetClient: SubnetClient, parentChainClient: ParentChainClient) {
     this.blockStorage = new BlockStorage();
+    this.subnetClient = subnetClient;
+    this.parentChainClient = parentChainClient;
   }
 
   public async addBlock(blockData: BlockInfo): Promise<void> {
@@ -24,13 +35,13 @@ export class BlockService {
     return await this.blockStorage.getMinedBlockByHash(hash);
   }
 
-  public async getBlockStats(): Promise<any> {
+  public async getBlockStats() {
     const allBlocks = await this.blockStorage.getAllBlocks();
     let averageBlockTime = 0;
     let txThroughput = 0;
     if (allBlocks && allBlocks.length > 1) {
       allBlocks.sort((a, b) => b.timestamp - a.timestamp);
-      const timeDiff = (allBlocks[0].timestamp - allBlocks[allBlocks.length - 1].timestamp);
+      const timeDiff = allBlocks[0].timestamp - allBlocks[allBlocks.length - 1].timestamp;
       averageBlockTime = timeDiff / allBlocks.length;
 
       const totalNumOfTxs = _.reduce(
@@ -48,47 +59,174 @@ export class BlockService {
     };
   }
 
-  // Get all available blocks on the same chain (sorted by block number)
-  public async getRecentBlocks(): Promise<BlockResponse[]> {
+  public async getLastMinedBlocks(): Promise<BaseBlockResponse> {
     const allBlocks = await this.blockStorage.getAllBlocks();
-    const lastCommittedBlockInfo = await this.blockStorage.getLatestCommittedBlock();
-    if (!lastCommittedBlockInfo) {
-      return this.shortCircuitRecentBlocks(allBlocks);
-    }
+    const latestMinedBlock =
+    allBlocks && allBlocks.length
+      ? {
+          hash: allBlocks[allBlocks.length - 1].hash,
+          number: allBlocks[allBlocks.length - 1].number,
+        }
+      : {
+        hash: "",
+        number: 0
+      };
+    return latestMinedBlock;
+  }
+
+  // Get all available blocks on the same chain (sorted by block number)
+  public async getRecentBlocks(blockIndex: number): Promise<BlockResponse[]> {
+    const allBlocks = await this.blockStorage.getAllBlocks();
+    const lastCommittedBlockInfo = await this.getLastSubnetCommittedBlock();
     const lastCommittedBlock = await this.blockStorage.getMinedBlockByHash(lastCommittedBlockInfo.hash);
+    const endIndex = blockIndex != -1? allBlocks.findIndex((block) => block.number == blockIndex) : allBlocks.length-1;
+    const startIndex = endIndex - NUM_OF_BLOCKS_RETURN >= 0 ? endIndex - NUM_OF_BLOCKS_RETURN : 0;
+    const selectedBlocks = allBlocks.slice(startIndex, endIndex)
+
     // Short-curcit if the committedBlock is not even recored in the system. The gap between mined and committed is too far
     if (!lastCommittedBlock) {
-      return this.shortCircuitRecentBlocks(allBlocks);
+      return this.shortCircuitRecentBlocks(selectedBlocks);
     }
 
-    const sameChainBlocks = this.filterOutForksBeforeStartingBlock(allBlocks, lastCommittedBlock);
+    const sameChainBlocks = this.filterOutForksBeforeStartingBlock(selectedBlocks, lastCommittedBlock);
+    const { committed } = await this.getLastParentchainSubnetBlock();
 
     return sameChainBlocks.map(b => {
       let committedInSubnet = false;
+      let committedInParentChain = false;
       if (b.number <= lastCommittedBlockInfo.number) {
         committedInSubnet = true;
+      }
+      if (b.number <= committed.height) {
+        committedInParentChain = true;
       }
       return {
         ...b,
         committedInSubnet,
-        committedInParentChain: false, // TODO: WIP for checking the status with parent chain
+        committedInParentChain,
       };
     });
   }
 
-  public async addLatestCommittedBlock(newCommittedBlock: LatestCommittedBlockInfoData): Promise<void> {
+  public async addLatestSubnetCommittedBlock(newCommittedBlock: LatestCommittedBlockInfoData): Promise<void> {
     const lastCommittedBlock = await this.blockStorage.getLatestCommittedBlock();
     if (!lastCommittedBlock || lastCommittedBlock.number < newCommittedBlock.number) {
-      this.blockStorage.setLatestCommittedBlock(newCommittedBlock);
+      await this.blockStorage.setLatestCommittedBlock(newCommittedBlock);
     }
   }
 
-  public async getLastCommittedBlock(): Promise<StoredLatestCommittedBlock> {
-    return await this.blockStorage.getLatestCommittedBlock();
+  // This method will get the latest committed block in subnet
+  public async getLastSubnetCommittedBlock(): Promise<StoredLatestCommittedBlock> {
+    let block = await this.blockStorage.getLatestCommittedBlock();
+    if (!block) {
+      block = await this.subnetClient.getLatestCommittedBlockInfo();
+      await this.blockStorage.setLatestCommittedBlock(block);
+    }
+    return block;
+  }
+
+  public async getLastParentchainSubnetBlock() {
+    const { smartContractCommittedHash, smartContractCommittedHeight, smartContractHash, smartContractHeight } =
+      await this.parentChainClient.getLastAudittedBlock();
+    return {
+      committed: {
+        height: smartContractCommittedHeight,
+        hash: smartContractCommittedHash,
+      },
+      submitted: {
+        height: smartContractHeight,
+        hash: smartContractHash,
+      },
+    };
   }
 
   public async getBlockChainStatus(): Promise<boolean> {
     return await this.blockStorage.getStatus();
+  }
+
+  // Returns the block num difference between what's mined in subnet and what's submitted to parent chain
+  public async getProcessingBacklog(): Promise<{ gap: number; isProcessing: boolean }> {
+    const [lastSubnetCommittedBlock, smartContractProcessingInfo] = await Promise.all([
+      this.getLastSubnetCommittedBlock(),
+      this.getSmartContractProcessingInfo(),
+    ]);
+    return {
+      gap: lastSubnetCommittedBlock.number - smartContractProcessingInfo.processedUntil || -1,
+      isProcessing: smartContractProcessingInfo.isProcessing,
+    };
+  }
+
+  public async confirmBlockByHeight(blockToConfirmHeight: number) {
+    const result = await this.subnetClient.getBlock(blockToConfirmHeight);
+    if (!result) {
+      throw new HttpException(404, 'No such block exit in subnet');
+    }
+    return this.confirmBlock(result.hash);
+  }
+
+  public async confirmBlockByHash(blockToConfirmHash: string) {
+    const result = await this.subnetClient.getBlockInfoByHash(blockToConfirmHash);
+    if (!result) {
+      throw new HttpException(404, 'No such block exit in subnet');
+    }
+    return this.confirmBlock(blockToConfirmHash, result);
+  }
+
+  public async getTransactionInfo(hash: string) {
+    const txResult = await this.subnetClient.getTxByTransactionHash(hash);
+    if (!txResult) {
+      return undefined;
+    }
+    const { timestamp } = await this.subnetClient.getBlock(txResult.blockHash);
+    return {
+      from: txResult.from,
+      to: txResult.to,
+      gas: txResult.gas,
+      timestamp: timestamp.toString(),
+      blockHash: txResult.blockHash,
+    };
+  }
+
+  // Perform confirmation operation to confirm the subnet block has been confirm on both subnet and parentchain
+  private async confirmBlock(
+    blockToConfirmHash: string,
+    subnetBlockInfo?: { subnetBlockNumber: number; committedInSubnet: boolean; proposer: string; timestamp: number },
+  ) {
+    // Only fetch if not provided
+    if (!subnetBlockInfo) {
+      subnetBlockInfo = await this.subnetClient.getBlockInfoByHash(blockToConfirmHash);
+    }
+
+    const parentchainConfirmation = await this.parentChainClient.confirmBlock(blockToConfirmHash);
+    return {
+      subnet: {
+        committedInSubnet: subnetBlockInfo.committedInSubnet,
+        subnetBlockHeight: subnetBlockInfo.subnetBlockNumber,
+        subnetBlockHash: blockToConfirmHash,
+        proposer: subnetBlockInfo.proposer,
+        timestamp: subnetBlockInfo.timestamp,
+      },
+      parentChain: {
+        committedInParentChain: parentchainConfirmation.isCommitted,
+        parentchainBlockHeight: parentchainConfirmation.parentChainNum,
+        parentchainBlockHash: parentchainConfirmation.parentchainHash,
+        proposer: parentchainConfirmation.proposer,
+        timestamp: parentchainConfirmation.timestamp,
+      },
+    };
+  }
+
+  private async getSmartContractProcessingInfo(): Promise<{ processedUntil: number; isProcessing: boolean }> {
+    const { smartContractHeight, smartContractCommittedHash } = await this.parentChainClient.getLastAudittedBlock();
+    const { timestamp } = await this.parentChainClient.getParentChainBlockBySubnetHash(smartContractCommittedHash);
+    let isProcessing = true;
+    const timeDiff = new Date().getTime() / 1000 - parseInt(timestamp.toString());
+    if (timeDiff > 60) isProcessing = false;
+
+    return {
+      processedUntil: smartContractHeight,
+      isProcessing,
+    };
   }
 
   /**
@@ -121,9 +259,10 @@ export class BlockService {
       return chainToFilter;
     }
 
-    const startingPointer = startingBlock ? startingBlock : chainToFilter[chainToFilter.length - 1];
+    const lastBLock = chainToFilter[chainToFilter.length - 1];
+    const startingPointer = startingBlock && startingBlock.number <= lastBLock.number? startingBlock : lastBLock;
     const onChainHash = [startingPointer.hash];
-    let parentHashPointer = startingBlock.parentHash;
+    let parentHashPointer = startingPointer.parentHash;
     // Track back through the parentChain hash, if found then mark them as on the same chain
     while (parentHashPointer) {
       const parentBlock = chainToFilter.find(b => b.hash === parentHashPointer);

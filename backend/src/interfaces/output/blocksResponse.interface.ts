@@ -1,9 +1,16 @@
 export interface BlocksResponse {
   blocks: BlockResponse[];
-  latestMinedBlock: BaseBlockResponse | {};
-  latestSubnetCommittedBlock: BaseBlockResponse | {};
-  latestParentChainCommittedBlock: BaseBlockResponse | {};
-  chainHealth: 'UP' | 'DOWN';
+  subnet: {
+    latestMinedBlock?: BaseBlockResponse | {};
+    latestCommittedBlock?: BaseBlockResponse | {};
+  };
+  checkpoint: {
+    latestCommittedSubnetBlock: BaseBlockResponse;
+    latestSubmittedSubnetBlock: BaseBlockResponse;
+  };
+  health: {
+    status: 'UP' | 'DOWN';
+  };
 }
 
 export interface BlockResponse extends BaseBlockResponse {
