@@ -5,8 +5,12 @@ interface ButtonProps extends PropsWithChildren {
   variant?: 'contained' | 'outlined';
   colour?: 'primary' | 'secondary' | 'success' | 'warning' | 'danger';
   className?: string;
+  onClick?: () => void;
 }
-export default function Button({ children, colour = 'secondary', variant = 'contained', className }: ButtonProps) {
+
+export default function Button(props: ButtonProps) {
+  const { children, colour = 'secondary', variant = 'contained', className, ...otherProps } = props;
+
   function getColourClass() {
     let colourClass = '';
 
@@ -83,6 +87,11 @@ export default function Button({ children, colour = 'secondary', variant = 'cont
   const colourClass = getColourClass();
 
   return (
-    <button className={`${twMerge(`${colourClass} font-bold rounded-3xl py-1.5 px-6`, className)}`}>{children}</button>
+    <button
+      className={`${twMerge(`${colourClass} font-bold rounded-3xl py-1.5 px-6`, className)}`}
+      {...otherProps}
+    >
+      {children}
+    </button>
   );
 }

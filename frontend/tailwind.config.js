@@ -12,6 +12,11 @@ export default {
       },
       colors: {
         'warning': '#FF3D00',
+        'attention': '#988D2D',
+        'error': '#A03A1A',
+        'bg-white': {
+          DEFAULT: '#E5F6FF',
+        },
         'bg-dark': {
           1000: '#131416',
           900: '#212326',
@@ -83,6 +88,9 @@ export default {
       },
       aspectRatio: {
         '4/3': '4 / 3',
+      },
+      opacity: {
+        '15': '.15',
       },
     },
   },

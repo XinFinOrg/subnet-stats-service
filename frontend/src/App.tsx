@@ -17,7 +17,8 @@ function App() {
       <ThemeContextProvider>
         <AlertProvider>
           <div className={`${!isDesktop ? 'flex-col' : ''}
-            relative max-w-[1440px] mx-auto flex font-nunito-sans text-text-dark dark:text-text-white dark:bg-bg-dark-900`
+            relative max-w-[1440px] mx-auto flex font-nunito-sans text-text-dark dark:text-text-white dark:bg-bg-dark-900
+          `
           }>
             <Nav />
             <main className='mx-6 my-8 grow llg-w-[1146px] relative'>
