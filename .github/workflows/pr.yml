@@ -21,3 +21,5 @@ jobs:
     # TODO: Tests to be added
     # - name: Unit tests
     #   run: npm run test
+
+ # TODO: the same for frontend

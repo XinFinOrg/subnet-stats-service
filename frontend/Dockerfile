@@ -9,12 +9,14 @@ COPY . ./app
 
 WORKDIR /app
 
+#macos
+RUN apk add --update --no-cache python3 g++ make
+
 RUN yarn install
 
-RUN yarn run build
-
-RUN yarn global add serve
+#temp
+RUN yarn add -D @types/lodash.debounce 
 
 EXPOSE 5000
 
-CMD ["serve", "-s", "dist", "-l", "5000"]
+CMD ["/bin/sh","-c","/app/start.sh"]
