@@ -55,10 +55,10 @@ interface InfoItemProps extends InfoListInfo.Data {
 
 function InfoListInfo({ name, value, isFirst, noIcon }: InfoItemProps) {
   return (
-    <div className={`flex justify-between pb-2 border-b-2 dark:border-text-dark-400 dark:border-opacity-40 border-text-white-400 ${isFirst ? '' : 'mt-6'}`}>
+    <div className={`flex justify-between pb-2 border-b-2 dark:border-text-dark-400/50 dark border-text-white-400 ${isFirst ? '' : 'mt-6'}`}>
       <div className='flex items-center'>
         {!noIcon && <Svg svgName={SvgNames.Rhombus} size='sm' />}
-        <div className='pl-1.5 dark:text-text-dark-100'>{name}</div>
+        <div className={`${noIcon ? '' : 'pl-1.5'}`}>{name}</div>
       </div>
       <div className='font-bold text-sm leading-[120%] text-right'>{value}</div>
     </div>
