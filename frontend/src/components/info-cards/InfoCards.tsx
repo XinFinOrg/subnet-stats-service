@@ -1,118 +1,176 @@
-import { useEffect, useState } from 'react';
+import axios from 'axios';
+import { useState } from 'react';
+import { useLoaderData } from 'react-router-dom';
 
-import BlocksInfo, { BlocksInfoItem } from '@/components/blocks-info/BlocksInfo';
+import {
+  BlocksInfoItem, MasterNode
+} from '@/components/blocks-info/blocks-info-item/BlocksInfoItem';
+import BlocksInfo from '@/components/blocks-info/BlocksInfo';
 import Card from '@/components/card/Card';
 import InfoList from '@/components/info-list/InfoList';
+import { baseUrl } from '@/constants/urls';
+import { getSortedRecentBlocks, uniqReplaceByName } from '@/pages/utils/BlockHelper';
+import { Info, InfoListHealth } from '@/types/info';
+import { HomeLoaderData } from '@/types/loaderData';
+import { formatHash, formatMoney } from '@/utils/formatter';
 
-const mockDataItem: BlocksInfoItem = {
-  type: 'recent-block',
-  height: 10000001,
-  hash: '0xdFrsdf...Dsa31ld7',
-  proposedBy: '0xdFrsdf...Dsa31ld7',
-  subnetConfirmed: true,
-  parentConfirmed: false,
-  time: 2
-};
+interface InfoCardsProps {
+  nextFetchRecentBlocksIndex: number;
+  setNextFetchRecentBlocksIndex: React.Dispatch<React.SetStateAction<number>>;
+  recentBlocks: BlocksInfoItem[];
+  setRecentBlocks: React.Dispatch<React.SetStateAction<BlocksInfoItem[]>>;
+  isLoadingRecentBlocks: boolean;
+  setIsLoadingRecentBlocks: React.Dispatch<React.SetStateAction<boolean>>;
+}
 
-const mockMasterNodeItem: BlocksInfoItem = {
-  type: 'master-node',
-  number: 1,
-  account: '0xdFrsdf...Dsa31ld7',
-  role: 'miner',
-  activity: true,
-  latestParticipateBlock: 10000001
-};
+export default function InfoCards(props: InfoCardsProps) {
+  const {
+    nextFetchRecentBlocksIndex
+    , setNextFetchRecentBlocksIndex
+    , recentBlocks
+    , setRecentBlocks
+    , isLoadingRecentBlocks
+    , setIsLoadingRecentBlocks
+  } = props;
+  const loaderData = useLoaderData() as HomeLoaderData;
 
-const mockData = Array(20).fill('').map((_v, i) => {
-  return { ...mockDataItem, height: mockDataItem.height + i };
-});
+  const [veryFirstSubnetBlock] = useState(loaderData.blocks?.blocks[0].number);
+  const [isFetchingMoreRecentBlocks, setIsLoadingMoreRecentBlocks] = useState(false);
+  const [isReachApiEndOfRecentBlocks, setIsReachApiEndOfRecentBlocks] = useState(false);
 
-const mockMasterNodes = Array(7).fill('').map<BlocksInfoItem>((_v, i) => {
-  if (i === 3) {
-    return { ...mockMasterNodeItem, role: 'penalty', number: (mockMasterNodeItem).number + i };
+  function getNetworkStatus(): InfoListHealth {
+    if (loaderData.network?.health.status === 'UP') {
+      return 'Normal';
+    }
+
+    return 'Abnormal';
   }
-  else if (i === 5) {
-    return { ...mockMasterNodeItem, role: 'standby', number: (mockMasterNodeItem).number + i };
+
+  function getRelayerStatus(): InfoListHealth {
+    if (loaderData.relayer?.health.status === 'UP') {
+      return 'Normal';
+    }
+
+    return 'Abnormal';
   }
-  return { ...mockMasterNodeItem, role: 'miner', number: (mockMasterNodeItem).number + i };
-});
 
-export default function InfoCards() {
-  const [blocksInfo, setBlocksInfo] = useState<BlocksInfoItem[]>([]);
+  const mappedInfo: Info = getMappedInfo(loaderData, getNetworkStatus, getRelayerStatus);
 
-  const mockInfo = {
-    info1: [
-      { name: 'Block Time', value: '2s' },
-      { name: 'TX Throughput', value: '10 txs/s' },
-      { name: 'Checkpointed to', value: 'XDC Devnet' },
-    ],
-    info2: [
-      { name: 'Smart Contract', value: 'Shorten Hash' },
-      { name: 'Backlog', value: '10 Subnet Headers' },
-      { name: 'Ave. tx fee', value: '0.001XDC/hour' },
-      { name: 'Remaining Balance', value: '10XDC\two weeks' },
-    ],
-    info3: [
-      { name: 'Current committee size', value: '30' },
-      { name: 'Activity', value: '0xdFrsdf...Dsa31ld7' },
-      { name: 'Number of stanby nodes', value: '10' },
-    ],
-  };
+  const masterNodes = loaderData.masterNodes?.nodes?.map<MasterNode>((v, i: number) => ({
+    ...v,
+    type: 'master-node',
+    account: formatHash(v.address),
+    number: i + 1
+  }));
 
-  // mock function
-  const fetchBlocksData = () => {
-    if (!blocksInfo) {
-      console.log('no info');
+  const fetchMoreRecentBlocks = async () => {
+    if (!recentBlocks || !veryFirstSubnetBlock) {
       return;
     }
 
-    setBlocksInfo(blocksInfo => {
-      const data = Array(20).fill('').map((_v, i) => {
-        return { ...mockDataItem, height: (blocksInfo[blocksInfo.length - 1] as any).height + 1 + i };
-      });
+    setIsLoadingMoreRecentBlocks(true);
+    const { data } = await axios.get<HomeLoaderData.Blocks>(`${baseUrl}/information/blocks?blockNumIndex=${nextFetchRecentBlocksIndex}`);
 
-      return [...blocksInfo, ...data];
+    const firstBlockNumber = data.blocks[0].number;
+
+    if (!firstBlockNumber) {
+      return;
+    }
+
+    setNextFetchRecentBlocksIndex(firstBlockNumber);
+
+    // concat data from api in the end of list since it would be the 'previous' data
+    setRecentBlocks((recentBlocks: BlocksInfoItem[]) => {
+      const newRecentBlocks = uniqReplaceByName(recentBlocks, getSortedRecentBlocks(data.blocks));
+      setIsLoadingMoreRecentBlocks(false);
+
+      // Reach API limit
+      if (veryFirstSubnetBlock - firstBlockNumber >= 251) {
+        setIsReachApiEndOfRecentBlocks(true);
+      }
+
+      return newRecentBlocks;
     });
   };
 
-  useEffect(() => {
-    setBlocksInfo(mockData);
-  }, []);
-
   return (
     <>
-      <div className="grid grid-cols-2 llg:grid-cols-3 gap-6">
-        <Card>
+      <div className='grid lg:grid-cols-2 llg:grid-cols-3 gap-6'>
+        <Card className='max-w-[400px]'>
           <InfoList
             title='Network Info'
-            status='Normal'
-            info={mockInfo.info1}
+            info={mappedInfo.network}
           />
         </Card>
-        <Card>
+        <Card className='max-w-[400px]'>
           <InfoList
             title='Relayer Info'
-            status='Abnormal'
-            info={mockInfo.info2}
+            info={mappedInfo.relayer}
           />
         </Card>
-        <Card>
+        <Card className='max-w-[400px]'>
           <InfoList
-            title='Master Nodes'
-            status='Normal'
-            info={mockInfo.info3}
+            title='Master Nodes Info'
+            info={mappedInfo.masterNodes}
           />
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 llg:grid-cols-2 gap-6">
+      <div className='grid grid-cols-1 llg:grid-cols-2 gap-6'>
         <Card className='max-w-[565px]'>
-          <BlocksInfo title='Recent Blocks' data={blocksInfo} fetchMoreData={fetchBlocksData} enableInfinite />
+          <BlocksInfo
+            title='Recent Blocks'
+            data={recentBlocks}
+            setData={setRecentBlocks}
+            fetchMoreData={fetchMoreRecentBlocks}
+            isReachApiEnd={isReachApiEndOfRecentBlocks}
+            isFetchingMore={isFetchingMoreRecentBlocks}
+            isLoading={isLoadingRecentBlocks}
+            setIsLoading={setIsLoadingRecentBlocks}
+            enableInfinite
+          />
         </Card>
-        <Card className='max-w-[565px]'>
-          <BlocksInfo title='Master Nodes' data={mockMasterNodes} />
-        </Card>
+        {<Card className='max-w-[565px]'>
+          <BlocksInfo title='Master Nodes' data={masterNodes} />
+        </Card>}
       </div>
     </>
   );
 }
+
+function getMappedInfo(loaderData: HomeLoaderData, getNetworkStatus: () => InfoListHealth, getRelayerStatus: () => InfoListHealth): Info {
+  const info: Info = {};
+
+  if (loaderData.network) {
+    info.network = {
+      health: getNetworkStatus(),
+      data: [
+        { name: 'Block Time', value: `${Math.floor(loaderData.network.subnet.block.averageBlockTime * 100) / 100}s` },
+        { name: 'TX Throughput', value: `${Math.round(loaderData.network.subnet.block.txThroughput * 100) / 100} txs/s` },
+        { name: 'Checkpointed to', value: loaderData.network.parentChain.name },
+      ]
+    };
+  }
+  if (loaderData.relayer) {
+    info.relayer = {
+      health: getRelayerStatus(),
+      data: [
+        { name: 'Smart Contract', value: formatHash(loaderData.relayer.account.walletAddress) },
+        { name: 'Backlog', value: `${loaderData.relayer.backlog} Subnet Headers` },
+        { name: 'Remaining Balance', value: formatMoney(parseInt(loaderData.relayer.account.balance)) },
+      ]
+    };
+  }
+  if (loaderData.masterNodes) {
+    info.masterNodes = {
+      data: [
+        { name: 'Current committee size', value: loaderData.masterNodes?.summary?.committee },
+        { name: 'Activity(active / inactive)', value: `${loaderData.masterNodes?.summary?.activeNodes} / ${loaderData.masterNodes.summary.committee - loaderData.masterNodes?.summary?.activeNodes}` },
+        { name: 'Number of standby nodes', value: loaderData.masterNodes?.summary?.inActiveNodes },
+      ],
+    };
+  }
+
+  return info;
+}
+

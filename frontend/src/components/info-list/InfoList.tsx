@@ -1,44 +1,51 @@
-import Svg, { SvgNames } from "@/components/images/Svg";
-import Title from "@/components/title/Title";
+import ErrorState from '@/components/error-state/ErrorState';
+import Svg, { SvgNames } from '@/components/images/Svg';
+import InfoListEmpty from '@/components/info-list/components/InfoListEmpty';
+import Title from '@/components/title/Title';
 
-type InfoListStatus = 'Normal' | 'Abnormal';
+import type { InfoItem } from '@/types/info';
 
 interface InfoListProps {
   title: string;
-  status: InfoListStatus;
-  info: InfoItemBaseProps[];
+  info?: InfoItem;
 }
 
-export default function InfoList({ title, status, info }: InfoListProps) {
+export default function InfoList({ title, info }: InfoListProps) {
+  if (!info) {
+    return <ErrorState title={title} />;
+  }
+
+  if (!info.data) {
+    return <InfoListEmpty title={title} />;
+  }
+
+  const { health: status, data } = info;
+
   return (
     <>
-      <div className="flex justify-between items-center pb-6">
-        <div>
-          <Title title={title} />
-        </div>
-        <div className='inline-flex items-center'>
-          <span>Status</span>
-          <span
-            className={`ml-1 px-3 py-2.5 bg-opacity-20 rounded-3xl font-bold leading-none
-            ${status === 'Normal' ? 'bg-sky-500 text-sky-500' : 'bg-warning text-warning'}
-          `}>
-            {status}
-          </span>
-        </div>
+      <div className='flex justify-between items-center pb-6'>
+        <Title title={title} />
+        {status && (
+          <div className='inline-flex items-center'>
+            <span>Status:</span>
+            <span
+              className={`ml-1 px-3 py-2.5 bg-opacity-20 rounded-3xl font-bold leading-none
+               ${status === 'Normal' ? 'bg-sky-500 text-sky-500' : 'bg-warning text-warning'}`
+              }
+            >
+              {status}
+            </span>
+          </div>
+        )}
       </div>
-      {info.map((item, index) => {
+      {data.map((item, index) => {
         return <InfoItem key={index} {...item} isFirst={index === 0} />;
       })}
     </>
   );
 }
 
-interface InfoItemBaseProps {
-  name: string;
-  value: string;
-}
-
-interface InfoItemProps extends InfoItemBaseProps {
+interface InfoItemProps extends InfoItem.Data {
   isFirst?: boolean;
 }
 
@@ -49,7 +56,7 @@ function InfoItem({ name, value, isFirst }: InfoItemProps) {
         <Svg svgName={SvgNames.Rhombus} size='sm' />
         <div className='pl-1.5 dark:text-text-dark-100'>{name}</div>
       </div>
-      <div className='font-bold text-lg leading-[120%]'>{value}</div>
+      <div className='font-bold text-sm leading-[120%]'>{value}</div>
     </div>
   );
 }

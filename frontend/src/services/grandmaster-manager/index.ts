@@ -20,12 +20,15 @@ interface CandidateDetails {
 
 export class GrandMasterManager {
   private _web3Client: any;
+
   public get web3Client() {
     return this._web3Client;
   }
+
   public set web3Client(value) {
     this._web3Client = value;
   }
+
   constructor() {
     const win = window as any;
     this.web3Client = new Web3(win.xdc ? win.xdc : win.ethereum);

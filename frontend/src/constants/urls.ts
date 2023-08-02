@@ -1,0 +1,1 @@
+export const baseUrl = 'https://devnetstats.apothem.network/stats';

@@ -8,7 +8,7 @@ const TTL = 60;
 
 const LATEST_COMMITTEDBLOCK_KEY = 'LATEST_COMMITTED_BLOCK';
 
-/** 
+/**
   This class is created so that we can easily swap with real DB without making changes to any other files.
   We using Promise for all the method eventho there is no need for that. This is also just to make it convenient when we move to a proper cache/db
 */

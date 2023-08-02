@@ -76,6 +76,9 @@ export default {
       },
       fontSize: {
         '2xl': ['26px']
+      },
+      transition: {
+        'left': 'left'
       }
     },
   },
