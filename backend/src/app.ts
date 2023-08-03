@@ -7,10 +7,12 @@ import hpp from 'hpp';
 import morgan from 'morgan';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
-import { LOG_FORMAT } from './config';
+import cors from 'cors';
+import { LOG_FORMAT, CORS_ALLOW_ORIGIN } from './config';
 import { Routes } from './interfaces/routes.interface';
 import { ErrorMiddleware } from './middlewares/error.middleware';
 import { logger, stream } from './utils/logger';
+
 
 export class App {
   public app: express.Application;
@@ -36,6 +38,9 @@ export class App {
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use(cookieParser());
+    if (CORS_ALLOW_ORIGIN != ''){
+      this.app.use(cors({origin: CORS_ALLOW_ORIGIN}));   
+    }
   }
 
   private initializeRoutes(routes: Routes[]) {
