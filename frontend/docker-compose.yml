@@ -1,0 +1,10 @@
+version: "3.7"
+services:
+    frontend:
+      build:
+        context: .
+      restart: always
+      ports:
+        - '5555:5555'
+      profiles:
+        - services

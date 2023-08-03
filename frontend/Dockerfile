@@ -1,22 +1,20 @@
+FROM node:18-alpine as builder
+RUN apk add --update --no-cache
+
+COPY . ./builder
+RUN cd /builder && yarn install && yarn build
+
+# The actual image
 FROM node:18-alpine
-ENV NODE_ENV=production
-
-RUN npm install -g yarn --force
-
-RUN npm install -g typescript
-
-COPY . ./app
+RUN apk add --update --no-cache
 
 WORKDIR /app
+COPY --from=builder /builder/dist /app
 
-#macos
-RUN apk add --update --no-cache python3 g++ make
+ENV NODE_ENV=production
 
-RUN yarn install
+RUN npm install --global serve
 
-#temp
-RUN yarn add -D @types/lodash.debounce 
+EXPOSE 5555
 
-EXPOSE 5000
-
-CMD ["/bin/sh","-c","/app/start.sh"]
+CMD ["/bin/sh","-c","serve -s -l 5555"]

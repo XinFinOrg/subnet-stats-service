@@ -16,7 +16,7 @@ const url = `${baseUrl}/confirmation`;
 
 export default function SearchBar({ searchText, setSearchText, setSearchResult }: SearchBarProps) {
   const debounceLoadData = useMemo(
-    () => debounce(async (searchText) => {
+    () => debounce(async (searchText: string) => {
       setSearchResult(undefined);
       try {
         const response = await axios.get<SearchResult>(`${url}?input=${searchText}`);
