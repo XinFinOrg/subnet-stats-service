@@ -14,9 +14,9 @@ interface LoginErrorProps {
 export default function LoginError({ errorType }: LoginErrorProps) {
   const networkInfo = {
     data: [
-      { name: 'Network ID:', value: 'tXDC' },
-      { name: 'Network Denom:', value: 'myCoin' },
-      { name: 'Network RPC:', value: 'https:192.168.1.1/443' }
+      { name: 'Network ID:', value: 'unknown' },
+      { name: 'Network Denom:', value: 'unknown' },
+      { name: 'Network RPC:', value: 'unknown' }
     ]
   };
 
