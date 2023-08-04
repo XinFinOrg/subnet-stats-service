@@ -5,6 +5,7 @@ import Card from '@/components/card/Card';
 import { Cell } from '@/components/cell/Cell';
 import Dialog, { DialogRef, DialogResultBase } from '@/components/dialog/Dialog';
 import ErrorState from '@/components/error-state/ErrorState';
+import Svg, { SvgNames } from '@/components/images/Svg';
 import Loader from '@/components/loader/Loader';
 import { ServiceContext } from '@/contexts/ServiceContext';
 import AddMasterNodeDialog from '@/pages/management-master-committee-page/components/add-master-node-dialog/AddMasterNodeDialog';
@@ -13,6 +14,7 @@ import RemoveMasterNodeDialog from '@/pages/management-master-committee-page/com
 import { CandidateDetailsStatus } from '@/services/grandmaster-manager';
 import { TableContent } from '@/types/managementMasterCommitteePage';
 import { formatHash } from '@/utils/formatter';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@radix-ui/react-tooltip';
 
 export default function ManagementMasterCommitteePage() {
   const [isLoading, setIsLoading] = useState<boolean>();
@@ -45,7 +47,19 @@ export default function ManagementMasterCommitteePage() {
         },
         {
           id: 'rank',
-          name: 'Rank',
+          name: (
+            <Tooltip>
+              <TooltipTrigger>
+                Rank
+                <span className='w-6 h-6 inline-flex items-center justify-center rounded-full bg-bg-dark-600 ml-2.5'>
+                  ?
+                </span>
+              </TooltipTrigger>
+              <TooltipContent sideOffset={10} className='w-[232px] bg-bg-dark-600 rounded-3xl text-center shadow-sm py-4 px-3 leading-tight'>
+                <p>The top x master candidates are in the current master committee with equal voting power</p>
+              </TooltipContent>
+            </Tooltip>
+          ),
           width: 'w-[100px]'
         },
         {
