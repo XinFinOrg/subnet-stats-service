@@ -5,7 +5,7 @@ interface InfoListInfo {
   health?: InfoListHealth;
 }
 
-namespace InfoListInfo {
+export namespace InfoListInfo {
   export interface Data {
     name: string;
     value?: string | number;

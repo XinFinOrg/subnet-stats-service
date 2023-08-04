@@ -11,7 +11,7 @@ import AddMasterNodeDialog from '@/pages/management-master-committee-page/compon
 import PromoteDialog from '@/pages/management-master-committee-page/components/promote-dialog/PromoteDialog';
 import RemoveMasterNodeDialog from '@/pages/management-master-committee-page/components/remove-master-node-dialog/RemoveMasterNodeDialog';
 import { CandidateDetailsStatus } from '@/services/grandmaster-manager';
-import { TableContent } from '@/types/managementPage';
+import { TableContent } from '@/types/managementMasterCommitteePage';
 import { formatHash } from '@/utils/formatter';
 
 export default function ManagementMasterCommitteePage() {
