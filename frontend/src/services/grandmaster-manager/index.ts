@@ -1,4 +1,4 @@
-import Web3 from 'web3';
+// import Web3 from 'web3';
 
 import { ManagerError } from '@/services/grandmaster-manager/errors';
 
@@ -10,29 +10,30 @@ interface AccountDetails {
   denom: string;
 }
 
-interface CandidateDetails {
+export interface CandidateDetails {
   address: string;
   delegation: number;
   rank: number;
-  status: 'MASTERNODE' | 'PROPOSED' | 'SLASHED';
+  status: CandidateDetailsStatus;
 }
 
+export type CandidateDetailsStatus = 'MASTERNODE' | 'PROPOSED' | 'SLASHED';
 
 export class GrandMasterManager {
-  private _web3Client: any;
+  // private _web3Client: any;
 
-  public get web3Client() {
-    return this._web3Client;
-  }
+  // public get web3Client() {
+  //   return this._web3Client;
+  // }
 
-  public set web3Client(value) {
-    this._web3Client = value;
-  }
+  // public set web3Client(value) {
+  //   this._web3Client = value;
+  // }
 
-  constructor() {
-    const win = window as any;
-    this.web3Client = new Web3(win.xdc ? win.xdc : win.ethereum);
-  }
+  // constructor() {
+  //   const win = window as any;
+  //   this.web3Client = new Web3(win.xdc ? win.xdc : win.ethereum);
+  // }
 
   /**
    * * This method will detect XDC-Pay and verify if customer has alraedy loggin.
@@ -55,6 +56,11 @@ export class GrandMasterManager {
    * @returns If transaction is successful, return. Otherwise, an error details will be returned
    */
   async removeMasterNode(_address: string): Promise<true | ManagerError> {
+    // const mockError: ManagerError = {
+    //   errorStatus: 1,
+    //   errorType: ErrorTypes.INTERNAL_ERROR
+    // };
+    // return mockError;
     return true;
   }
 

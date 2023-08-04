@@ -13,7 +13,7 @@ function getReadableErrorMessage(status: number) {
     return 'Invalid search term, please use a valid Block Height, Block Hash or TX Hash';
   }
 
-  return 'No result for the query, please try again'
+  return 'No result for the query, please try again';
 }
 
 export default function SearchNotFound({ status }: SearchNotFoundProps) {

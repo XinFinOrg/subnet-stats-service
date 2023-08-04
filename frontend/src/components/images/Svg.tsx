@@ -69,6 +69,14 @@ function Arrow({ colour }: GeneralSvgProps) {
   );
 }
 
+function Spinner({ colour }: GeneralSvgProps) {
+  return (
+    <svg className={`${colour} stroke-primary`} height="16px" width="16px" xmlns="http://www.w3.org/2000/svg" viewBox="22 22 44 44 ">
+      <circle className='animate-loading spin flex' strokeDasharray="80px, 200px" strokeDashoffset="0" cx="44" cy="44" r="20.2" fill='none' strokeWidth="3.5"></circle>
+    </svg>
+  );
+}
+
 interface InlineSvgProps {
   svgName: InlineSvgNames;
   colour?: InlineSvgColours;
@@ -94,6 +102,10 @@ export function InlineSvg({ svgName, colour, className, strokeColour }: InlineSv
 
     case InlineSvgNames.Arrow:
       SvgComponent = Arrow;
+      break;
+
+    case InlineSvgNames.Spinner:
+      SvgComponent = Spinner;
       break;
 
     default:
@@ -261,6 +273,7 @@ export enum InlineSvgNames {
   Sun = 'Sun',
   Copy = 'Copy',
   Arrow = 'Arrow',
+  Spinner = 'Spinner',
 }
 
 export enum SvgNames {

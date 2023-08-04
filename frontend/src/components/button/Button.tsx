@@ -6,6 +6,7 @@ interface ButtonProps extends PropsWithChildren {
   colour?: 'primary' | 'secondary' | 'success' | 'warning' | 'danger';
   className?: string;
   onClick?: () => void;
+  type?: 'submit';
 }
 
 export default function Button(props: ButtonProps) {
