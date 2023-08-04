@@ -4,14 +4,14 @@ import { twMerge } from 'tailwind-merge';
 import XDCPlaceholder from '@/assets/xdc.png';
 import Card from '@/components/card/Card';
 import InfoList from '@/components/info-list/InfoList';
+import { ErrorTypes } from '@/services/grandmaster-manager/errors';
 
 import type { InfoListInfo } from '@/types/info';
-
 interface LoginErrorProps {
-  errorState: number;
+  errorType: ErrorTypes;
 }
 
-export default function LoginError({ errorState }: LoginErrorProps) {
+export default function LoginError({ errorType }: LoginErrorProps) {
   const networkInfo = {
     data: [
       { name: 'Network ID:', value: 'tXDC' },
@@ -23,7 +23,7 @@ export default function LoginError({ errorState }: LoginErrorProps) {
   return (
     <>
       <h1 className='text-2xl font-extrabold'>Login in Portal</h1>
-      <ErrorStateCard errorState={errorState} />
+      <ErrorStateCard errorType={errorType} />
       <Card className='mt-8'>
         <div className='text-2xl font-bold border-b dark:border-text-dark-600 border-text-white-600 py-4'>
           <h2 className='pl-4'>How to Log In correctly?</h2>
@@ -56,7 +56,7 @@ interface ManagementLoginPageInfoItemProps {
   className?: string;
 }
 
-function ManagementLoginPageNetworkInfo({ className, info }: ManagementLoginPageInfoItemProps) {
+function ManagementLoginPageNetworkInfo({ className, info }: ManagementLoginPageInfoItemProps): JSX.Element {
   return (
     <div className={twMerge(className, 'w-[300px] mt-8')}>
       <InfoList info={info} noIcon />
@@ -65,18 +65,50 @@ function ManagementLoginPageNetworkInfo({ className, info }: ManagementLoginPage
 }
 
 interface ErrorStateCardProps {
-  errorState: number;
+  errorType: ErrorTypes;
 }
 
-function ErrorStateCard({ errorState }: ErrorStateCardProps) {
-  // TODO:
-  errorState;
-
+function ErrorStateCard({ errorType }: ErrorStateCardProps) {
   return (
-    <Card className='mt-8 text-lg'>
-      Metamask not installed. Please
-      <NavLink className='dark:bg-primary bg-primary-300 rounded-3xl px-2 py-[2px] mx-1' to={'/installMetaMask'}>click here</NavLink>
-      to install Metamask, and then follow the instructions below to login
+    <Card className='mt-8 text-lg font-extrabold'>
+      <CardContent errorType={errorType} />
     </Card>
   );
+}
+
+interface CardContentProps {
+  errorType: ErrorTypes;
+}
+
+function CardContent({ errorType }: CardContentProps): JSX.Element {
+  switch (errorType) {
+    case ErrorTypes.WALLET_NOT_INSTALLED:
+      return (
+        <>
+          Metamask not installed. Please
+          <NavLink className='dark:bg-primary bg-primary-300 rounded-3xl px-2 py-[2px] mx-1' to={'/installMetaMask'}>click here</NavLink>
+          to install Metamask, and then follow the instructions below to login
+        </>
+      );
+
+    case ErrorTypes.NOT_GRANDMASTER:
+      return (
+        <>
+          Metamask installed. Please follow the instructions below to log in as the grand master
+        </>
+      );
+
+    case ErrorTypes.WALLET_NOT_LOGIN:
+      return (
+        <>
+          <div>Incorrect log in detected</div>
+          <p className='text-base font-normal'>
+            Error Info: Wrong network. Please switch account or follow the instructions below
+          </p>
+        </>
+      );
+
+    default:
+      return <>internal error</>;
+  }
 }

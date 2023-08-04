@@ -1,34 +1,78 @@
-import { useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 
 import Button from '@/components/button/Button';
 import Card from '@/components/card/Card';
+import ErrorState from '@/components/error-state/ErrorState';
 import InfoList from '@/components/info-list/InfoList';
+import { ServiceContext } from '@/contexts/ServiceContext';
 import LoginError from '@/pages/management-login-page/components/LoginError';
+import { AccountDetails } from '@/services/grandmaster-manager';
+import { TableContent } from '@/types/managementLoginPage';
 import { formatHash } from '@/utils/formatter';
 
-export default function ManagementLoginPage() {
-  // TODO: Load init state
-  const [errorState] = useState(0);
+import type { ErrorTypes, ManagerError } from '@/services/grandmaster-manager/errors';
 
-  if (errorState !== 0) {
-    return <LoginError errorState={errorState} />;
+function isError(result: AccountDetails | ManagerError): result is ManagerError {
+  return 'errorType' in (result as ManagerError);
+}
+
+export default function ManagementLoginPage() {
+  const [errorType, setErrorType] = useState<ErrorTypes>();
+  const [tableContent, setTableContent] = useState<TableContent | null>();
+  const service = useContext(ServiceContext);
+
+  function getContent(accountDetails: AccountDetails): TableContent {
+    const { accountAddress, balance, denom, networkId, rpcAddress } = accountDetails;
+
+    const walletInfo = {
+      data: [
+        { name: 'Wallet Connected:', value: formatHash(accountAddress) },
+        { name: 'Current Balance:', value: `${balance} hxdc` },
+        { name: 'Redeemable Balance:', value: `${'unknown'} hxdc` }
+      ]
+    };
+
+    const networkInfo = {
+      data: [
+        { name: 'Network ID:', value: networkId },
+        { name: 'Network Denom:', value: denom },
+        { name: 'Network RPC:', value: rpcAddress }
+      ]
+    };
+
+    return {
+      wallet: walletInfo,
+      network: networkInfo
+    };
   }
 
-  const walletInfo = {
-    data: [
-      { name: 'Wallet Connected:', value: formatHash('0abcdasdfasdfsdfxyz') },
-      { name: 'Current Balance:', value: `${'123'} hxdc` },
-      { name: 'Redeemable Balance:', value: `${'123'} hxdc` }
-    ]
-  };
+  useEffect(() => {
+    async function getData() {
+      const result = await service?.login();
 
-  const networkInfo = {
-    data: [
-      { name: 'Network ID:', value: 'tXDC' },
-      { name: 'Network Denom:', value: 'myCoin' },
-      { name: 'Network RPC:', value: 'https:192.168.1.1/443' }
-    ]
-  };
+      if (!result) {
+        setTableContent(null);
+        return;
+      }
+
+      if (isError(result)) {
+        setErrorType(result.errorType)
+        return;
+      }
+
+      setTableContent(getContent(result));
+    }
+
+    getData();
+  }, [service]);
+
+  if (errorType) {
+    return <LoginError errorType={errorType} />;
+  }
+
+  if (!tableContent) {
+    return <ErrorState title='master login' />;
+  }
 
   return (
     <>
@@ -37,12 +81,12 @@ export default function ManagementLoginPage() {
         <div className='grid gap-12 grid-cols-1 md:grid-cols-2'>
           <div className='flex flex-col'>
             <div>
-              <InfoList info={walletInfo} noIcon />
+              <InfoList info={tableContent.wallet} noIcon />
             </div>
             <Button colour='primary' className='self-end mt-6'>Redeem</Button>
           </div>
           <div>
-            <InfoList info={networkInfo} noIcon />
+            <InfoList info={tableContent.network} noIcon />
           </div>
         </div>
         <div className='border-t border-text-dark-400 col-2 mt-6'>

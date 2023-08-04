@@ -1,8 +1,8 @@
 // import Web3 from 'web3';
 
-import { ManagerError } from '@/services/grandmaster-manager/errors';
+import { ErrorTypes, ManagerError } from '@/services/grandmaster-manager/errors';
 
-interface AccountDetails {
+export interface AccountDetails {
   accountAddress: string;
   balance: string;
   networkId: number;
@@ -40,6 +40,12 @@ export class GrandMasterManager {
    * @returns Account details will be returned if all good, otherwise, relevant error message and type will be returned such as WALLET_NOT_LOGIN
    */
   async login(): Promise<AccountDetails | ManagerError> {
+    const mockError: ManagerError = {
+      errorStatus: 404,
+      errorType: ErrorTypes.WALLET_NOT_INSTALLED
+    };
+    return mockError;
+
     const chainId = 551;
     return {
       accountAddress: "xdc888c073313b36cf03cf1f739f39443551ff12bbe",
