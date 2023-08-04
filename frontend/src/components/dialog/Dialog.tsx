@@ -1,6 +1,8 @@
 import React, { forwardRef, useImperativeHandle, useRef } from 'react';
+import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/button/Button';
+import { InlineSvg, InlineSvgNames, InlineSvgStrokeColours } from '@/components/images/Svg';
 
 export interface DialogRef {
   open: () => void;
@@ -110,33 +112,50 @@ const Dialog = forwardRef<DialogRef, DialogProps>((props, ref) => {
 
 interface DialogTitleProps {
   title: string;
+  className?: string;
 }
 
-export function DialogTitle({ title }: DialogTitleProps) {
+export function DialogTitle({ title, className }: DialogTitleProps) {
   return (
     <div className='h-[62px] flex items-center'>
-      <h1 className='text-2xl font-medium leading-tight'>{title}</h1>
+      <h1 className={`${twMerge('text-2xl text-center font-medium leading-tight', className)}`}>{title}</h1>
     </div>
   );
 }
 
 interface DialogButtonsProps {
   onClose: () => void;
-  onSubmit: () => void;
+  onSubmit?: () => void;
+  omitSeparator?: boolean;
   submitText?: string;
   cancelText?: string;
+  isSubmitting?: boolean;
 }
 
-export function DialogButtons({ submitText, cancelText, onClose, onSubmit }: DialogButtonsProps) {
+export function DialogButtons({ omitSeparator, submitText, cancelText, onClose, onSubmit, isSubmitting }: DialogButtonsProps) {
+
   return (
-    <div className='flex gap-2.5 pt-6'>
-      <Button onClick={onSubmit} className='font-extrabold px-4 flex-1' variant='outlined' colour='primary'>
-        {submitText ?? 'Submit'}
-      </Button>
-      <Button onClick={onClose} className='font-extrabold px-4 flex-1' variant='contained' colour='primary'>
-        {cancelText ?? 'Cancel'}
-      </Button>
-    </div>
+    <>
+      {!omitSeparator && <div className='pt-6 border-b border-text-dark-400/50' />}
+      <div className='flex gap-2.5 pt-6'>
+        <Button onClick={onSubmit} className='font-extrabold px-4 py-2.5 flex-1 flex items-center justify-center' variant='outlined' colour='primary' type='submit'>
+          {isSubmitting
+            ? (
+              <InlineSvg
+                svgName={InlineSvgNames.Spinner}
+                strokeColour={InlineSvgStrokeColours.Default}
+              />
+            ) :
+            (
+              submitText ?? 'Submit'
+            )
+          }
+        </Button>
+        <Button onClick={onClose} className='font-extrabold px-4 py-2.5 flex-1' variant='contained' colour='primary'>
+          {cancelText ?? 'Cancel'}
+        </Button>
+      </div>
+    </>
   );
 }
 

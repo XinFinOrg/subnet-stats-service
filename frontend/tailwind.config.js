@@ -67,7 +67,7 @@ export default {
           300: '#80D0FF',
           200: '#99DAFF',
           100: '#B2E3FF',
-          light: '#00a2ff26', 
+          light: '#00a2ff26',
           dark: '#558BCD'
         },
         'border-dark': '#F2F3F3',
@@ -92,7 +92,27 @@ export default {
       opacity: {
         '15': '.15',
       },
+      animation: {
+        'spin-fast': 'spin .5s linear infinite',
+        loading: 'loading 1s ease-in-out infinite',
+      },
+      keyframes: {
+        loading: {
+          '0%': {
+            'stroke-dasharray': "1px 200px",
+            'stroke-dashoffset': "0",
+          },
+          '50%': {
+            'stroke-dasharray': "100px 200px",
+            'stroke-dashoffset': "-15px",
+          },
+          '100%': {
+            'stroke-dasharray': "100px 200px",
+            'stroke-dashoffset': "-125px",
+          },
+        }
+      }
     },
   },
   plugins: [],
-}
+};
