@@ -8,6 +8,7 @@ import Miner from '@/assets/miner.svg';
 import NoResultDark from '@/assets/no-results-dark.svg';
 import NoResult from '@/assets/no-results.svg';
 import Penalty from '@/assets/penalty.svg';
+import QuestionMark from '@/assets/question-mark.svg';
 import Refresh from '@/assets/refresh.svg';
 import Rhombus from '@/assets/rhombus.svg';
 import Search from '@/assets/search.svg';
@@ -250,6 +251,11 @@ export default function Svg({ svgName, size, sizeClass: userDefinedSizeClass, cl
       SvgComponent = Refresh;
       alt = 'Refresh';
       break;
+
+    case SvgNames.QuestionMark:
+      SvgComponent = QuestionMark;
+      alt = 'QuestionMark';
+      break;
   }
 
   return (
@@ -292,4 +298,5 @@ export enum SvgNames {
   Logo = 'Logo',
   Menu = 'Menu',
   Refresh = 'Refresh',
+  QuestionMark = 'QuestionMark',
 }

@@ -9,7 +9,7 @@ export namespace TableContent {
   export namespace Header {
     export interface Config {
       id: string;
-      name: string;
+      name: string | ReactNode;
       width: string;
     }
   }
