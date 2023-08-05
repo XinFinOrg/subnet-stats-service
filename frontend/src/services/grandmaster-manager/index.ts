@@ -42,7 +42,7 @@ export class GrandMasterManager {
   async login(): Promise<AccountDetails | ManagerError> {
     const mockError: ManagerError = {
       errorStatus: 404,
-      errorType: ErrorTypes.WALLET_NOT_INSTALLED
+      errorType: ErrorTypes.NOT_GRANDMASTER
     };
     return mockError;
 

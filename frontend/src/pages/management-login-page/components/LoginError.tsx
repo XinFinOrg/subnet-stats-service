@@ -25,7 +25,7 @@ export default function LoginError({ errorType }: LoginErrorProps) {
       <h1 className='text-2xl font-extrabold'>Login in Portal</h1>
       <ErrorStateCard errorType={errorType} />
       <Card className='mt-8'>
-        <div className='text-2xl font-bold border-b dark:border-text-dark-600 border-text-white-600 py-4'>
+        <div className='text-2xl font-bold border-b dark:border-text-dark-600 border-text-white-400 py-4'>
           <h2 className='pl-4'>How to Log In correctly?</h2>
         </div>
         <div className='mt-8 grid gap-6 grid-cols-[repeat(auto-fill,minmax(330px,1fr))]'>
@@ -86,7 +86,7 @@ function CardContent({ errorType }: CardContentProps): JSX.Element {
       return (
         <>
           Metamask not installed. Please
-          <NavLink className='dark:bg-primary bg-primary-300 rounded-3xl px-2 py-[2px] mx-1' to={'/installMetaMask'}>click here</NavLink>
+          <NavLink className='dark:bg-primary bg-primary rounded-3xl px-2 py-[2px] mx-1 whitespace-nowrap text-white' to={'/installMetaMask'}>click here</NavLink>
           to install Metamask, and then follow the instructions below to login
         </>
       );

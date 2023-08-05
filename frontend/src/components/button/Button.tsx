@@ -22,7 +22,7 @@ export default function Button(props: ButtonProps) {
             colourClass = 'dark:bg-primary bg-primary text-white';
             break;
           case 'outlined':
-            colourClass = 'border border-primary';
+            colourClass = 'border border-primary text-primary dark:text-white';
             break;
         }
 

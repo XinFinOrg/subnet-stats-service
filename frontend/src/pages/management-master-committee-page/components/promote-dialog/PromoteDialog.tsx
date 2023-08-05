@@ -119,7 +119,7 @@ function FormContent(props: PromoteDialogProps) {
 
       {/* Dialog content */}
       <div className='pt-6'>
-        <InfoList info={initInfo} noIcon />
+        <InfoList info={initInfo} noIcon valueClassName='text-lg' />
       </div>
       <DialogFormField
         labelText={actionLabel}
@@ -160,7 +160,7 @@ function PreviewUpdatedMasterNodeInfo({ delegation, formattedAddress, type }: Up
 
   return (
     <div className='pt-6'>
-      <InfoList info={changedInfo} noIcon />
+      <InfoList info={changedInfo} noIcon valueClassName='text-lg' />
     </div>
   );
 }

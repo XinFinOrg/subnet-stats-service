@@ -28,7 +28,6 @@ export default function ManagementLoginPage() {
       data: [
         { name: 'Wallet Connected:', value: formatHash(accountAddress) },
         { name: 'Current Balance:', value: `${balance} hxdc` },
-        { name: 'Redeemable Balance:', value: `${'unknown'} hxdc` }
       ]
     };
 
@@ -56,7 +55,7 @@ export default function ManagementLoginPage() {
       }
 
       if (isError(result)) {
-        setErrorType(result.errorType)
+        setErrorType(result.errorType);
         return;
       }
 
@@ -83,13 +82,12 @@ export default function ManagementLoginPage() {
             <div>
               <InfoList info={tableContent.wallet} noIcon />
             </div>
-            <Button colour='primary' className='self-end mt-6'>Redeem</Button>
           </div>
           <div>
             <InfoList info={tableContent.network} noIcon />
           </div>
         </div>
-        <div className='border-t border-text-dark-400 col-2 mt-6'>
+        <div className='border-t border-text-dark-400 col-2 mt-12'>
           <Button colour='secondary' className='mt-6'>Log out</Button>
         </div>
       </Card>

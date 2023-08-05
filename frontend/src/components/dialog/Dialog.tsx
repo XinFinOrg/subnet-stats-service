@@ -97,8 +97,8 @@ const Dialog = forwardRef<DialogRef, DialogProps>((props, ref) => {
       className={`
       ${borderClass}
       text-text-dark bg-white
-      dark:text-text-white dark:bg-black
-        z-10 rounded-3xl py-6 px-5 backdrop:bg-black/15
+      dark:text-text-white dark:bg-bg-dark-800
+        z-10 rounded-3xl py-6 px-5 backdrop:dark:bg-bg-white/15 backdrop:bg-black/15
         w-[640px]
       `}
       ref={dialogRef}
@@ -118,7 +118,7 @@ interface DialogTitleProps {
 export function DialogTitle({ title, className }: DialogTitleProps) {
   return (
     <div className='h-[62px] flex items-center'>
-      <h1 className={`${twMerge('text-2xl text-center font-medium leading-tight', className)}`}>{title}</h1>
+      <h1 className={`${twMerge('text-2xl text-center leading-tight font-extrabold', className)}`}>{title}</h1>
     </div>
   );
 }
