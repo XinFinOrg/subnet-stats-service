@@ -37,7 +37,7 @@ export default function RemoveMasterNodeDialog(props: RemoveMasterNodeDialogProp
       <div className='pt-6'>
         <p>A remove transaction will be generated for your approval. You can add this address back anytime using the add a new master node function.</p>
       </div>
-      <DialogButtons isSubmitting={isSubmitting} onClose={closeDialog} onSubmit={handleSubmit} submitText='Yes, proceed to wallet confirmation' />
+      <DialogButtons isSubmitting={isSubmitting} onClose={closeDialog} onSubmit={handleSubmit} submitText='Proceed to wallet confirmation' />
     </>
   );
 }

@@ -16,6 +16,7 @@ export default {
         'error': '#A03A1A',
         'bg-white': {
           DEFAULT: '#E5F6FF',
+          1000: '#CCEFFF',
         },
         'bg-dark': {
           1000: '#131416',

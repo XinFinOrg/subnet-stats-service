@@ -5,7 +5,6 @@ import Card from '@/components/card/Card';
 import { Cell } from '@/components/cell/Cell';
 import Dialog, { DialogRef, DialogResultBase } from '@/components/dialog/Dialog';
 import ErrorState from '@/components/error-state/ErrorState';
-import Svg, { SvgNames } from '@/components/images/Svg';
 import Loader from '@/components/loader/Loader';
 import { ServiceContext } from '@/contexts/ServiceContext';
 import AddMasterNodeDialog from '@/pages/management-master-committee-page/components/add-master-node-dialog/AddMasterNodeDialog';
@@ -14,7 +13,7 @@ import RemoveMasterNodeDialog from '@/pages/management-master-committee-page/com
 import { CandidateDetailsStatus } from '@/services/grandmaster-manager';
 import { TableContent } from '@/types/managementMasterCommitteePage';
 import { formatHash } from '@/utils/formatter';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@radix-ui/react-tooltip';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@radix-ui/react-tooltip';
 
 export default function ManagementMasterCommitteePage() {
   const [isLoading, setIsLoading] = useState<boolean>();
@@ -51,11 +50,11 @@ export default function ManagementMasterCommitteePage() {
             <Tooltip>
               <TooltipTrigger>
                 Rank
-                <span className='w-6 h-6 inline-flex items-center justify-center rounded-full bg-bg-dark-600 ml-2.5'>
+                <span className='w-4 h-4 text-xs inline-flex items-center justify-center rounded-full dark:bg-bg-dark-600 bg-bg-white-1000 text-primary dark:text-white md:ml-1.5 ml-1'>
                   ?
                 </span>
               </TooltipTrigger>
-              <TooltipContent sideOffset={10} className='w-[232px] bg-bg-dark-600 rounded-3xl text-center shadow-sm py-4 px-3 leading-tight'>
+              <TooltipContent sideOffset={10} className='w-[232px] dark:bg-bg-dark-600 bg-white border border-text-white-600 dark:border-none whitespace-normal rounded-3xl text-center shadow-sm py-4 px-3 leading-tight'>
                 <p>The top x master candidates are in the current master committee with equal voting power</p>
               </TooltipContent>
             </Tooltip>
@@ -64,13 +63,12 @@ export default function ManagementMasterCommitteePage() {
         },
         {
           id: 'status',
-          name: 'Status',
-          width: 'w-[100px]'
+          name: 'Status', width: 'w-[130px]'
         },
         {
           id: 'actions',
           name: 'Actions',
-          width: 'w-[100px]'
+          width: 'w-[300px]'
         }],
         body
       };
@@ -131,51 +129,53 @@ export default function ManagementMasterCommitteePage() {
             Add a new master candidate
           </Button>
         </div>
-        <table className='dark:bg-bg-dark-800 bg-white sticky top-0 mt-6'>
-          <thead>
-            <tr>
-              {tableContent.headerConfig.map(header => (
-                <Cell key={header.id} className={header.width}>{header.name}</Cell>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {tableContent.body.map((row, i) => (
-              <tr key={i} className='border-b border-text-white-400/40 dark:border-text-dark-400/40'>
-                <Cell>{formatHash(row.address)}</Cell>
-                <Cell>{row.delegation} xdc</Cell>
-                <Cell>{row.rank}</Cell>
-                <Cell>{getDisplayStatus(row.status)}</Cell>
-                <Cell className='flex'>
-                  <Button
-                    variant='outlined'
-                    colour='success'
-                    className='px-4'
-                    onClick={() => openDialog(<PromoteDialog closeDialog={handleCloseDialog} data={row} type='promote' setDialogResult={setDialogResult} />)}
-                  >
-                    Promote
-                  </Button>
-                  <Button
-                    variant='outlined'
-                    colour='warning'
-                    className='px-4 ml-2'
-                    onClick={() => openDialog(<PromoteDialog closeDialog={handleCloseDialog} data={row} type='demote' setDialogResult={setDialogResult} />)}
-                  >
-                    Demote
-                  </Button>
-                  <Button
-                    variant='outlined'
-                    colour='danger'
-                    className='px-4 ml-2'
-                    onClick={() => openDialog(<RemoveMasterNodeDialog closeDialog={handleCloseDialog} address={row.address} setDialogResult={setDialogResult} />)}
-                  >
-                    Remove
-                  </Button>
-                </Cell>
+        <div className='overflow-x-auto'>
+          <table className='dark:bg-bg-dark-800 bg-white sticky top-0 mt-6 w-full'>
+            <thead>
+              <tr className='border-b border-text-white-400/40 dark:border-text-dark-400/40'>
+                {tableContent.headerConfig.map(header => (
+                  <Cell key={header.id} className={`${header.width} whitespace-nowrap`}>{header.name}</Cell>
+                ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {tableContent.body.map((row, i) => (
+                <tr key={i} className='border-b border-text-white-400/40 dark:border-text-dark-400/40'>
+                  <Cell>{formatHash(row.address)}</Cell>
+                  <Cell>{row.delegation} xdc</Cell>
+                  <Cell>{row.rank}</Cell>
+                  <Cell>{getDisplayStatus(row.status)}</Cell>
+                  <Cell className='flex'>
+                    <Button
+                      variant='outlined'
+                      colour='success'
+                      className='px-4'
+                      onClick={() => openDialog(<PromoteDialog closeDialog={handleCloseDialog} data={row} type='promote' setDialogResult={setDialogResult} />)}
+                    >
+                      Promote
+                    </Button>
+                    <Button
+                      variant='outlined'
+                      colour='warning'
+                      className='px-4 ml-2'
+                      onClick={() => openDialog(<PromoteDialog closeDialog={handleCloseDialog} data={row} type='demote' setDialogResult={setDialogResult} />)}
+                    >
+                      Demote
+                    </Button>
+                    <Button
+                      variant='outlined'
+                      colour='danger'
+                      className='px-4 ml-2'
+                      onClick={() => openDialog(<RemoveMasterNodeDialog closeDialog={handleCloseDialog} address={row.address} setDialogResult={setDialogResult} />)}
+                    >
+                      Remove
+                    </Button>
+                  </Cell>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </Card>
     </>
   );
