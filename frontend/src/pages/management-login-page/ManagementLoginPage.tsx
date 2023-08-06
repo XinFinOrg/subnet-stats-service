@@ -4,6 +4,7 @@ import Button from '@/components/button/Button';
 import Card from '@/components/card/Card';
 import ErrorState from '@/components/error-state/ErrorState';
 import InfoList from '@/components/info-list/InfoList';
+import Loader from '@/components/loader/Loader';
 import { ServiceContext } from '@/contexts/ServiceContext';
 import LoginError from '@/pages/management-login-page/components/LoginError';
 import { AccountDetails } from '@/services/grandmaster-manager';
@@ -11,7 +12,6 @@ import { TableContent } from '@/types/managementLoginPage';
 import { formatHash } from '@/utils/formatter';
 
 import type { ErrorTypes, ManagerError } from '@/services/grandmaster-manager/errors';
-
 function isError(result: AccountDetails | ManagerError): result is ManagerError {
   return 'errorType' in (result as ManagerError);
 }
@@ -19,6 +19,8 @@ function isError(result: AccountDetails | ManagerError): result is ManagerError 
 export default function ManagementLoginPage() {
   const [errorType, setErrorType] = useState<ErrorTypes>();
   const [tableContent, setTableContent] = useState<TableContent | null>();
+  const [isLoading, setIsLoading] = useState(false);
+
   const service = useContext(ServiceContext);
 
   function getContent(accountDetails: AccountDetails): TableContent {
@@ -47,9 +49,11 @@ export default function ManagementLoginPage() {
 
   useEffect(() => {
     async function getData() {
+      setIsLoading(true);
       const result = await service?.login();
+      setIsLoading(false);
 
-      if (!result) {
+      if (!result || !service) {
         setTableContent(null);
         return;
       }
@@ -64,6 +68,10 @@ export default function ManagementLoginPage() {
 
     getData();
   }, [service]);
+
+  if (isLoading) {
+    return <Loader />;
+  }
 
   if (errorType) {
     return <LoginError errorType={errorType} />;

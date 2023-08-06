@@ -33,9 +33,11 @@ export default function RemoveMasterNodeDialog(props: RemoveMasterNodeDialogProp
 
   return (
     <>
-      <DialogTitle className='text-xl' title={`Are you about to completely remove address ${formatHash(address)} from the master list?`} />
+      <DialogTitle className='text-xl' title={`Are you sure you want to completely remove address ${formatHash(address)} from the master list?`} />
       <div className='pt-6'>
-        <p>A remove transaction will be generated for your approval. You can add this address back anytime using the add a new master node function.</p>
+        <p>A remove transaction will be generated for your approval. You can add this address back anytime using the
+          <span className='font-bold'> add a new master node</span> function.
+        </p>
       </div>
       <DialogButtons isSubmitting={isSubmitting} onClose={closeDialog} onSubmit={handleSubmit} submitText='Proceed to wallet confirmation' />
     </>

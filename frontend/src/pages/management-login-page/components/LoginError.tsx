@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom';
 import { twMerge } from 'tailwind-merge';
 
-import XDCPlaceholder from '@/assets/xdc.png';
+import XDCPlaceholder from '@/assets/xdc-logo.png';
 import Card from '@/components/card/Card';
 import InfoList from '@/components/info-list/InfoList';
 import { ErrorTypes } from '@/services/grandmaster-manager/errors';
@@ -26,7 +26,7 @@ export default function LoginError({ errorType }: LoginErrorProps) {
       <ErrorStateCard errorType={errorType} />
       <Card className='mt-8'>
         <div className='text-2xl font-bold border-b dark:border-text-dark-600 border-text-white-400 py-4'>
-          <h2 className='pl-4'>How to Log In correctly?</h2>
+          <h2 className='pl-4'>How to log in correctly?</h2>
         </div>
         <div className='mt-8 grid gap-6 grid-cols-[repeat(auto-fill,minmax(330px,1fr))]'>
           <ImagePlaceholder />

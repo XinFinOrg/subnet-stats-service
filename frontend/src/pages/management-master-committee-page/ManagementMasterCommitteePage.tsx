@@ -38,11 +38,11 @@ export default function ManagementMasterCommitteePage() {
         headerConfig: [{
           id: 'address',
           name: 'Address',
-          width: 'w-[50px]'
+          width: 'w-[220px]'
         }, {
           id: 'delegation',
           name: 'Delegation',
-          width: 'w-[100px]'
+          width: 'w-[220px]'
         },
         {
           id: 'rank',
@@ -59,16 +59,16 @@ export default function ManagementMasterCommitteePage() {
               </TooltipContent>
             </Tooltip>
           ),
-          width: 'w-[100px]'
+          width: 'w-[220px]'
         },
         {
           id: 'status',
-          name: 'Status', width: 'w-[130px]'
+          name: 'Status', width: 'w-[220px]'
         },
         {
           id: 'actions',
           name: 'Actions',
-          width: 'w-[300px]'
+          width: 'w-[100px]'
         }],
         body
       };
