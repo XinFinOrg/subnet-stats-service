@@ -1,11 +1,11 @@
-export type Info = Partial<Record<InfoNames, InfoItem | undefined>>;
+export type Info = Partial<Record<InfoNames, InfoListInfo | undefined>>;
 
-interface InfoItem {
-  data?: InfoItem.Data[];
+interface InfoListInfo {
+  data?: InfoListInfo.Data[];
   health?: InfoListHealth;
 }
 
-namespace InfoItem {
+export namespace InfoListInfo {
   export interface Data {
     name: string;
     value?: string | number;

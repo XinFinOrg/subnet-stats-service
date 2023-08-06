@@ -3,8 +3,6 @@ ENV NODE_ENV=production
 
 RUN npm install -g yarn --force
 
-RUN npm install -g typescript
-
 COPY . ./app
 
 WORKDIR /app

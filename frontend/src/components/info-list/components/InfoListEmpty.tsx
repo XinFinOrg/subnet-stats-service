@@ -7,7 +7,7 @@ import { ThemeContext } from '@/contexts/ThemeContext';
 import styles from './info-list-empty.module.scss';
 
 interface InfoListEmptyProps {
-  title: string;
+  title?: string;
 }
 
 export default function InfoListEmpty({ title }: InfoListEmptyProps) {
@@ -24,7 +24,7 @@ export default function InfoListEmpty({ title }: InfoListEmptyProps) {
       <div className='h-[319px] bg-white dark:bg-bg-dark-800 rounded-b-3xl flex flex-col items-center justify-center'>
 
         <Svg svgName={svgName} className={`rounded-full ${styles.svgFilter}`} sizeClass='w-[75px] h-[75px]' />
-        <p className='dark:text-text-white text-text-dark text-xl pt-9'>No {title.toLowerCase()}</p>
+        <p className='dark:text-text-white text-text-dark text-xl pt-9'>No {title?.toLowerCase() ?? 'Data'}</p>
       </div>
     </>
   );

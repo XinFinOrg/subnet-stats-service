@@ -1,0 +1,2 @@
+export const TransactionSuccess = 'Transaction submitted. The change will be applied in the next epoch. Please check later.';
+export const TransactionFail = (errorCode: string) => `Transaction failed. Error: ${errorCode} . Please try again.`;
