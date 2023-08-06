@@ -1,5 +1,5 @@
 import { BlockService } from '../services/block.service';
-import { CHECKPOINT_CONTRACT, PARENTCHAIN_WALLET } from '../config';
+import { CHECKPOINT_CONTRACT, PARENTCHAIN_WALLET, SUBNET_URL } from '../config';
 import { getService } from '../services';
 import { AccountService } from '../services/account.service';
 import { NextFunction, Request, Response } from 'express';
@@ -32,5 +32,15 @@ export class RelayerController {
     } catch (error) {
       next(error);
     }
+  };
+
+  // TODO: Fetch the chain grandmaster address etc.
+  public getChainDetails = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const data = {
+      rpcUrl: SUBNET_URL,
+      grandmasterAddress: 'xxx',
+      minimumDelegation: '10000000000000000000000000',
+    };
+    res.status(200).json(data);
   };
 }
