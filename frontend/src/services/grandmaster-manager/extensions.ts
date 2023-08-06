@@ -1,8 +1,9 @@
-import Web3 from 'web3';
+import { Web3PluginBase } from 'web3';
 
-export interface Web3WithExtension extends Web3 {
-  xdcSubnet: {
-    getCandidates: (epochNum: "latest") => Promise<{
+
+export class CustomRpcMethodsPlugin extends Web3PluginBase {
+  public pluginNamespace = 'xdcSubnet';
+  public async getCandidates(epochNum: "latest"): Promise<{
       candidates: {
         [key: string]: {
           capacity: number;
@@ -11,19 +12,18 @@ export interface Web3WithExtension extends Web3 {
       };
       epoch: number;
       success: boolean;
-    }>
-  };
+    } | undefined> {
+    return await this.requestManager.send({
+      // plugin has access to web3.js internal features like request manager
+      method: 'eth_getCandidates',
+      params: [epochNum],
+    });
+  }
 }
 
-export const networkExtensions = (extensionName = 'xdcSubnet') => {
-  return {
-    property: extensionName,
-    methods: [
-      {
-        name: 'getCandidates',
-        params: 1,
-        call: 'eth_getCandidates',
-      }
-    ],
-  };
-};
+// Module Augmentation
+declare module 'web3' {
+  interface Web3Context {
+    xdcSubnet: CustomRpcMethodsPlugin;
+  }
+}

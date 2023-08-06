@@ -236,6 +236,39 @@ paths:
           description: 'Bad Request'
         '500':
           description: 'Server Error'
+  /information/chainsetting:
+    get:
+      summary: Get the subnet network metadata such as the RPC URL. This is particularly useful for help to validate the setting parameters from XDC pay/wallet in management page
+      tags:
+        - management
+      responses:
+        '200':
+          content: 
+            'application/json':
+              schema: 
+                type: object
+                properties:
+                  subnet:
+                    type: object
+                    properties:
+                      rpcUrl:
+                        description: Subnet Chain RPC URL
+                        type: string
+                      grandmasterAddress:
+                        description: The grandmaster wallet address for verification
+                        type: string
+                      minimumDelegation:
+                        description: Minimum delegation required when increase the candidates's voting/ranking power
+                    required:
+                      - rpcUrl
+                      - grandmasterAddress
+                      - minimumDelegation
+                required:
+                  - subnet
+        '400':
+          description: 'Bad Request'
+        '500':
+          description: 'Server Error'
                   
   /confirmation:
     get:
