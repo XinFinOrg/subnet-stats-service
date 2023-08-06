@@ -1,3 +1,4 @@
+import { SmartContractAuditedBlockInfo } from '../client/parentchain';
 import { MAX_NUM_OF_BLOCKS_IN_HISTORY } from '../config';
 import { Db } from './base';
 
@@ -5,8 +6,10 @@ const TYPE = 'BLOCK';
 // In case of no new blocks in 60s, we declare the block componenet of the system is not operational
 const STATUS_KEY = 'BLOCK_STATUS';
 const TTL = 60;
+const CHECK_PARENTCHAIN_TTL = 2;
 
 const LATEST_COMMITTEDBLOCK_KEY = 'LATEST_COMMITTED_BLOCK';
+const LATEST_PARENTCHAIN_SUBMITTED_KEY = 'LATEST_PARENTCHAIN_SUBMITTED_BLOCKINFO';
 
 /**
   This class is created so that we can easily swap with real DB without making changes to any other files.
@@ -57,6 +60,14 @@ export class BlockStorage {
 
   async getStatus(): Promise<boolean> {
     return this.db.get(STATUS_KEY) || false;
+  }
+
+  async getLastSubmittedBlockInfo(): Promise<SmartContractAuditedBlockInfo> {
+    return this.db.get(LATEST_PARENTCHAIN_SUBMITTED_KEY);
+  }
+
+  async setLastSubmittedToParentchainBlockInfo(blockInfo: SmartContractAuditedBlockInfo) {
+    this.db.set(LATEST_PARENTCHAIN_SUBMITTED_KEY, blockInfo, CHECK_PARENTCHAIN_TTL);
   }
 }
 

@@ -356,11 +356,15 @@ definitions:
         committedInParentChain:
           description: This boolean value is to indicate whether this block has been confirmed in the parent chain smart contract
           type: boolean
+        submittedInParentChain:
+          description: This boolean value is to indicate whether this block has been submitted in the parent chain smart contract and waiting for the confirmation
+          type: boolean
     required:
       - hash
       - number
       - committedInParentChain
       - committedInSubnet
+      - submittedInParentChain
         
 schemes:
  - https

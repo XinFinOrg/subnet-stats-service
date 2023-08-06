@@ -18,6 +18,7 @@ export interface BlockResponse extends BaseBlockResponse {
   parentHash: string;
   committedInSubnet: boolean;
   committedInParentChain: boolean;
+  submittedInParentChain: boolean;
 }
 
 export interface BaseBlockResponse {
