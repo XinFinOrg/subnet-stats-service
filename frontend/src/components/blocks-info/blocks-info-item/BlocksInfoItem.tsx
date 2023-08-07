@@ -2,6 +2,7 @@ import { PropsWithChildren, useContext } from 'react';
 import { Link } from 'react-router-dom';
 
 import { cellWith } from '@/components/blocks-info/constants';
+import Copyable from '@/components/copyable/Copyable';
 import Svg, { SvgNames } from '@/components/images/Svg';
 import { TimeContext } from '@/contexts/TimeContext';
 import { formatHash } from '@/utils/formatter';
@@ -52,9 +53,17 @@ export function BlocksInfoItem(data: BlocksInfoItemProps) {
           <Link to={`/checker/${data.number}`}>{data.number}</Link>
         </BlockCell>
         <BlockCell className={cellWith.recentBlocks.hash}>
-          <Link to={`/checker/${data.hash}`}>{formatHash(data.hash)}</Link>
+          <Copyable copyText={data.hash}>
+            <Link to={`/checker/${data.hash}`}>
+              {formatHash(data.hash)}
+            </Link>
+          </Copyable>
         </BlockCell>
-        <BlockCell className={cellWith.recentBlocks.proposedBy}>{formatHash(data.miner)}</BlockCell>
+        <BlockCell className={cellWith.recentBlocks.proposedBy}>
+          <Copyable copyText={data.miner}>
+            {formatHash(data.miner)}
+          </Copyable>
+        </BlockCell>
         <BlockImageCell className={cellWith.recentBlocks.status}>
           <BlockConfirmStatus committedInSubnet={data.committedInSubnet} committedInParentChain={data.committedInParentChain} />
         </BlockImageCell>
@@ -66,7 +75,11 @@ export function BlocksInfoItem(data: BlocksInfoItemProps) {
   return (
     <div className='flex'>
       <BlockCell className={cellWith.masterNodes.number}>{data.number}</BlockCell>
-      <BlockCell className={cellWith.masterNodes.account}>{data.account}</BlockCell>
+      <BlockCell className={cellWith.masterNodes.account}>
+        <Copyable copyText={data.account}>
+          {formatHash(data.account)}
+        </Copyable>
+      </BlockCell>
       <BlockImageCell className={cellWith.masterNodes.role}><MasterNodeRole role={data.role} /></BlockImageCell>
       {/* <BlockCell className={cellWith.masterNodes.activity}>{data.activity ? 'Active' : 'Inactive'}</BlockCell>
       <BlockCell className={cellWith.masterNodes.lastedParticipatedBlock}>{data.latestParticipateBlock}</BlockCell> */}
@@ -80,7 +93,7 @@ interface BlockCellProps extends PropsWithChildren {
 
 export function BlockCell({ className, children }: BlockCellProps) {
   return (
-    <div className={`px-2 py-2.5 leading-tight ${className}`}>{children}</div>
+    <div className={`group px-2 py-2.5 leading-tight ${className}`}>{children}</div>
   );
 }
 

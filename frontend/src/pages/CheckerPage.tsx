@@ -10,7 +10,7 @@ import SearchBar from '@/components/search-bar/SearchBar';
 import SearchNotFound from '@/components/search-not-found/SearchNotFound';
 import { formatHash, formatHashFromNonZero, formatMoney, formatTime } from '@/utils/formatter';
 
-import type { Info, InfoItem } from '@/types/info';
+import type { Info, InfoListInfo } from '@/types/info';
 import type { SearchResult } from '@/types/searchResult';
 
 export default function CheckerPage() {
@@ -123,7 +123,7 @@ function SearchResult({ searchText, searchResult }: SearchResultProps) {
         parentChainStatus={parentChain?.isConfirmed}
         inputType={inputType}
       />
-      <div className='pt-8 grid grid-cols-2 llg:grid-cols-3 gap-6'>
+      <div className='pt-8 grid md:grid-cols-2 llg:grid-cols-3 gap-6'>
         <InfoListCard
           title='Transaction Info'
           info={mappedInfo.transaction}
@@ -143,7 +143,7 @@ function SearchResult({ searchText, searchResult }: SearchResultProps) {
 
 interface InfoListCardProps {
   title: string;
-  info?: InfoItem;
+  info?: InfoListInfo;
 }
 
 function InfoListCard({ title, info }: InfoListCardProps) {

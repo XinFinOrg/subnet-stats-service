@@ -62,15 +62,15 @@ export class BlockService {
   public async getLastMinedBlocks(): Promise<BaseBlockResponse> {
     const allBlocks = await this.blockStorage.getAllBlocks();
     const latestMinedBlock =
-    allBlocks && allBlocks.length
-      ? {
-          hash: allBlocks[allBlocks.length - 1].hash,
-          number: allBlocks[allBlocks.length - 1].number,
-        }
-      : {
-        hash: "",
-        number: 0
-      };
+      allBlocks && allBlocks.length
+        ? {
+            hash: allBlocks[allBlocks.length - 1].hash,
+            number: allBlocks[allBlocks.length - 1].number,
+          }
+        : {
+            hash: '',
+            number: 0,
+          };
     return latestMinedBlock;
   }
 
@@ -79,9 +79,9 @@ export class BlockService {
     const allBlocks = await this.blockStorage.getAllBlocks();
     const lastCommittedBlockInfo = await this.getLastSubnetCommittedBlock();
     const lastCommittedBlock = await this.blockStorage.getMinedBlockByHash(lastCommittedBlockInfo.hash);
-    const endIndex = blockIndex != -1? allBlocks.findIndex((block) => block.number == blockIndex) : allBlocks.length-1;
+    const endIndex = blockIndex != -1 ? allBlocks.findIndex(block => block.number == blockIndex) : allBlocks.length - 1;
     const startIndex = endIndex - NUM_OF_BLOCKS_RETURN >= 0 ? endIndex - NUM_OF_BLOCKS_RETURN : 0;
-    const selectedBlocks = allBlocks.slice(startIndex, endIndex)
+    const selectedBlocks = allBlocks.slice(startIndex, endIndex);
 
     // Short-curcit if the committedBlock is not even recored in the system. The gap between mined and committed is too far
     if (!lastCommittedBlock) {
@@ -89,21 +89,14 @@ export class BlockService {
     }
 
     const sameChainBlocks = this.filterOutForksBeforeStartingBlock(selectedBlocks, lastCommittedBlock);
-    const { committed } = await this.getLastParentchainSubnetBlock();
+    const { committed, submitted } = await this.getLastParentchainSubnetBlock();
 
     return sameChainBlocks.map(b => {
-      let committedInSubnet = false;
-      let committedInParentChain = false;
-      if (b.number <= lastCommittedBlockInfo.number) {
-        committedInSubnet = true;
-      }
-      if (b.number <= committed.height) {
-        committedInParentChain = true;
-      }
       return {
         ...b,
-        committedInSubnet,
-        committedInParentChain,
+        committedInSubnet: b.number <= lastCommittedBlockInfo.number,
+        committedInParentChain: b.number <= committed.height,
+        submittedInParentChain: b.number <= submitted.height,
       };
     });
   }
@@ -127,7 +120,7 @@ export class BlockService {
 
   public async getLastParentchainSubnetBlock() {
     const { smartContractCommittedHash, smartContractCommittedHeight, smartContractHash, smartContractHeight } =
-      await this.parentChainClient.getLastAudittedBlock();
+      await this.getAndSetLastSubmittedBlockInfo();
     return {
       committed: {
         height: smartContractCommittedHeight,
@@ -217,7 +210,7 @@ export class BlockService {
   }
 
   private async getSmartContractProcessingInfo(): Promise<{ processedUntil: number; isProcessing: boolean }> {
-    const { smartContractHeight, smartContractCommittedHash } = await this.parentChainClient.getLastAudittedBlock();
+    const { smartContractHeight, smartContractCommittedHash } = await this.getAndSetLastSubmittedBlockInfo();
     const { timestamp } = await this.parentChainClient.getParentChainBlockBySubnetHash(smartContractCommittedHash);
     let isProcessing = true;
     const timeDiff = new Date().getTime() / 1000 - parseInt(timestamp.toString());
@@ -227,6 +220,17 @@ export class BlockService {
       processedUntil: smartContractHeight,
       isProcessing,
     };
+  }
+
+  private async getAndSetLastSubmittedBlockInfo() {
+    const lastSubmittedBlockInfo = await this.blockStorage.getLastSubmittedBlockInfo();
+    // Not exist, we need to call the parentchain node and set the value
+    if (!lastSubmittedBlockInfo) {
+      const result = await this.parentChainClient.getLastAudittedBlock();
+      await this.blockStorage.setLastSubmittedToParentchainBlockInfo(result);
+      return result;
+    }
+    return lastSubmittedBlockInfo;
   }
 
   /**
@@ -260,7 +264,7 @@ export class BlockService {
     }
 
     const lastBLock = chainToFilter[chainToFilter.length - 1];
-    const startingPointer = startingBlock && startingBlock.number <= lastBLock.number? startingBlock : lastBLock;
+    const startingPointer = startingBlock && startingBlock.number <= lastBLock.number ? startingBlock : lastBLock;
     const onChainHash = [startingPointer.hash];
     let parentHashPointer = startingPointer.parentHash;
     // Track back through the parentChain hash, if found then mark them as on the same chain
@@ -287,6 +291,7 @@ export class BlockService {
         ...b,
         committedInSubnet: false,
         committedInParentChain: false,
+        submittedInParentChain: false,
       };
     });
   }

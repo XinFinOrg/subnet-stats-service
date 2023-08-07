@@ -7,7 +7,8 @@ import { baseUrl } from '@/constants/urls.ts';
 import CheckerPage from '@/pages/CheckerPage.tsx';
 import ErrorPage from '@/pages/ErrorPage.tsx';
 import HomePage from '@/pages/HomePage.tsx';
-import ManagementPage from '@/pages/ManagementPage.tsx';
+import ManagementLoginPage from '@/pages/management-login-page/ManagementLoginPage.tsx';
+import ManagementMasterCommitteePage from '@/pages/management-master-committee-page/ManagementMasterCommitteePage.tsx';
 
 import App from './App.tsx';
 
@@ -75,8 +76,11 @@ const router = createBrowserRouter([
       path: 'checker/:id',
       element: <CheckerPage />,
     }, {
-      path: 'management',
-      element: <ManagementPage />,
+      path: 'managementLogin',
+      element: <ManagementLoginPage />,
+    }, {
+      path: 'managementMasterCommittee',
+      element: <ManagementMasterCommitteePage />,
     }, {
       path: '*',
       element: <Navigate to='/home' replace />,

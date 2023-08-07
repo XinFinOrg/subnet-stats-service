@@ -14,7 +14,7 @@ export class BlocksController {
   }
 
   public loadRecentBlocks = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    const blockNumIndex = req.query.blockNumIndex? Number(req.query.blockNumIndex) : -1;
+    const blockNumIndex = req.query.blockNumIndex ? Number(req.query.blockNumIndex) : -1;
 
     try {
       const [latestMinedBlock, recentBlocks, chainStatus, lastSubnetCommittedBlock, parentchainSubnetBlock] = await Promise.all([

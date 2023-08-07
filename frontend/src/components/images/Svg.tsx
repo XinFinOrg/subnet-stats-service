@@ -8,6 +8,7 @@ import Miner from '@/assets/miner.svg';
 import NoResultDark from '@/assets/no-results-dark.svg';
 import NoResult from '@/assets/no-results.svg';
 import Penalty from '@/assets/penalty.svg';
+import QuestionMark from '@/assets/question-mark.svg';
 import Refresh from '@/assets/refresh.svg';
 import Rhombus from '@/assets/rhombus.svg';
 import Search from '@/assets/search.svg';
@@ -16,6 +17,7 @@ import Logo from '@/assets/xdc-logo.svg';
 
 interface GeneralSvgProps {
   colour: string;
+  strokeColour?: string;
 }
 
 function Fallback({ colour }: GeneralSvgProps) {
@@ -60,13 +62,30 @@ function Copy({ colour }: GeneralSvgProps) {
   );
 }
 
+function Arrow({ colour }: GeneralSvgProps) {
+  return (
+    <svg className={colour} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+      <path d="M11.9758 8.6252C12.0758 8.6252 12.1674 8.64186 12.2508 8.6752C12.3341 8.70853 12.4174 8.76686 12.5008 8.8502L17.4508 13.8002C17.6008 13.9502 17.6758 14.1252 17.6758 14.3252C17.6758 14.5252 17.6008 14.7002 17.4508 14.8502C17.3008 15.0002 17.1216 15.0752 16.9133 15.0752C16.7049 15.0752 16.5258 15.0002 16.3758 14.8502L11.9758 10.4502L7.57578 14.8502C7.42578 15.0002 7.25078 15.0752 7.05078 15.0752C6.85078 15.0752 6.67578 15.0002 6.52578 14.8502C6.37578 14.7002 6.30078 14.521 6.30078 14.3127C6.30078 14.1044 6.37578 13.9252 6.52578 13.7752L11.4508 8.8502C11.5341 8.76686 11.6174 8.70853 11.7008 8.6752C11.7841 8.64186 11.8758 8.6252 11.9758 8.6252Z" />
+    </svg>
+  );
+}
+
+function Spinner({ colour }: GeneralSvgProps) {
+  return (
+    <svg className={`${colour} stroke-primary`} height="16px" width="16px" xmlns="http://www.w3.org/2000/svg" viewBox="22 22 44 44 ">
+      <circle className='animate-loading spin flex' strokeDasharray="80px, 200px" strokeDashoffset="0" cx="44" cy="44" r="20.2" fill='none' strokeWidth="3.5"></circle>
+    </svg>
+  );
+}
+
 interface InlineSvgProps {
   svgName: InlineSvgNames;
   colour?: InlineSvgColours;
+  strokeColour?: InlineSvgStrokeColours;
   className?: string;
 }
 
-export function InlineSvg({ svgName, colour, className }: InlineSvgProps) {
+export function InlineSvg({ svgName, colour, className, strokeColour }: InlineSvgProps) {
   let SvgComponent: (props: GeneralSvgProps) => JSX.Element;
 
   switch (svgName) {
@@ -82,15 +101,36 @@ export function InlineSvg({ svgName, colour, className }: InlineSvgProps) {
       SvgComponent = Copy;
       break;
 
+    case InlineSvgNames.Arrow:
+      SvgComponent = Arrow;
+      break;
+
+    case InlineSvgNames.Spinner:
+      SvgComponent = Spinner;
+      break;
+
     default:
       SvgComponent = Fallback;
       break;
 
   }
 
+  let strokeColourClass = '';
+
+  switch (strokeColour) {
+    case (InlineSvgStrokeColours.Default): {
+      strokeColourClass = 'stroke-text-dark-600 dark:stroke-text-white';
+      break;
+    }
+  }
+
   let fillColour = '';
 
   switch (colour) {
+    case (InlineSvgColours.Default): {
+      fillColour = 'fill-text-dark-600 dark:fill-text-white';
+      break;
+    }
     case (InlineSvgColours.Primary): {
       fillColour = 'fill-primary';
       break;
@@ -103,15 +143,11 @@ export function InlineSvg({ svgName, colour, className }: InlineSvgProps) {
       fillColour = 'fill-text-white';
       break;
     }
-    default: {
-      console.debug('warning: define fill colour');
-      break;
-    }
   }
 
   return (
     <div className={className ? className : ''}>
-      <SvgComponent colour={fillColour} />
+      <SvgComponent colour={fillColour} strokeColour={strokeColourClass} />
     </div>
   );
 }
@@ -215,6 +251,11 @@ export default function Svg({ svgName, size, sizeClass: userDefinedSizeClass, cl
       SvgComponent = Refresh;
       alt = 'Refresh';
       break;
+
+    case SvgNames.QuestionMark:
+      SvgComponent = QuestionMark;
+      alt = 'QuestionMark';
+      break;
   }
 
   return (
@@ -223,15 +264,22 @@ export default function Svg({ svgName, size, sizeClass: userDefinedSizeClass, cl
 }
 
 export enum InlineSvgColours {
+  Default = 'Default',
   Primary = 'Primary',
   Grey = 'Grey',
   White = 'White',
+}
+
+export enum InlineSvgStrokeColours {
+  Default = 'Default',
 }
 
 export enum InlineSvgNames {
   Moon = 'Moon',
   Sun = 'Sun',
   Copy = 'Copy',
+  Arrow = 'Arrow',
+  Spinner = 'Spinner',
 }
 
 export enum SvgNames {
@@ -250,4 +298,5 @@ export enum SvgNames {
   Logo = 'Logo',
   Menu = 'Menu',
   Refresh = 'Refresh',
+  QuestionMark = 'QuestionMark',
 }

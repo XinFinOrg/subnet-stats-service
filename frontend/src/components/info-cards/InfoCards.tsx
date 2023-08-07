@@ -9,9 +9,9 @@ import BlocksInfo from '@/components/blocks-info/BlocksInfo';
 import Card from '@/components/card/Card';
 import InfoList from '@/components/info-list/InfoList';
 import { baseUrl } from '@/constants/urls';
-import { getSortedRecentBlocks, uniqReplaceByName } from '@/pages/utils/BlockHelper';
 import { Info, InfoListHealth } from '@/types/info';
 import { HomeLoaderData } from '@/types/loaderData';
+import { getSortedRecentBlocks, uniqReplaceByName } from '@/utils/blockHelper';
 import { formatHash, formatMoney } from '@/utils/formatter';
 
 interface InfoCardsProps {
@@ -59,7 +59,7 @@ export default function InfoCards(props: InfoCardsProps) {
   const masterNodes = loaderData.masterNodes?.nodes?.map<MasterNode>((v, i: number) => ({
     ...v,
     type: 'master-node',
-    account: formatHash(v.address),
+    account: v.address,
     number: i + 1
   }));
 
