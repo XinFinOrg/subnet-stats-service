@@ -12,9 +12,6 @@ RUN apk add --update --no-cache python3 g++ make
 
 RUN yarn install
 
-#temp
-RUN yarn add -D @types/lodash.debounce 
-
 EXPOSE 5000
 
 CMD ["/bin/sh","-c","/app/start.sh"]

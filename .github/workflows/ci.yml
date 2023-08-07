@@ -54,8 +54,16 @@ jobs:
         DOCKER_PASSWORD: ${{secrets.DOCKER_ACCESS_TOKEN}}
       run: |
         echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+    - name: Determine Docker Image Name
+      id: image
+      run: |
+        if [[ "${{github.ref_name}}" == "master" ]]; then
+          echo "name=xinfinorg/subnet-frontend:latest" >> $GITHUB_OUTPUT
+        else
+          echo "name=xinfinorg/subnet-frontend:${{github.ref_name}}" >> $GITHUB_OUTPUT
+        fi
     - name: Docker build and tag image
-      run: cd frontend && docker build . --file Dockerfile --tag xinfinorg/subnet-frontend:latest
-    - name: Docker push
-      run: docker push xinfinorg/subnet-frontend:latest
+      run: cd backend && docker build . --file Dockerfile --tag ${{ steps.image.outputs.name }}
 
+    - name: Docker push
+      run: docker push ${{ steps.image.outputs.name }}
