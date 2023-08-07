@@ -47,7 +47,7 @@ export default function LoginError({ errorType }: LoginErrorProps) {
 
 function ImagePlaceholder() {
   return (
-    <img loading='lazy' className='p-5' width='330' height='330' src={XDCPlaceholder} alt='placeholder' />
+    <img loading='lazy' className='p-5 h-[330px] object-contain' width='330' height='330' src={XDCPlaceholder} alt='placeholder' />
   );
 }
 
