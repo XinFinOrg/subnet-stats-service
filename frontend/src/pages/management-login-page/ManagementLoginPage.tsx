@@ -12,14 +12,11 @@ import { TableContent } from '@/types/managementLoginPage';
 import { formatHash } from '@/utils/formatter';
 
 import type { ErrorTypes, ManagerError } from '@/services/grandmaster-manager/errors';
-function isError(result: AccountDetails | ManagerError): result is ManagerError {
-  return 'errorType' in (result as ManagerError);
-}
 
 export default function ManagementLoginPage() {
   const [errorType, setErrorType] = useState<ErrorTypes>();
   const [tableContent, setTableContent] = useState<TableContent | null>();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const service = useContext(ServiceContext);
 
@@ -49,21 +46,21 @@ export default function ManagementLoginPage() {
 
   useEffect(() => {
     async function getData() {
-      setIsLoading(true);
-      const result = await service?.login();
-      setIsLoading(false);
+      try {
+        setIsLoading(true);
+        const result = await service?.login();
+        if (!result || !service) {
+          setTableContent(null);
+          return;
+        }
 
-      if (!result || !service) {
-        setTableContent(null);
+        setTableContent(getContent(result));
+      } catch (error) {
+        setErrorType((error as ManagerError).errorType);
         return;
+      } finally {
+        setIsLoading(false);
       }
-
-      if (isError(result)) {
-        setErrorType(result.errorType);
-        return;
-      }
-
-      setTableContent(getContent(result));
     }
 
     getData();

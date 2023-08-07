@@ -6,7 +6,9 @@ import { DialogButtons, DialogResultBase, DialogTitle } from '@/components/dialo
 import { DialogFormField } from '@/components/form-field/FormField';
 import InfoList from '@/components/info-list/InfoList';
 import { ServiceContext } from '@/contexts/ServiceContext';
-import { setMasterNodeDialogResult } from '@/pages/management-master-committee-page/utils/helper';
+import {
+  setMasterNodeDialogFailResult, setMasterNodeDialogSuccessResult
+} from '@/pages/management-master-committee-page/utils/helper';
 import { CandidateDetails } from '@/services/grandmaster-manager';
 import { formatHash } from '@/utils/formatter';
 
@@ -42,12 +44,16 @@ export default function PromoteDialog(props: PromoteDialogProps) {
       return;
     }
 
-    const updatedDelegation = getUpdatedDelegation(data.delegation, increaseDelegation, type);
-    const result = await service.changeVote(data.address, updatedDelegation);
+    try {
+      const updatedDelegation = getUpdatedDelegation(data.delegation, increaseDelegation, type);
+      await service.changeVote(data.address, updatedDelegation);
 
-    setMasterNodeDialogResult(result, setDialogResult);
+      setMasterNodeDialogSuccessResult(setDialogResult);
 
-    formikRef.current?.resetForm();
+      formikRef.current?.resetForm();
+    } catch (error) {
+      setMasterNodeDialogFailResult(setDialogResult, error);
+    }
   }
 
   return (

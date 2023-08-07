@@ -16,7 +16,7 @@ import { formatHash } from '@/utils/formatter';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@radix-ui/react-tooltip';
 
 export default function ManagementMasterCommitteePage() {
-  const [isLoading, setIsLoading] = useState<boolean>();
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [tableContent, setTableContent] = useState<TableContent | null>();
   const [dialogContent, setDialogContent] = useState<React.ReactNode | null>(null);
   const [dialogResult, setDialogResult] = useState<DialogResultBase>();
@@ -25,55 +25,60 @@ export default function ManagementMasterCommitteePage() {
 
   useEffect(() => {
     async function fetchData() {
-      setIsLoading(true);
-      const body = await service?.getCandidates();
-      setIsLoading(false);
+      try {
+        setIsLoading(true);
+        const candidates = await service?.getCandidates();
 
-      if (!body) {
+        if (!candidates) {
+          setTableContent(null);
+          return;
+        }
+
+        const tableContent: TableContent = {
+          headerConfig: [{
+            id: 'address',
+            name: 'Address',
+            width: 'w-[220px]'
+          }, {
+            id: 'delegation',
+            name: 'Delegation',
+            width: 'w-[220px]'
+          },
+          {
+            id: 'rank',
+            name: (
+              <Tooltip>
+                <TooltipTrigger>
+                  Rank
+                  <span className='w-4 h-4 text-xs inline-flex items-center justify-center rounded-full dark:bg-bg-dark-600 bg-bg-white-1000 text-primary dark:text-white md:ml-1.5 ml-1'>
+                    ?
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent sideOffset={10} className='w-[232px] dark:bg-bg-dark-600 bg-white border border-text-white-600 dark:border-none whitespace-normal rounded-3xl text-center shadow-sm py-4 px-3 leading-tight'>
+                  <p>The top x master candidates are in the current master committee with equal voting power</p>
+                </TooltipContent>
+              </Tooltip>
+            ),
+            width: 'w-[220px]'
+          },
+          {
+            id: 'status',
+            name: 'Status', width: 'w-[220px]'
+          },
+          {
+            id: 'actions',
+            name: 'Actions',
+            width: 'w-[100px]'
+          }],
+          body: candidates
+        };
+
+        setTableContent(tableContent);
+      } catch (error) {
         setTableContent(null);
-        return;
+      } finally {
+        setIsLoading(false);
       }
-
-      const tableContent: TableContent = {
-        headerConfig: [{
-          id: 'address',
-          name: 'Address',
-          width: 'w-[220px]'
-        }, {
-          id: 'delegation',
-          name: 'Delegation',
-          width: 'w-[220px]'
-        },
-        {
-          id: 'rank',
-          name: (
-            <Tooltip>
-              <TooltipTrigger>
-                Rank
-                <span className='w-4 h-4 text-xs inline-flex items-center justify-center rounded-full dark:bg-bg-dark-600 bg-bg-white-1000 text-primary dark:text-white md:ml-1.5 ml-1'>
-                  ?
-                </span>
-              </TooltipTrigger>
-              <TooltipContent sideOffset={10} className='w-[232px] dark:bg-bg-dark-600 bg-white border border-text-white-600 dark:border-none whitespace-normal rounded-3xl text-center shadow-sm py-4 px-3 leading-tight'>
-                <p>The top x master candidates are in the current master committee with equal voting power</p>
-              </TooltipContent>
-            </Tooltip>
-          ),
-          width: 'w-[220px]'
-        },
-        {
-          id: 'status',
-          name: 'Status', width: 'w-[220px]'
-        },
-        {
-          id: 'actions',
-          name: 'Actions',
-          width: 'w-[100px]'
-        }],
-        body
-      };
-
-      setTableContent(tableContent);
     }
 
     fetchData(); // Call the asynchronous function to fetch the data

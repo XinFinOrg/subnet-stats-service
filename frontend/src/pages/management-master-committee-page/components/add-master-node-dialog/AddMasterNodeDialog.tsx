@@ -6,10 +6,11 @@ import { DialogButtons, DialogResultBase, DialogTitle } from '@/components/dialo
 import { DialogFormField } from '@/components/form-field/FormField';
 import InfoList from '@/components/info-list/InfoList';
 import { ServiceContext } from '@/contexts/ServiceContext';
-import { setMasterNodeDialogResult } from '@/pages/management-master-committee-page/utils/helper';
+import {
+  setMasterNodeDialogFailResult, setMasterNodeDialogSuccessResult
+} from '@/pages/management-master-committee-page/utils/helper';
 
 import type { InfoListInfo } from '@/types/info';
-
 interface AddMasterNodeDialogProps {
   closeDialog: () => void;
   setDialogResult?: React.Dispatch<React.SetStateAction<DialogResultBase | undefined>>;
@@ -35,11 +36,15 @@ export default function AddMasterNodeDialog(props: AddMasterNodeDialogProps) {
       return;
     }
 
-    const result = await service.addNewMasterNode(formikRef.current.values.newAddress);
+    try {
+      await service.addNewMasterNode(formikRef.current.values.newAddress);
 
-    setMasterNodeDialogResult(result, setDialogResult);
+      setMasterNodeDialogSuccessResult(setDialogResult);
 
-    formikRef.current?.resetForm();
+      formikRef.current?.resetForm();
+    } catch (error) {
+      setMasterNodeDialogFailResult(setDialogResult, error);
+    }
   }
 
   interface FormValues {

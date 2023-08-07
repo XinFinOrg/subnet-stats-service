@@ -2,7 +2,9 @@ import { useContext, useState } from 'react';
 
 import { DialogButtons, DialogResultBase, DialogTitle } from '@/components/dialog/Dialog';
 import { ServiceContext } from '@/contexts/ServiceContext';
-import { setMasterNodeDialogResult } from '@/pages/management-master-committee-page/utils/helper';
+import {
+  setMasterNodeDialogFailResult, setMasterNodeDialogSuccessResult
+} from '@/pages/management-master-committee-page/utils/helper';
 import { formatHash } from '@/utils/formatter';
 
 interface RemoveMasterNodeDialogProps {
@@ -23,12 +25,17 @@ export default function RemoveMasterNodeDialog(props: RemoveMasterNodeDialogProp
       return;
     }
 
-    setIsSubmitting(true);
+    try {
+      setIsSubmitting(true);
 
-    const result = await service.removeMasterNode(address);
+      await service.removeMasterNode(address);
 
-    setIsSubmitting(false);
-    setMasterNodeDialogResult(result, setDialogResult);
+      setMasterNodeDialogSuccessResult(setDialogResult);
+    } catch (error) {
+      setMasterNodeDialogFailResult(setDialogResult, error);
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
