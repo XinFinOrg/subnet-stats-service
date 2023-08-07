@@ -77,6 +77,16 @@ interface BaseNavItemsProps extends PropsWithChildren {
 
 function BaseNavItems({ name, children }: BaseNavItemsProps) {
   const [isManagementGroupOpen, setIsManagementGroupOpen] = useState(false);
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.pathname === '/managementLogin' || location.pathname === '/managementMasterCommittee') {
+      setIsManagementGroupOpen(true);
+      return;
+    }
+
+    setIsManagementGroupOpen(false);
+  }, [location]);
 
   return (
     <>
