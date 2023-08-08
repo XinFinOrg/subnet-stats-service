@@ -54,6 +54,7 @@ const getRpcUrl = async () => {
   } catch (error) {
     // TODO: Throw error instead after we updated the backend to have this chainsetting endpoint
     return "https://devnetstats.apothem.network/subnet"
+    // return "http://localhost:8545"
   }
 }
 
@@ -67,6 +68,9 @@ export class GrandMasterManager {
   }
   
   async init() {
+    if (!(window as any).ethereum) {
+      throw new ManagerError("XDC Pay Not Installed", ErrorTypes.WALLET_NOT_INSTALLED)
+    }
     if (this.initilised) {
       return
     }
@@ -74,13 +78,6 @@ export class GrandMasterManager {
     this.rpcBasedWeb3 = new Web3(await getRpcUrl());
     this.rpcBasedWeb3.registerPlugin(new CustomRpcMethodsPlugin());
     this.initilised = true;
-  }
-  
-  private async isXdcWalletInstalled() {
-    if (this.web3Client!.currentProvider) {
-      return true;
-    }
-    return false;
   }
   
   private async getGrandMasterAccountDetails() {
@@ -106,9 +103,6 @@ export class GrandMasterManager {
    */
   async login(): Promise<AccountDetails> {
     await this.init()
-    if (!this.isXdcWalletInstalled) {
-      throw new ManagerError("XDC Pay Not Installed", ErrorTypes.WALLET_NOT_INSTALLED)
-    }
     
     try {
       const { accountAddress, balance, networkId } = await this.getGrandMasterAccountDetails();
