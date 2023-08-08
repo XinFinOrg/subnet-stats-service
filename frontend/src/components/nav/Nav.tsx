@@ -112,7 +112,7 @@ function BaseNavItems({ name, children }: BaseNavItemsProps) {
       <div className={`pl-7 overflow-hidden ${isManagementGroupOpen ? 'h-32 transition-height duration-300' : 'h-0'}`}>
         <div className='border-l-4 border-text-dark-400/50'>
           <NavItem Image={ManagementLoginImage} text='Login' page='managementLogin' />
-          <NavItem Image={ManagementMasterCommitteeImage} text='Master Committee' page='managementMasterCommittee' />
+          <NavItem Image={ManagementMasterCommitteeImage} text='Master List' page='managementMasterCommittee' />
         </div>
       </div>
     </>
