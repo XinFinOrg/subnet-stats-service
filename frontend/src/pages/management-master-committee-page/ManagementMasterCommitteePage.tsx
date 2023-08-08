@@ -148,7 +148,7 @@ export default function ManagementMasterCommitteePage() {
                 <tr key={i} className='border-b border-text-white-400/40 dark:border-text-dark-400/40'>
                   <Cell>{formatHash(row.address)}</Cell>
                   <Cell>{row.delegation} xdc</Cell>
-                  <Cell>{i}</Cell>
+                  <Cell>{i + 1}</Cell>
                   <Cell>{getDisplayStatus(row.status)}</Cell>
                   <Cell className='flex'>
                     <Button
