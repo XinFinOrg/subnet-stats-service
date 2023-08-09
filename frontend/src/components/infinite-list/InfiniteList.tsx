@@ -1,6 +1,7 @@
 import { PropsWithChildren, useEffect, useRef } from 'react';
 
 import { BlocksInfoItem } from '@/components/blocks-info/blocks-info-item/BlocksInfoItem';
+import Loader from '@/components/loader/Loader';
 
 interface InfiniteListProps extends PropsWithChildren {
   data: BlocksInfoItem[];
@@ -38,7 +39,9 @@ export default function InfiniteList({ fetchData, children, isFetchingMore, isRe
 
   if (isLoading) {
     return (
-      <tr className='pt-20 text-center'><td>Loading...</td></tr>
+      <tr className='pt-20 text-center'>
+        <td><Loader minHeightClassName='min-h-[300px]' /></td>
+      </tr>
     );
   }
 
