@@ -46,9 +46,8 @@ export function BlocksInfoItem(data: BlocksInfoItemProps) {
   }
 
   if (data.type === 'recent-block') {
-
     return (
-      <div className='flex'>
+      <>
         <BlockCell className={cellWith.recentBlocks.height}>
           <Link to={`/checker/${data.number}`}>{data.number}</Link>
         </BlockCell>
@@ -68,12 +67,12 @@ export function BlocksInfoItem(data: BlocksInfoItemProps) {
           <BlockConfirmStatus committedInSubnet={data.committedInSubnet} committedInParentChain={data.committedInParentChain} />
         </BlockImageCell>
         <BlockCell className={cellWith.recentBlocks.time}>{getTimeDiff(data.timestamp)} ago</BlockCell>
-      </div>
+      </>
     );
   }
 
   return (
-    <div className='flex'>
+    <>
       <BlockCell className={cellWith.masterNodes.number}>{data.number}</BlockCell>
       <BlockCell className={cellWith.masterNodes.account}>
         <Copyable copyText={data.account}>
@@ -83,7 +82,7 @@ export function BlocksInfoItem(data: BlocksInfoItemProps) {
       <BlockImageCell className={cellWith.masterNodes.role}><MasterNodeRole role={data.role} /></BlockImageCell>
       {/* <BlockCell className={cellWith.masterNodes.activity}>{data.activity ? 'Active' : 'Inactive'}</BlockCell>
       <BlockCell className={cellWith.masterNodes.lastedParticipatedBlock}>{data.latestParticipateBlock}</BlockCell> */}
-    </div>
+    </>
   );
 }
 
@@ -93,13 +92,13 @@ interface BlockCellProps extends PropsWithChildren {
 
 export function BlockCell({ className, children }: BlockCellProps) {
   return (
-    <div className={`group px-2 py-2.5 leading-tight ${className}`}>{children}</div>
+    <td className={`group px-2 py-2.5 leading-tight ${className}`}>{children}</td>
   );
 }
 
 export function BlockImageCell({ className, children }: BlockCellProps) {
   return (
-    <div className={`flex items-center px-2 py-[7px] leading-tight ${className}`}>{children}</div>
+    <td className={`flex items-center px-2 py-[7px] leading-tight ${className}`}>{children}</td>
   );
 }
 
