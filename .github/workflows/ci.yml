@@ -63,7 +63,7 @@ jobs:
           echo "name=xinfinorg/subnet-frontend:${{github.ref_name}}" >> $GITHUB_OUTPUT
         fi
     - name: Docker build and tag image
-      run: cd backend && docker build . --file Dockerfile --tag ${{ steps.image.outputs.name }}
+      run: cd frontend && docker build . --file Dockerfile --tag ${{ steps.image.outputs.name }}
 
     - name: Docker push
       run: docker push ${{ steps.image.outputs.name }}
