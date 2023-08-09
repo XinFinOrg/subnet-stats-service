@@ -11,6 +11,7 @@ import AddMasterNodeDialog from '@/pages/management-master-committee-page/compon
 import PromoteDialog from '@/pages/management-master-committee-page/components/promote-dialog/PromoteDialog';
 import RemoveMasterNodeDialog from '@/pages/management-master-committee-page/components/remove-master-node-dialog/RemoveMasterNodeDialog';
 import { CandidateDetailsStatus } from '@/services/grandmaster-manager';
+import { ManagerError } from '@/services/grandmaster-manager/errors';
 import { TableContent } from '@/types/managementMasterCommitteePage';
 import { formatHash } from '@/utils/formatter';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@radix-ui/react-tooltip';
@@ -20,6 +21,8 @@ export default function ManagementMasterCommitteePage() {
   const [tableContent, setTableContent] = useState<TableContent | null>();
   const [dialogContent, setDialogContent] = useState<React.ReactNode | null>(null);
   const [dialogResult, setDialogResult] = useState<DialogResultBase>();
+  const [error, setError] = useState<ManagerError>();
+
   const service = useContext(ServiceContext);
   const dialogRef = useRef<DialogRef>(null);
 
@@ -75,7 +78,7 @@ export default function ManagementMasterCommitteePage() {
 
         setTableContent(tableContent);
       } catch (error) {
-        setTableContent(null);
+        setError(error as ManagerError);
       } finally {
         setIsLoading(false);
       }
@@ -112,6 +115,12 @@ export default function ManagementMasterCommitteePage() {
   if (isLoading) {
     return (
       <Loader />
+    );
+  }
+
+  if (error?.errorType) {
+    return (
+      <ErrorState title={`master candidate list - ${error.message}`} />
     );
   }
 
