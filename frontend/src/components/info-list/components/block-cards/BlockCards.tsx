@@ -59,8 +59,8 @@ export default function BlockCards(props: BlockCardsProps) {
           </Card >) : (
           <Card className='max-w-[400px]'>
             <InfoList
-              title='subnet blockchain'
-              info={mappedInfo.parentChain}
+              title='Subnet blockchain'
+              info={mappedInfo.subnet}
             />
           </Card>
         )
@@ -78,7 +78,7 @@ export default function BlockCards(props: BlockCardsProps) {
           </Card>) : (
           <Card className='max-w-[400px]'>
             <InfoList
-              title='copy at the parent chain'
+              title='Checkpoints at the parent chain'
               info={mappedInfo.parentChain}
             />
           </Card>
