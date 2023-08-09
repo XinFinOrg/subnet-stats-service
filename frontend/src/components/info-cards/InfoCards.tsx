@@ -155,7 +155,7 @@ function getMappedInfo(loaderData: HomeLoaderData, getNetworkStatus: () => InfoL
     info.relayer = {
       health: getRelayerStatus(),
       data: [
-        { name: 'Smart Contract', value: formatHash(loaderData.relayer.account.walletAddress) },
+        { name: 'Smart Contract', value: formatHash(loaderData.relayer.contractAddress) },
         { name: 'Backlog', value: `${loaderData.relayer.backlog} Subnet Headers` },
         { name: 'Remaining Balance', value: formatMoney(parseInt(loaderData.relayer.account.balance)) },
       ]
