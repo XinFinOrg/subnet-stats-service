@@ -1,6 +1,7 @@
 import { PropsWithChildren, useEffect, useRef } from 'react';
 
 import { BlocksInfoItem } from '@/components/blocks-info/blocks-info-item/BlocksInfoItem';
+import Loader from '@/components/loader/Loader';
 
 interface InfiniteListProps extends PropsWithChildren {
   data: BlocksInfoItem[];
@@ -38,7 +39,9 @@ export default function InfiniteList({ fetchData, children, isFetchingMore, isRe
 
   if (isLoading) {
     return (
-      <div className='pt-20 text-center'>Loading...</div>
+      <tr className='pt-20 text-center'>
+        <td><Loader minHeightClassName='min-h-[300px]' /></td>
+      </tr>
     );
   }
 
@@ -46,14 +49,21 @@ export default function InfiniteList({ fetchData, children, isFetchingMore, isRe
     <>
       {children}
       {(isReachApiEnd || isFetchingMore) && (
-        <div className='text-bg-dark-800 dark:text-white p-5 pl-0'>
-          {isFetchingMore && !isReachApiEnd && <>Loading more data...</>}
-          {isReachApiEnd && <>The end of list</>}
-        </div>
+        <tr className='text-bg-dark-800 dark:text-white p-5 pl-0'>
+          <td className='pt-1'>
+            {isFetchingMore && !isReachApiEnd && <>Loading more data...</>}
+            {isReachApiEnd && <>The end of list</>}
+          </td>
+        </tr>
       )}
-      <div ref={observerTarget}></div>
-      {/* The following extra div is essential for infinitely scrolling */}
-      <div className='dark:text-bg-dark-800 text-white'>Detection helper</div>
-    </ >
+      {/* TODO: */}
+      <tr ref={observerTarget}></tr>
+      {/* The following extra tr is essential for infinitely scrolling */}
+      <tr className='dark:text-bg-dark-800 text-white'>
+        <td>
+          Detection helper
+        </td>
+      </tr>
+    </>
   );
 }

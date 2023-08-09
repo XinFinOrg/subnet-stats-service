@@ -1,8 +1,12 @@
 import Svg, { SvgNames } from '@/components/images/Svg';
 
-export default function Loader(): JSX.Element {
+interface LoaderProps {
+  minHeightClassName?: string;
+}
+
+export default function Loader({ minHeightClassName }: LoaderProps): JSX.Element {
   return (
-    <div className='flex justify-center items-center h-full min-h-[500px]'>
+    <div className={`flex justify-center items-center ${minHeightClassName ? minHeightClassName : 'min-h-[500px] h-full'}`}>
       <Svg svgName={SvgNames.Loading} sizeClass='w-[100px]' />
     </div>
   );

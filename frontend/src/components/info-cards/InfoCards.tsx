@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useLoaderData } from 'react-router-dom';
 
 import {
-  BlocksInfoItem, MasterNode
+    BlocksInfoItem, MasterNode
 } from '@/components/blocks-info/blocks-info-item/BlocksInfoItem';
 import BlocksInfo from '@/components/blocks-info/BlocksInfo';
 import Card from '@/components/card/Card';
@@ -25,12 +25,12 @@ interface InfoCardsProps {
 
 export default function InfoCards(props: InfoCardsProps) {
   const {
-    nextFetchRecentBlocksIndex
-    , setNextFetchRecentBlocksIndex
-    , recentBlocks
-    , setRecentBlocks
-    , isLoadingRecentBlocks
-    , setIsLoadingRecentBlocks
+    nextFetchRecentBlocksIndex,
+    setNextFetchRecentBlocksIndex,
+    recentBlocks,
+    setRecentBlocks,
+    isLoadingRecentBlocks,
+    setIsLoadingRecentBlocks
   } = props;
   const loaderData = useLoaderData() as HomeLoaderData;
 

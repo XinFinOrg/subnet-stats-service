@@ -98,7 +98,7 @@ const Dialog = forwardRef<DialogRef, DialogProps>((props, ref) => {
       ${borderClass}
       text-text-dark bg-white
       dark:text-text-white dark:bg-bg-dark-800
-        z-10 rounded-3xl py-6 px-5 backdrop:dark:bg-bg-white/15 backdrop:bg-black/15
+        z-10 rounded-3xl py-6 px-5 backdrop:dark:bg-black/60 backdrop:bg-black/15
         w-[640px]
       `}
       ref={dialogRef}
