@@ -1,3 +1,5 @@
+import BigNumber from 'bignumber.js';
+
 export function formatHashFromNonZero(hash: string): string {
   return formatHash(hash.replace(/0x[0]*/, 'xdc'));
 }
@@ -46,4 +48,12 @@ export function formatTime(unixTimestamp: number) {
   const formattedDate = date.toLocaleString();
 
   return formattedDate;
+}
+
+export function weiToEther(wei: number) {
+  return BigNumber(wei).div(1e18).toNumber();
+}
+
+export function etherToWei(either: number) {
+  return either * 1e18;
 }
