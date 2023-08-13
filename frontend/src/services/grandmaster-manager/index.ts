@@ -75,7 +75,6 @@ export class GrandMasterManager {
     await this.init()
     try {
       const { accountAddress, balance, networkId } = await this.getGrandMasterAccountDetails();
-      console.log(accountAddress)
       return {
         accountAddress,
         balance,
@@ -126,7 +125,6 @@ export class GrandMasterManager {
         gasPrice: 250000000
       });  
     } catch (error: any) {
-      console.log(error)
       throw new ManagerError(error.message, ErrorTypes.INVALID_TRANSACTION) // Temporary return all errors as invalid
     }
   }
