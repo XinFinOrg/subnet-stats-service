@@ -102,8 +102,8 @@ export class GrandMasterManager {
         nonce,
         value: FIXED_CAP_VALUE,
         gas: 220000,
-        gasPrice: 250000000
-      });  
+        gasPrice: '250000000'
+      });
     } catch (error: any) {
       throw handleTransactionError(error)
     }
@@ -116,55 +116,48 @@ export class GrandMasterManager {
   async removeMasterNode(address: string): Promise<void> {
     await this.init()
     try {
-      const { accountAddress, networkId } = await this.getGrandMasterAccountDetails();
+      const { accountAddress } = await this.getGrandMasterAccountDetails();
       const nonce = await this.web3Client!.eth.getTransactionCount(accountAddress, undefined, { number: FMT_NUMBER.NUMBER , bytes: FMT_BYTES.HEX });
       await this.web3Contract.methods.resign(replaceXdcWith0x(address)).send({
         from: accountAddress,
         nonce,
-        value: "0x0",
-        gas: 220000,
-        gasPrice: 250000000,
-        // chainId: networkId
-      });  
+        value: 100,
+        gas: 2200000,
+        gasPrice: '250000000'
+      });
     } catch (error: any) {
       throw handleTransactionError(error)
     }
   }
   
-  async vote(address: string): Promise<void> {
-    await this.init()
-    try {
-      const { accountAddress } = await this.getGrandMasterAccountDetails();
-      const nonce = await this.web3Client!.eth.getTransactionCount(accountAddress, undefined, { number: FMT_NUMBER.NUMBER , bytes: FMT_BYTES.HEX });
-      await this.web3Contract.methods.vote(replaceXdcWith0x(address)).send({
-        from: accountAddress,
-        nonce,
-        value: FIXED_CAP_VALUE,
-        gas: 220000,
-        gasPrice: 250000000
-      });  
-    } catch (error: any) {
-      throw handleTransactionError(error)
-    }
-  }
-
   /**
    * Change the voting/ranking power/order of a particular masternode.
    * @param address The targeted masternode
-   * @param unvoteCap The xdc value that will be applied to the targeted address. This value indicates the cap that would like to be reduced on this address
+   * @param capValue The xdc value that will be applied to the targeted address. This value indicates the cap that would like to be increase/reduced on this address
    */
-  async unvote(address: string, unvoteCap: number): Promise<void> {
+  async changeVote(address: string, capValue: number): Promise<void> {
     await this.init()
     try {
       const { accountAddress } = await this.getGrandMasterAccountDetails();
       const nonce = await this.web3Client!.eth.getTransactionCount(accountAddress, undefined, { number: FMT_NUMBER.NUMBER , bytes: FMT_BYTES.HEX });
-      await this.web3Contract.methods.unvote(replaceXdcWith0x(address), unvoteCap).send({
-        from: accountAddress,
-        nonce,
-        value: "0x0",
-        gas: 220000,
-        gasPrice: 250000000
-      });  
+      
+      if (capValue > 0) {
+        await this.web3Contract.methods.vote(replaceXdcWith0x(address)).send({
+          from: accountAddress,
+          nonce,
+          value: capValue,
+          gas: 220000,
+          gasPrice: '250000000'
+        });
+      } else {
+        await this.web3Contract.methods.unvote(replaceXdcWith0x(address), Math.abs(capValue)).send({
+          from: accountAddress,
+          nonce,
+          value: "0x0",
+          gas: 220000,
+          gasPrice: '250000000'
+        });  
+      }
     } catch (error: any) {
       throw handleTransactionError(error)
     }
