@@ -4,6 +4,7 @@ import Web3, { FMT_BYTES, FMT_NUMBER } from "web3";
 import { ErrorTypes, ManagerError } from "@/services/grandmaster-manager/errors";
 import { CustomRpcMethodsPlugin } from "@/services/grandmaster-manager/extensions";
 import { ABI } from "./abi";
+import { CONTRACT_ADDRESS, FIXED_CAP_VALUE } from '@/constants/config';
 
 export interface AccountDetails {
   accountAddress: string;
@@ -20,9 +21,6 @@ export interface CandidateDetails {
   status: CandidateDetailsStatus
 }
 
-const CONTRACT_ADDRESS = "0x0000000000000000000000000000000000000088";
-const FIXED_CAP_VALUE = "0x84595161401484a000000";
-
 export class GrandMasterManager {
   private initilised: boolean;
   private web3Client: Web3 | undefined;
@@ -38,6 +36,9 @@ export class GrandMasterManager {
     }
     this.web3Client = new Web3((window as any).ethereum);
     this.web3Contract = new this.web3Client.eth.Contract(ABI, CONTRACT_ADDRESS);
+    this.web3Contract.defaultHardfork = "homestead";
+    this.web3Contract.defaultChain = "mainnet";
+    
     this.statsServiceClient = new StatsServiceClient();
   }
   
@@ -104,7 +105,7 @@ export class GrandMasterManager {
         gasPrice: 250000000
       });  
     } catch (error: any) {
-      throw new ManagerError(error.message, ErrorTypes.INVALID_TRANSACTION) // Temporary return all errors as invalid
+      throw handleTransactionError(error)
     }
   }
     
@@ -115,17 +116,18 @@ export class GrandMasterManager {
   async removeMasterNode(address: string): Promise<void> {
     await this.init()
     try {
-      const { accountAddress } = await this.getGrandMasterAccountDetails();
+      const { accountAddress, networkId } = await this.getGrandMasterAccountDetails();
       const nonce = await this.web3Client!.eth.getTransactionCount(accountAddress, undefined, { number: FMT_NUMBER.NUMBER , bytes: FMT_BYTES.HEX });
       await this.web3Contract.methods.resign(replaceXdcWith0x(address)).send({
         from: accountAddress,
         nonce,
         value: "0x0",
         gas: 220000,
-        gasPrice: 250000000
+        gasPrice: 250000000,
+        // chainId: networkId
       });  
     } catch (error: any) {
-      throw new ManagerError(error.message, ErrorTypes.INVALID_TRANSACTION) // Temporary return all errors as invalid
+      throw handleTransactionError(error)
     }
   }
   
@@ -142,7 +144,7 @@ export class GrandMasterManager {
         gasPrice: 250000000
       });  
     } catch (error: any) {
-      throw new ManagerError(error.message, ErrorTypes.INVALID_TRANSACTION) // Temporary return all errors as invalid
+      throw handleTransactionError(error)
     }
   }
 
@@ -164,7 +166,7 @@ export class GrandMasterManager {
         gasPrice: 250000000
       });  
     } catch (error: any) {
-      throw new ManagerError(error.message, ErrorTypes.INVALID_TRANSACTION) // Temporary return all errors as invalid
+      throw handleTransactionError(error)
     }
   }
 
@@ -209,9 +211,23 @@ export class GrandMasterManager {
       }).sort((a, b) => b.delegation - a.delegation);
       
     } catch (error: any) {
-      throw new ManagerError(error);
+      throw handleTransactionError(error)
     }
   }
+}
+
+const handleTransactionError = (error: any) => {
+  if (error && error.code) {
+    switch (error.code) {
+      case 100:
+        return new ManagerError(error.message, ErrorTypes.USER_DENINED);
+      case 405:
+        return new ManagerError(error.message, ErrorTypes.REVERTED_WITH_NO_REASON);
+      default:
+        return new ManagerError("Unable to process this transaction in xdc node, something wrong with your transaction/smart contract call input", ErrorTypes.INVALID_TRANSACTION);    
+    }
+  }
+  return new ManagerError("Error while processing, but no message found", ErrorTypes.INTERNAL_ERROR);
 }
 
 const replaceXdcWith0x = (address: string) => {
