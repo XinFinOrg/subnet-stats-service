@@ -16,8 +16,11 @@ const preview: Preview = {
   },
 
   decorators: [
-    // Adds theme switching support.
-    // NOTE: requires setting "darkMode" to "class" in your tailwind config
+    (Story) => (
+      <div className='font-nunito-sans text-text-dark dark:text-text-white dark:bg-bg-dark-900 p-6'>
+        <Story />
+      </div >
+    ),
     withThemeByClassName({
       themes: {
         light: 'light',
