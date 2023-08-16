@@ -7,7 +7,7 @@ import { DialogFormField } from '@/components/form-field/FormField';
 import InfoList from '@/components/info-list/InfoList';
 import { ServiceContext } from '@/contexts/ServiceContext';
 import {
-  setMasterNodeDialogFailResult, setMasterNodeDialogSuccessResult
+    setMasterNodeDialogFailResult, setMasterNodeDialogSuccessResult
 } from '@/pages/management-master-committee-page/utils/helper';
 import { CandidateDetails } from '@/services/grandmaster-manager';
 import { formatHash } from '@/utils/formatter';
@@ -40,17 +40,18 @@ export default function PromoteDialog(props: PromoteDialogProps) {
   });
 
   async function handleSubmit({ increaseDelegation }: FormValues) {
-    if (!increaseDelegation || !setDialogResult || !service) {
+    if (!increaseDelegation || Number.isNaN(increaseDelegation) || !setDialogResult || !service || !formikRef.current) {
       return;
     }
 
     try {
-      const updatedDelegation = getUpdatedDelegation(data.delegation, increaseDelegation, type);
-      await service.changeVote(data.address, updatedDelegation);
+      const delegation = getDelegation(increaseDelegation, type);
+      await service.changeVote(data.address, delegation);
 
       setMasterNodeDialogSuccessResult(setDialogResult);
 
-      formikRef.current?.resetForm();
+      formikRef.current.resetForm();
+
     } catch (error) {
       setMasterNodeDialogFailResult(setDialogResult, error);
     }
@@ -152,6 +153,14 @@ function getUpdatedDelegation(delegation: number, increaseDelegation: number | '
   }
 
   return delegation + increaseDelegation;
+}
+
+function getDelegation(increaseDelegation: number, type: PromoteDialogType) {
+  if (type === 'demote') {
+    return -increaseDelegation;
+  }
+
+  return increaseDelegation;
 }
 
 function PreviewUpdatedMasterNodeInfo({ delegation, formattedAddress, type }: UpdatedMasterNodeInfoProps) {
