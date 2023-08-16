@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useLoaderData } from 'react-router-dom';
 
 import {
-    BlocksInfoItem, MasterNode
+  BlocksInfoItem, MasterNode
 } from '@/components/blocks-info/blocks-info-item/BlocksInfoItem';
 import BlocksInfo from '@/components/blocks-info/BlocksInfo';
 import Card from '@/components/card/Card';
@@ -130,9 +130,9 @@ export default function InfoCards(props: InfoCardsProps) {
             enableInfinite
           />
         </Card>
-        {<Card className='max-w-[565px]'>
+        <Card className='max-w-[565px]'>
           <BlocksInfo title='Master Nodes' data={masterNodes} />
-        </Card>}
+        </Card>
       </div>
     </>
   );
