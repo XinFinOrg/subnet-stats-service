@@ -1,6 +1,5 @@
 import { Block } from '@/components/Blocks';
 import BlockCard from '@/components/info-list/components/block-card/BlockCard';
-import { useIsTablet } from '@/hooks/useMediaQuery';
 
 import type { Info } from '@/types/info';
 
