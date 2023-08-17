@@ -1,5 +1,6 @@
 import { Form, Formik, FormikContextType, useFormikContext } from 'formik';
 import { useContext, useRef } from 'react';
+import { useLoaderData } from 'react-router-dom';
 import * as Yup from 'yup';
 
 import { DialogButtons, DialogResultBase, DialogTitle } from '@/components/dialog/Dialog';
@@ -7,10 +8,12 @@ import { DialogFormField } from '@/components/form-field/FormField';
 import InfoList from '@/components/info-list/InfoList';
 import { ServiceContext } from '@/contexts/ServiceContext';
 import {
-    setMasterNodeDialogFailResult, setMasterNodeDialogSuccessResult
+  setMasterNodeDialogFailResult, setMasterNodeDialogSuccessResult
 } from '@/pages/management-master-committee-page/utils/helper';
 import { CandidateDetails } from '@/services/grandmaster-manager';
 import { formatHash } from '@/utils/formatter';
+
+import type { ManagementLoaderData } from '@/types/loaderData';
 
 interface PromoteDialogProps {
   type: PromoteDialogType;
@@ -28,6 +31,8 @@ type PromoteDialogType = 'promote' | 'demote';
 export default function PromoteDialog(props: PromoteDialogProps) {
   const { setDialogResult, data, type } = props;
 
+  const { minimumDelegation } = useLoaderData() as ManagementLoaderData;
+
   const formikRef = useRef<FormikContextType<FormValues>>(null);
   const service = useContext(ServiceContext);
 
@@ -36,7 +41,10 @@ export default function PromoteDialog(props: PromoteDialogProps) {
   };
 
   const validationSchema = Yup.object().shape({
-    increaseDelegation: Yup.number().required('Increase delegation is required').positive('The value must be greater than 0'),
+    increaseDelegation: Yup.number()
+      .required('Increase delegation is required')
+      .positive('The value must be greater than 0')
+      .min(type === 'promote' ? minimumDelegation : 0, `The value must be greater than minimum delegation ${minimumDelegation}`),
   });
 
   async function handleSubmit({ increaseDelegation }: FormValues) {
@@ -80,6 +88,8 @@ interface UpdatedMasterNodeInfoProps {
 function FormContent(props: PromoteDialogProps) {
   const { type, data, closeDialog } = props;
 
+  const { minimumDelegation, grandmasterRemainingBalance } = useLoaderData() as ManagementLoaderData;
+
   const formik = useFormikContext<FormValues>();
 
   function getTitle(type: PromoteDialogType) {
@@ -114,9 +124,9 @@ function FormContent(props: PromoteDialogProps) {
 
   const initInfo = {
     data: [
-      { name: 'Grandmaster\'s remaining balance:', value: `${'unknown'} xdc` },
+      { name: 'Grandmaster\'s remaining balance:', value: `${grandmasterRemainingBalance} xdc` },
       { name: `${formattedAddress}'s current delegation:`, value: `${delegation} hxdc` },
-      { name: `${formattedAddress}'s minimum delegation:`, value: `${'unknown'} hxdc` },
+      { name: `${formattedAddress}'s minimum delegation:`, value: `${minimumDelegation} hxdc` },
     ]
   };
 
