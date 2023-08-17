@@ -1,12 +1,13 @@
-import axios from 'axios';
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import Web3, { FMT_BYTES, FMT_NUMBER } from 'web3';
 
-import { baseUrl } from '@/constants/urls';
+import { CONTRACT_ADDRESS, FIXED_CAP_VALUE } from '@/constants/config';
 import { ErrorTypes, ManagerError } from '@/services/grandmaster-manager/errors';
 import { CustomRpcMethodsPlugin } from '@/services/grandmaster-manager/extensions';
-import { getSigningMsg } from '@/services/grandmaster-manager/utils';
 import { weiToEther } from '@/utils/formatter';
+
+import { ABI } from './abi';
+import { StatsServiceClient } from './statsServiceClient';
 
 export interface AccountDetails {
   accountAddress: string;
@@ -23,61 +24,32 @@ export interface CandidateDetails {
   status: CandidateDetailsStatus;
 }
 
-type ContractAvailableActions = 'propose' | 'resign' | 'vote' | 'unvote';
-interface ContractAvailableActionDetail {
-  name: string;
-  action: ContractAvailableActions;
-}
-const contractAvailableActions: { [key in ContractAvailableActions]: ContractAvailableActionDetail } = {
-  propose: {
-    action: "propose",
-    name: "Propose a new masternode"
-  },
-  resign: {
-    action: "resign",
-    name: "Resign an existing masternode"
-  },
-  vote: {
-    action: "vote",
-    name: "Increase masternode delegation",
-  },
-  unvote: {
-    action: "unvote",
-    name: "Decrease masternode delegation",
-  }
-};
-
-// const CONTRACT_ADDRESS = "0x0000000000000000000000000000000000000088";
-
-const getRpcUrl = async () => {
-  try {
-    const { data } = await axios.get<{ subnet: { rpcUrl: string; }; }>(`${baseUrl}/information/chainsetting`);
-    return data.subnet.rpcUrl;
-  } catch (error) {
-    // TODO: Throw error instead after we updated the backend to have this chainsetting endpoint
-    return "https://devnetstats.apothem.network/subnet";
-    // return "http://localhost:8545"
-  }
-};
-
 export class GrandMasterManager {
   private initilised: boolean;
   private web3Client: Web3 | undefined;
+  private web3Contract: any;
 
   private rpcBasedWeb3: Web3 | undefined;
+  private statsServiceClient: StatsServiceClient;
+
   constructor() {
     this.initilised = false;
-  }
-
-  async init() {
     if (!(window as any).ethereum) {
       throw new ManagerError("XDC Pay Not Installed", ErrorTypes.WALLET_NOT_INSTALLED);
     }
-    if (this.initilised) {
+    this.web3Client = new Web3((window as any).ethereum);
+    this.web3Contract = new this.web3Client.eth.Contract(ABI, CONTRACT_ADDRESS);
+    this.web3Contract.defaultHardfork = "homestead";
+    this.web3Contract.defaultChain = "mainnet";
+
+    this.statsServiceClient = new StatsServiceClient();
+  }
+
+  async init(forceInit = false) {
+    if (this.initilised && !forceInit) {
       return;
     }
-    this.web3Client = new Web3((window as any).ethereum);
-    this.rpcBasedWeb3 = new Web3(await getRpcUrl());
+    this.rpcBasedWeb3 = new Web3(await this.statsServiceClient.getRpcUrl());
     this.rpcBasedWeb3.registerPlugin(new CustomRpcMethodsPlugin());
     this.initilised = true;
   }
@@ -105,7 +77,6 @@ export class GrandMasterManager {
    */
   async login(): Promise<AccountDetails> {
     await this.init();
-
     try {
       const { accountAddress, balance, networkId } = await this.getGrandMasterAccountDetails();
       return {
@@ -120,73 +91,79 @@ export class GrandMasterManager {
     }
   }
 
-  private encodeAbi(functionName: ContractAvailableActions, address: string) {
-    return this.web3Client!.eth.abi.encodeFunctionCall({
-      name: functionName,
-      type: 'function',
-      inputs: [{
-        type: 'string',
-        name: 'address'
-      }]
-    }, [address]);
-  }
-
-  private async signTransaction(action: ContractAvailableActionDetail, targetAddress: string, value: string) {
-    const { accountAddress, networkId } = await this.getGrandMasterAccountDetails();
-    const nonce = await this.web3Client!.eth.getTransactionCount(accountAddress, undefined, { number: FMT_NUMBER.NUMBER, bytes: FMT_BYTES.HEX });
-    const encodedData = this.encodeAbi(action.action, targetAddress);
-    const msg = getSigningMsg(action.name, networkId, nonce, encodedData, value);
-    const payload = {
-      method: "eth_signTypedData_v4",
-      params: [accountAddress, msg],
-      from: accountAddress
-    };
-    (this.web3Client!.currentProvider as any).sendAsync(payload, (err: any, result: any) => {
-      if (err) {
-        throw err;
-      }
-      if (result.error) {
-        throw new ManagerError("Received error when signing the transaction");
-      }
-      return result.result;
-    });
-  }
   /**
    * Propose to add a new masternode for being a mining candidate from the next epoch
    * @param address The master node to be added
-   * @returns If transaction is successful, return. Otherwise, an error details will be thrown
    */
-  async addNewMasterNode(address: string): Promise<true> {
-    // TODO: use etherToWei(_value)
+  async addNewMasterNode(address: string): Promise<void> {
     await this.init();
-
-    await this.signTransaction(contractAvailableActions.propose, address, "0x84595161401484a000000");
-
-    return true;
+    try {
+      const { accountAddress } = await this.getGrandMasterAccountDetails();
+      const nonce = await this.web3Client!.eth.getTransactionCount(accountAddress, undefined, { number: FMT_NUMBER.NUMBER, bytes: FMT_BYTES.HEX });
+      await this.web3Contract.methods.propose(replaceXdcWith0x(address)).send({
+        from: accountAddress,
+        nonce,
+        value: FIXED_CAP_VALUE,
+        gas: 220000,
+        gasPrice: '250000000'
+      });
+    } catch (error: any) {
+      throw handleTransactionError(error);
+    }
   }
 
   /**
    * Remove a masternode from the manager view list
    * @param address The master node to be removed
-   * @returns If transaction is successful, return. Otherwise, an error details will be thrown
    */
-  async removeMasterNode(_address: string): Promise<true> {
+  async removeMasterNode(address: string): Promise<void> {
     await this.init();
-
-    return true;
+    try {
+      const { accountAddress } = await this.getGrandMasterAccountDetails();
+      const nonce = await this.web3Client!.eth.getTransactionCount(accountAddress, undefined, { number: FMT_NUMBER.NUMBER, bytes: FMT_BYTES.HEX });
+      await this.web3Contract.methods.resign(replaceXdcWith0x(address)).send({
+        from: accountAddress,
+        nonce,
+        value: 100,
+        gas: 2200000,
+        gasPrice: '250000000'
+      });
+    } catch (error: any) {
+      throw handleTransactionError(error);
+    }
   }
 
   /**
    * Change the voting/ranking power/order of a particular masternode.
    * @param address The targeted masternode
-   * @param value The xdc value that will be applied to the targeted address. Postive number means increase power, negative means decrease the power
-   * @returns If transaction is successful, return. Otherwise, an error details will be thrown
+   * @param capValue The xdc value that will be applied to the targeted address. This value indicates the cap that would like to be increase/reduced on this address
    */
-  async changeVote(_address: string, _value: number): Promise<true> {
-    // TODO: use etherToWei(_value)
+  async changeVote(address: string, capValue: number): Promise<void> {
     await this.init();
+    try {
+      const { accountAddress } = await this.getGrandMasterAccountDetails();
+      const nonce = await this.web3Client!.eth.getTransactionCount(accountAddress, undefined, { number: FMT_NUMBER.NUMBER, bytes: FMT_BYTES.HEX });
 
-    return true;
+      if (capValue > 0) {
+        await this.web3Contract.methods.vote(replaceXdcWith0x(address)).send({
+          from: accountAddress,
+          nonce,
+          value: capValue,
+          gas: 220000,
+          gasPrice: '250000000'
+        });
+      } else {
+        await this.web3Contract.methods.unvote(replaceXdcWith0x(address), Math.abs(capValue)).send({
+          from: accountAddress,
+          nonce,
+          value: "0x0",
+          gas: 220000,
+          gasPrice: '250000000'
+        });
+      }
+    } catch (error: any) {
+      throw handleTransactionError(error);
+    }
   }
 
   /**
@@ -196,6 +173,7 @@ export class GrandMasterManager {
   async onAccountChange(changeHandler: (accounts: string) => any) {
     (this.web3Client!.currentProvider as any).on("accountsChanged", (accounts: string[]) => {
       if (accounts && accounts.length) {
+        this.init(true);
         changeHandler(accounts[0]);
       }
     });
@@ -229,7 +207,25 @@ export class GrandMasterManager {
       }).sort((a, b) => b.delegation - a.delegation);
 
     } catch (error: any) {
-      throw new ManagerError(error);
+      throw handleTransactionError(error);
     }
   }
 }
+
+const handleTransactionError = (error: any) => {
+  if (error && error.code) {
+    switch (error.code) {
+      case 100:
+        return new ManagerError(error.message, ErrorTypes.USER_DENINED);
+      case 405:
+        return new ManagerError(error.message, ErrorTypes.REVERTED_WITH_NO_REASON);
+      default:
+        return new ManagerError("Unable to process this transaction in xdc node, something wrong with your transaction/smart contract call input", ErrorTypes.INVALID_TRANSACTION);
+    }
+  }
+  return new ManagerError("Error while processing, but no message found", ErrorTypes.INTERNAL_ERROR);
+};
+
+const replaceXdcWith0x = (address: string) => {
+  return address.replace("xdc", "0x");
+};

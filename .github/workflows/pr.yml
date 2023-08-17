@@ -6,8 +6,8 @@ on:
       - master
   
 jobs:
-  test_on_pr:
-    name: Test
+  test_on_pr_backend:
+    name: Test Backend
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
@@ -21,3 +21,19 @@ jobs:
     # TODO: Tests to be added
     # - name: Unit tests
     #   run: npm run test
+
+  test_on_pr_frontend:
+    name: Test Frontend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+    - uses: actions/checkout@master
+    - uses: actions/setup-node@v3
+      with:
+        node-version: '18.x'
+    - name: Install dependencies
+      run: yarn install
+    - name: Test build
+      run: yarn build

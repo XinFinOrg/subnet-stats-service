@@ -14,6 +14,21 @@ import App from './App.tsx';
 
 import '@/index.css';
 
+async function managementLoader() {
+  // async function getData() {
+  // TODO: This is broken without the new api
+  //   const response = await axios.get(`${baseUrl}/information/newAPI`);
+  //   return response.data;
+  // }
+
+  // const data = await getData();
+
+  return {
+    minimumDelegation: 0,
+    grandmasterRemainingBalance: 0
+  };
+}
+
 export async function appLoader() {
   async function getData() {
     const response = await axios.get(`${baseUrl}/information/network`);
@@ -81,6 +96,7 @@ const router = createBrowserRouter([
     }, {
       path: 'managementMasterCommittee',
       element: <ManagementMasterCommitteePage />,
+      loader: managementLoader
     }, {
       path: '*',
       element: <Navigate to='/home' replace />,

@@ -1,7 +1,5 @@
-import Blocks, { Block } from '@/components/Blocks';
-import Card from '@/components/card/Card';
-import InfoList from '@/components/info-list/InfoList';
-import { useIsTablet } from '@/hooks/useMediaQuery';
+import { Block } from '@/components/Blocks';
+import BlockCard from '@/components/info-list/components/block-card/BlockCard';
 
 import type { Info } from '@/types/info';
 
@@ -25,7 +23,6 @@ export default function BlockCards(props: BlockCardsProps) {
     subnetBlocks,
     parentBlocks
   } = props;
-  const isTablet = useIsTablet();
 
   const mappedInfo: Info = {
     subnet: {
@@ -46,44 +43,24 @@ export default function BlockCards(props: BlockCardsProps) {
 
   return (
     <>
-      {
-        isTablet ? (
-          <Card>
-            <Blocks
-              lastBlock={lastSubnetBlock}
-              lastConfirmedBlock={lastSubnetConfirmedBlock}
-              blockNumber={blockNumber}
-              blocks={subnetBlocks}
-              name='subnet blockchain'
-            />
-          </Card >) : (
-          <Card className='max-w-[400px]'>
-            <InfoList
-              title='Subnet blockchain'
-              info={mappedInfo.subnet}
-            />
-          </Card>
-        )
-      }
-      {
-        isTablet ? (
-          <Card>
-            <Blocks
-              lastBlock={lastParentBlock}
-              lastConfirmedBlock={lastParentConfirmedBlock}
-              blockNumber={blockNumber}
-              blocks={parentBlocks}
-              name='checkpoints at the parent chain'
-            />
-          </Card>) : (
-          <Card className='max-w-[400px]'>
-            <InfoList
-              title='Checkpoints at the parent chain'
-              info={mappedInfo.parentChain}
-            />
-          </Card>
-        )
-      }
+      <BlockCard
+        lastBlock={lastSubnetBlock}
+        lastConfirmedBlock={lastSubnetConfirmedBlock}
+        blockNumber={blockNumber}
+        blocks={subnetBlocks}
+        name='subnet blockchain'
+        mobileTitle='Subnet blockchain'
+        mobileInfo={mappedInfo.subnet}
+      />
+      <BlockCard
+        lastBlock={lastParentBlock}
+        lastConfirmedBlock={lastParentConfirmedBlock}
+        blockNumber={blockNumber}
+        blocks={parentBlocks}
+        name='checkpoints at the parent chain'
+        mobileTitle='Checkpoints at the parent chain'
+        mobileInfo={mappedInfo.parentChain}
+      />
     </>
   );
 }
