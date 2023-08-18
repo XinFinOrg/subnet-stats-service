@@ -57,3 +57,7 @@ export function weiToEther(wei: number) {
 export function etherToWei(either: number) {
   return either * 1e18;
 }
+
+export function roundDownToSixDecimalPlaces(number: number) {
+  return Math.floor(number * 1e6) / 1e6;
+}
