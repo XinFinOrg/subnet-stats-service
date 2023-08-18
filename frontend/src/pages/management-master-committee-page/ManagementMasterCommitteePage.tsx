@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import Button from '@/components/button/Button';
 import Card from '@/components/card/Card';
@@ -6,11 +6,10 @@ import { Cell } from '@/components/cell/Cell';
 import Dialog, { DialogRef, DialogResultBase } from '@/components/dialog/Dialog';
 import ErrorState from '@/components/error-state/ErrorState';
 import Loader from '@/components/loader/Loader';
-import { ServiceContext } from '@/contexts/ServiceContext';
 import AddMasterNodeDialog from '@/pages/management-master-committee-page/components/add-master-node-dialog/AddMasterNodeDialog';
 import PromoteDialog from '@/pages/management-master-committee-page/components/promote-dialog/PromoteDialog';
 import RemoveMasterNodeDialog from '@/pages/management-master-committee-page/components/remove-master-node-dialog/RemoveMasterNodeDialog';
-import { CandidateDetailsStatus } from '@/services/grandmaster-manager';
+import { CandidateDetailsStatus, GrandMasterManager } from '@/services/grandmaster-manager';
 import { ManagerError } from '@/services/grandmaster-manager/errors';
 import { TableContent } from '@/types/managementMasterCommitteePage';
 import { formatHash } from '@/utils/formatter';
@@ -23,13 +22,14 @@ export default function ManagementMasterCommitteePage() {
   const [dialogResult, setDialogResult] = useState<DialogResultBase>();
   const [error, setError] = useState<ManagerError>();
 
-  const service = useContext(ServiceContext);
   const dialogRef = useRef<DialogRef>(null);
 
   useEffect(() => {
     async function fetchData() {
       try {
         setIsLoading(true);
+
+        const service = new GrandMasterManager();
         const candidates = await service?.getCandidates();
 
         if (!candidates) {
@@ -85,7 +85,7 @@ export default function ManagementMasterCommitteePage() {
     }
 
     fetchData(); // Call the asynchronous function to fetch the data
-  }, [service]);
+  }, []);
 
   function openDialog(content: React.ReactNode) {
     setDialogContent(content);

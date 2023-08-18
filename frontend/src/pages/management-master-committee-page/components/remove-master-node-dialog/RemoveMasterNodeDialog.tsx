@@ -1,10 +1,10 @@
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 
 import { DialogButtons, DialogResultBase, DialogTitle } from '@/components/dialog/Dialog';
-import { ServiceContext } from '@/contexts/ServiceContext';
 import {
   setMasterNodeDialogFailResult, setMasterNodeDialogSuccessResult
 } from '@/pages/management-master-committee-page/utils/helper';
+import { GrandMasterManager } from '@/services/grandmaster-manager';
 import { formatHash } from '@/utils/formatter';
 
 interface RemoveMasterNodeDialogProps {
@@ -18,16 +18,14 @@ export default function RemoveMasterNodeDialog(props: RemoveMasterNodeDialogProp
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const service = useContext(ServiceContext);
-
   async function handleSubmit() {
-    if (!setDialogResult || !service) {
+    if (!setDialogResult) {
       return;
     }
 
     try {
       setIsSubmitting(true);
-
+      const service = new GrandMasterManager();
       await service.removeMasterNode(address);
 
       setMasterNodeDialogSuccessResult(setDialogResult);

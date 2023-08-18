@@ -1,16 +1,15 @@
 import { Form, Formik, FormikContextType, useFormikContext } from 'formik';
-import { useContext, useRef } from 'react';
+import { useRef } from 'react';
 import { useLoaderData } from 'react-router-dom';
 import * as Yup from 'yup';
 
 import { DialogButtons, DialogResultBase, DialogTitle } from '@/components/dialog/Dialog';
 import { DialogFormField } from '@/components/form-field/FormField';
 import InfoList from '@/components/info-list/InfoList';
-import { ServiceContext } from '@/contexts/ServiceContext';
 import {
-  setMasterNodeDialogFailResult, setMasterNodeDialogSuccessResult
+    setMasterNodeDialogFailResult, setMasterNodeDialogSuccessResult
 } from '@/pages/management-master-committee-page/utils/helper';
-import { CandidateDetails } from '@/services/grandmaster-manager';
+import { CandidateDetails, GrandMasterManager } from '@/services/grandmaster-manager';
 import { formatHash } from '@/utils/formatter';
 
 import type { ManagementLoaderData } from '@/types/loaderData';
@@ -34,7 +33,6 @@ export default function PromoteDialog(props: PromoteDialogProps) {
   const { minimumDelegation } = useLoaderData() as ManagementLoaderData;
 
   const formikRef = useRef<FormikContextType<FormValues>>(null);
-  const service = useContext(ServiceContext);
 
   const initialValues: FormValues = {
     increaseDelegation: ''
@@ -48,11 +46,12 @@ export default function PromoteDialog(props: PromoteDialogProps) {
   });
 
   async function handleSubmit({ increaseDelegation }: FormValues) {
-    if (!increaseDelegation || Number.isNaN(increaseDelegation) || !setDialogResult || !service || !formikRef.current) {
+    if (!increaseDelegation || Number.isNaN(increaseDelegation) || !setDialogResult || !formikRef.current) {
       return;
     }
 
     try {
+      const service = new GrandMasterManager();
       const delegation = getDelegation(increaseDelegation, type);
       await service.changeVote(data.address, delegation);
 

@@ -1,14 +1,14 @@
 import { Form, Formik, FormikContextType } from 'formik';
-import { useContext, useRef } from 'react';
+import { useRef } from 'react';
 import * as Yup from 'yup';
 
 import { DialogButtons, DialogResultBase, DialogTitle } from '@/components/dialog/Dialog';
 import { DialogFormField } from '@/components/form-field/FormField';
 import InfoList from '@/components/info-list/InfoList';
-import { ServiceContext } from '@/contexts/ServiceContext';
 import {
   setMasterNodeDialogFailResult, setMasterNodeDialogSuccessResult
 } from '@/pages/management-master-committee-page/utils/helper';
+import { GrandMasterManager } from '@/services/grandmaster-manager';
 
 import type { InfoListInfo } from '@/types/info';
 interface AddMasterNodeDialogProps {
@@ -18,7 +18,6 @@ interface AddMasterNodeDialogProps {
 
 export default function AddMasterNodeDialog(props: AddMasterNodeDialogProps) {
   const { closeDialog, setDialogResult } = props;
-  const service = useContext(ServiceContext);
 
   const formikRef = useRef<FormikContextType<FormValues>>(null);
 
@@ -32,13 +31,13 @@ export default function AddMasterNodeDialog(props: AddMasterNodeDialogProps) {
   });
 
   async function handleSubmit() {
-    if (!setDialogResult || !service || !formikRef.current) {
+    if (!setDialogResult || !formikRef.current) {
       return;
     }
 
     try {
+      const service = new GrandMasterManager();
       await service.addNewMasterNode(formikRef.current.values.newAddress);
-
       setMasterNodeDialogSuccessResult(setDialogResult);
 
       formikRef.current?.resetForm();
