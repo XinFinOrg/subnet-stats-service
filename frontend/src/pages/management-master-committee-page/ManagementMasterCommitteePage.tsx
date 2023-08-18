@@ -121,7 +121,7 @@ export default function ManagementMasterCommitteePage() {
 
   if (error?.errorType) {
     return (
-      <ErrorState title={`master candidate list - ${error.message}`} />
+      <ErrorState isPage title={`master candidate list - ${error.message}`} />
     );
   }
 

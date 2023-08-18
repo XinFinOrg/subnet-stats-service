@@ -74,7 +74,7 @@ export default function ManagementLoginPage() {
   }
 
   if (!tableContent) {
-    return <ErrorState title='master login' />;
+    return <ErrorState isPage title='master login' />;
   }
 
   return (
