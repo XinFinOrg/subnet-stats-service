@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import Button from '@/components/button/Button';
 import Card from '@/components/card/Card';
@@ -6,15 +6,14 @@ import { Cell } from '@/components/cell/Cell';
 import Dialog, { DialogRef, DialogResultBase } from '@/components/dialog/Dialog';
 import ErrorState from '@/components/error-state/ErrorState';
 import Loader from '@/components/loader/Loader';
-import { ServiceContext } from '@/contexts/ServiceContext';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/tooltip/Tooltip';
 import AddMasterNodeDialog from '@/pages/management-master-committee-page/components/add-master-node-dialog/AddMasterNodeDialog';
 import PromoteDialog from '@/pages/management-master-committee-page/components/promote-dialog/PromoteDialog';
 import RemoveMasterNodeDialog from '@/pages/management-master-committee-page/components/remove-master-node-dialog/RemoveMasterNodeDialog';
-import { CandidateDetailsStatus } from '@/services/grandmaster-manager';
+import { CandidateDetailsStatus, GrandMasterManager } from '@/services/grandmaster-manager';
 import { ManagerError } from '@/services/grandmaster-manager/errors';
 import { TableContent } from '@/types/managementMasterCommitteePage';
 import { formatHash } from '@/utils/formatter';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@radix-ui/react-tooltip';
 
 export default function ManagementMasterCommitteePage() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -23,13 +22,14 @@ export default function ManagementMasterCommitteePage() {
   const [dialogResult, setDialogResult] = useState<DialogResultBase>();
   const [error, setError] = useState<ManagerError>();
 
-  const service = useContext(ServiceContext);
   const dialogRef = useRef<DialogRef>(null);
 
   useEffect(() => {
     async function fetchData() {
       try {
         setIsLoading(true);
+
+        const service = new GrandMasterManager();
         const candidates = await service?.getCandidates();
 
         if (!candidates) {
@@ -44,20 +44,21 @@ export default function ManagementMasterCommitteePage() {
             width: 'w-[220px]'
           }, {
             id: 'delegation',
-            name: 'Delegation',
+            name: (
+              <Tooltip>
+                <TooltipTrigger withQuestionMark>Delegation</TooltipTrigger>
+                <TooltipContent>
+                  <p>The number is rounded down to 6 decimal places</p>
+                </TooltipContent>
+              </Tooltip>
+            ),
             width: 'w-[220px]'
-          },
-          {
+          }, {
             id: 'rank',
             name: (
               <Tooltip>
-                <TooltipTrigger>
-                  Rank
-                  <span className='w-4 h-4 text-xs inline-flex items-center justify-center rounded-full dark:bg-bg-dark-600 bg-bg-white-1000 text-primary dark:text-white md:ml-1.5 ml-1'>
-                    ?
-                  </span>
-                </TooltipTrigger>
-                <TooltipContent sideOffset={10} className='w-[232px] dark:bg-bg-dark-600 bg-white border border-text-white-600 dark:border-none whitespace-normal rounded-3xl text-center shadow-sm py-4 px-3 leading-tight'>
+                <TooltipTrigger withQuestionMark>Rank</TooltipTrigger>
+                <TooltipContent>
                   <p>The top x master candidates are in the current master committee with equal voting power</p>
                 </TooltipContent>
               </Tooltip>
@@ -85,7 +86,7 @@ export default function ManagementMasterCommitteePage() {
     }
 
     fetchData(); // Call the asynchronous function to fetch the data
-  }, [service]);
+  }, []);
 
   function openDialog(content: React.ReactNode) {
     setDialogContent(content);
@@ -120,7 +121,7 @@ export default function ManagementMasterCommitteePage() {
 
   if (error?.errorType) {
     return (
-      <ErrorState title={`master candidate list - ${error.message}`} />
+      <ErrorState isPage title={`master candidate list - ${error.message}`} />
     );
   }
 
