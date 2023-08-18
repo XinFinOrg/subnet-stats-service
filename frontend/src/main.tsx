@@ -9,6 +9,7 @@ import ErrorPage from '@/pages/ErrorPage.tsx';
 import HomePage from '@/pages/HomePage.tsx';
 import ManagementLoginPage from '@/pages/management-login-page/ManagementLoginPage.tsx';
 import ManagementMasterCommitteePage from '@/pages/management-master-committee-page/ManagementMasterCommitteePage.tsx';
+import { roundDownToSixDecimalPlaces } from '@/utils/formatter.ts';
 
 import App from './App.tsx';
 
@@ -22,10 +23,12 @@ async function managementLoader() {
   // }
 
   // const data = await getData();
+  const minimumDelegation = 0;
+  const grandmasterRemainingBalance = 0;
 
   return {
-    minimumDelegation: 0,
-    grandmasterRemainingBalance: 0
+    minimumDelegation: roundDownToSixDecimalPlaces(minimumDelegation),
+    grandmasterRemainingBalance: roundDownToSixDecimalPlaces(grandmasterRemainingBalance)
   };
 }
 

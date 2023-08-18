@@ -1,19 +1,16 @@
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import TooltipPrimitive from '@radix-ui/react-tooltip';
+import {
+  Tooltip, TooltipContent as PrimitiveTooltipContent, TooltipProvider,
+  TooltipTrigger as PrimitiveTooltipTrigger
+} from '@radix-ui/react-tooltip';
 
-const TooltipProvider = TooltipPrimitive.Provider;
-
-const Tooltip = TooltipPrimitive.Root;
-
-const TooltipTrigger = TooltipPrimitive.Trigger;
-
-const TooltipContent = React.forwardRef<
-  React.ElementRef<typeof TooltipPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content>
+const NativeTooltipContent = React.forwardRef<
+  React.ElementRef<typeof PrimitiveTooltipContent>,
+  React.ComponentPropsWithoutRef<typeof PrimitiveTooltipContent>
 >(({ className, sideOffset = 4, ...props }, ref) => (
-  <TooltipPrimitive.Content
+  <PrimitiveTooltipContent
     ref={ref}
     sideOffset={sideOffset}
     className={twMerge(
@@ -24,6 +21,35 @@ const TooltipContent = React.forwardRef<
   />
 ));
 
-TooltipContent.displayName = TooltipPrimitive.Content.displayName;
+TooltipContent.displayName = PrimitiveTooltipContent.displayName;
 
-export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider };
+function TooltipContent({ children }: PropsWithChildren) {
+  return (
+    <NativeTooltipContent sideOffset={10} className='w-[232px] dark:bg-bg-dark-600 bg-white border border-text-white-600 dark:border-none whitespace-normal rounded-3xl text-center shadow-sm py-4 px-3 leading-tight'>
+      {children}
+      {/* <p>The top x master candidates are in the current master committee with equal voting power</p> */}
+    </NativeTooltipContent>
+  );
+}
+
+interface TooltipTriggerProps extends PropsWithChildren {
+  withQuestionMark?: boolean;
+}
+
+function TooltipTrigger({ children, withQuestionMark }: TooltipTriggerProps) {
+  function TooltipQuestionMark() {
+    return (
+      <span className='w-4 h-4 text-xs inline-flex items-center justify-center rounded-full dark:bg-bg-dark-600 bg-bg-white-1000 text-primary dark:text-white md:ml-1.5 ml-1'>
+        ?
+      </span>
+    );
+  }
+
+  return (
+    <PrimitiveTooltipTrigger>
+      {children}{withQuestionMark ? <TooltipQuestionMark /> : ''}
+    </PrimitiveTooltipTrigger>
+  );
+}
+
+export { Tooltip, TooltipProvider, TooltipTrigger, TooltipContent };

@@ -4,7 +4,7 @@ import Web3, { FMT_BYTES, FMT_NUMBER } from 'web3';
 import { CONTRACT_ADDRESS, FIXED_CAP_VALUE } from '@/constants/config';
 import { ErrorTypes, ManagerError } from '@/services/grandmaster-manager/errors';
 import { CustomRpcMethodsPlugin } from '@/services/grandmaster-manager/extensions';
-import { weiToEther } from '@/utils/formatter';
+import { roundDownToSixDecimalPlaces, weiToEther } from '@/utils/formatter';
 
 import { ABI } from './abi';
 import { StatsServiceClient } from './statsServiceClient';
@@ -81,7 +81,7 @@ export class GrandMasterManager {
       const { accountAddress, balance, networkId } = await this.getGrandMasterAccountDetails();
       return {
         accountAddress,
-        balance,
+        balance: roundDownToSixDecimalPlaces(balance),
         networkId,
         denom: "hxdc",
         rpcAddress: "https://devnetstats.apothem.network/subnet"
@@ -201,7 +201,7 @@ export class GrandMasterManager {
         const [address, { capacity, status }] = entry;
         return {
           address,
-          delegation: weiToEther(capacity),
+          delegation: roundDownToSixDecimalPlaces(weiToEther(capacity)),
           status
         };
       }).sort((a, b) => b.delegation - a.delegation);

@@ -7,7 +7,7 @@ import { DialogButtons, DialogResultBase, DialogTitle } from '@/components/dialo
 import { DialogFormField } from '@/components/form-field/FormField';
 import InfoList from '@/components/info-list/InfoList';
 import {
-    setMasterNodeDialogFailResult, setMasterNodeDialogSuccessResult
+  setMasterNodeDialogFailResult, setMasterNodeDialogSuccessResult
 } from '@/pages/management-master-committee-page/utils/helper';
 import { CandidateDetails, GrandMasterManager } from '@/services/grandmaster-manager';
 import { formatHash } from '@/utils/formatter';
