@@ -88,6 +88,34 @@ paths:
           description: 'Conflict'
         '500':
           description: 'Server Error'
+  /information/candidates:
+    get:
+      summary: Get candidates information
+      tags:
+        - management
+      response:
+        '200':
+          description: Candidates information/status and their delegation
+          content:
+            'application/json':
+                schema: 
+                  type: object
+                  properties:
+                    address:
+                      type: string
+                    delegation:
+                      description: Delegation in wei unit
+                      type: number
+                    status:
+                      type: enum
+                      enum: ['MASTERNODE', 'PROPOSED' , 'SLASHED']
+        '400':
+          description: 'Bad Request'
+        '409':
+          description: 'Conflict'
+        '500':
+          description: 'Server Error'
+                    
   /information/masternodes:
     get:
       summary: Get master nodes information such as committed size and their status

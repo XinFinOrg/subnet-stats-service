@@ -38,4 +38,13 @@ export class MasterNodeController {
       next(error);
     }
   };
+
+  public getCandidates = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const data = await this.masternodeService.getLatestCandidates();
+      res.status(200).json(data);
+    } catch (error) {
+      next(error);
+    }
+  };
 }

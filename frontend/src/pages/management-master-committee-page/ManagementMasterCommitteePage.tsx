@@ -10,7 +10,7 @@ import { ServiceContext } from '@/contexts/ServiceContext';
 import AddMasterNodeDialog from '@/pages/management-master-committee-page/components/add-master-node-dialog/AddMasterNodeDialog';
 import PromoteDialog from '@/pages/management-master-committee-page/components/promote-dialog/PromoteDialog';
 import RemoveMasterNodeDialog from '@/pages/management-master-committee-page/components/remove-master-node-dialog/RemoveMasterNodeDialog';
-import { CandidateDetailsStatus } from '@/services/grandmaster-manager';
+import { CandidateDetailsStatus } from '@/services/grandmaster-manager/statsServiceClient';
 import { ManagerError } from '@/services/grandmaster-manager/errors';
 import { TableContent } from '@/types/managementMasterCommitteePage';
 import { formatHash } from '@/utils/formatter';

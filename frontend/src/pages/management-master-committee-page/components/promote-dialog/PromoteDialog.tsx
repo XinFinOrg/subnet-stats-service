@@ -10,7 +10,7 @@ import { ServiceContext } from '@/contexts/ServiceContext';
 import {
   setMasterNodeDialogFailResult, setMasterNodeDialogSuccessResult
 } from '@/pages/management-master-committee-page/utils/helper';
-import { CandidateDetails } from '@/services/grandmaster-manager';
+import { CandidateDetails } from '@/services/grandmaster-manager/statsServiceClient';
 import { formatHash } from '@/utils/formatter';
 
 import type { ManagementLoaderData } from '@/types/loaderData';
