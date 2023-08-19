@@ -29,12 +29,24 @@ interface MasternodesInfo {
   Penalty: string[];
 }
 
+export interface Candidates {
+  candidates: {
+    [key in string]: {
+      capacity: number;
+      status: 'MASTERNODE' | 'PROPOSED' | 'SLASHED';
+    };
+  };
+  success: boolean;
+  epoch: number;
+}
+
 export interface Web3WithExtension extends Web3 {
   xdcSubnet: {
     getV2Block: (type: 'committed') => Promise<FetchedV2BlockInfo>;
     getV2BlockByNumber: (bluckNum: string) => Promise<FetchedV2BlockInfo>;
     getV2BlockByHash: (blockHash: string) => Promise<FetchedV2BlockInfo>;
     getMasternodesByNumber: (blockStatus: BlockStatus) => Promise<MasternodesInfo>;
+    getCandidates: (param: 'latest') => Promise<Candidates>;
   };
 }
 
@@ -61,6 +73,11 @@ export const networkExtensions = (extensionName = 'xdcSubnet') => {
         name: 'getMasternodesByNumber',
         params: 1,
         call: 'XDPoS_getMasternodesByNumber',
+      },
+      {
+        name: 'getCandidates',
+        params: 1,
+        call: 'eth_getCandidates',
       },
     ],
   };

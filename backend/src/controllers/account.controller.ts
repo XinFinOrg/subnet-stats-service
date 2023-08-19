@@ -38,7 +38,7 @@ export class RelayerController {
   public getChainDetails = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const data = {
       rpcUrl: SUBNET_URL,
-      grandmasterAddress: 'xxx',
+      grandmasterAddress: '0xaF41973D6b9EA4ADbD497365a76E6443FFB49fC5',
       minimumDelegation: '10000000000000000000000000',
     };
     res.status(200).json(data);
