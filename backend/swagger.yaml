@@ -282,17 +282,14 @@ paths:
                       rpcUrl:
                         description: Subnet Chain RPC URL
                         type: string
-                      grandmasterAddress:
-                        description: The grandmaster wallet address for verification
-                        type: string
-                      minimumDelegation:
-                        description: Minimum delegation required when increase the candidates's voting/ranking power
                     required:
                       - rpcUrl
-                      - grandmasterAddress
-                      - minimumDelegation
+                      - denom
+                      - networkName
                 required:
                   - subnet
+                  - denom
+                  - networkName
         '400':
           description: 'Bad Request'
         '500':
