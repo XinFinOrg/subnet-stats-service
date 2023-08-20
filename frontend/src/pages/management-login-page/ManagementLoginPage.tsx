@@ -21,7 +21,7 @@ export default function ManagementLoginPage() {
   const service = useContext(ServiceContext);
 
   function getContent(accountDetails: AccountDetails): TableContent {
-    const { accountAddress, balance, denom, networkId, rpcAddress } = accountDetails;
+    const { accountAddress, balance, denom, networkId, rpcUrl } = accountDetails;
 
     const walletInfo = {
       data: [
@@ -34,7 +34,7 @@ export default function ManagementLoginPage() {
       data: [
         { name: 'Network ID:', value: networkId },
         { name: 'Network Denom:', value: denom },
-        { name: 'Network RPC:', value: rpcAddress }
+        { name: 'Network RPC:', value: rpcUrl }
       ]
     };
 

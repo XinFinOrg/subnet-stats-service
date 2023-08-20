@@ -12,6 +12,9 @@ import { StatsServiceClient } from './statsServiceClient';
 export interface AccountDetails {
   accountAddress: string;
   balance: number;
+  rpcUrl: string;
+  denom: string;
+  networkId: number;
 }
 
 interface GrandMasterInfo {
@@ -29,10 +32,10 @@ export class GrandMasterManager {
   private grandMasterInfo: GrandMasterInfo | undefined;
   private web3Client: Web3 | undefined;
   private web3Contract: any;
-  // private statsServiceClient: StatsServiceClient;
-  private chainSetting: ChainSettingInfo;
+  private statsServiceClient: StatsServiceClient;
+  private chainSetting: ChainSettingInfo | undefined;
 
-  constructor(chainSetting?: ChainSettingInfo) {
+  constructor() {
     if (!(window as any).ethereum) {
       throw new ManagerError("XDC Pay Not Installed", ErrorTypes.WALLET_NOT_INSTALLED);
     }
@@ -41,13 +44,7 @@ export class GrandMasterManager {
     this.web3Contract.defaultHardfork = "homestead";
     this.web3Contract.defaultChain = "mainnet";
 
-    // this.statsServiceClient = new StatsServiceClient();
-    // Temporary, to be injected by chainSetting
-    this.chainSetting = chainSetting ? chainSetting : {
-      rpcUrl: "https://devnetstats.apothem.network/subnet",
-      denom: "xdc",
-      chainId: 59467
-    }
+    this.statsServiceClient = new StatsServiceClient();
   }
 
   /**
@@ -57,10 +54,13 @@ export class GrandMasterManager {
    */
   async login(): Promise<AccountDetails> {
     try {
+      const { rpcUrl, denom, chainId } = await this.statsServiceClient.getChainSettingInfo();
+      this.chainSetting = { rpcUrl, denom, chainId };
       const { accountAddress, balance } = await this.grandMasterAccountDetails();
       return {
         accountAddress,
-        balance
+        balance,
+        rpcUrl, denom, networkId: chainId
       };
     } catch (err: any) {
       console.log(err)
@@ -195,7 +195,7 @@ export class GrandMasterManager {
   
   private async getGrandmasterAddressAndMinimumDelegation(): Promise<{ minimumDelegation: number, grandMaster: string[]}> {
     try {
-      const grandMasterResult = await this.web3Contract.methods.getGrandMasters().call();    
+      const grandMasterResult = await this.web3Contract.methods.getGrandMasters().call();
       if (!grandMasterResult || !grandMasterResult.length) throw new ManagerError("No grand master found in the node", ErrorTypes.INTERNAL_ERROR);
       let minimumDelegation = 0;
       const minimumDelegationResult: number[] = await this.web3Contract.methods.minCandidateCap().call();
@@ -223,7 +223,7 @@ export class GrandMasterManager {
     
     if (this.grandMasterInfo.grandMasterAddress.indexOf(accountAddress)) {
       throw new ManagerError("Not Grand Master", ErrorTypes.NOT_GRANDMASTER);
-    } else if(networkId != this.chainSetting.chainId) {
+    } else if(networkId != this.chainSetting?.chainId) {
       throw new ManagerError("Not on the right networkId", ErrorTypes.NOT_ON_THE_RIGHT_NETWORK);
     }
   }
