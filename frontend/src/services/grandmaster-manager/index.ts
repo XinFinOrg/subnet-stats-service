@@ -15,6 +15,7 @@ export interface AccountDetails {
   rpcUrl: string;
   denom: string;
   networkId: number;
+  minimumDelegation: number;
 }
 
 interface GrandMasterInfo {
@@ -56,11 +57,12 @@ export class GrandMasterManager {
     try {
       const { rpcUrl, denom, chainId } = await this.statsServiceClient.getChainSettingInfo();
       this.chainSetting = { rpcUrl, denom, chainId };
-      const { accountAddress, balance } = await this.grandMasterAccountDetails();
+      const { accountAddress, balance, minimumDelegation} = await this.grandMasterAccountDetails();
       return {
         accountAddress,
         balance,
-        rpcUrl, denom, networkId: chainId
+        rpcUrl, denom, networkId: chainId,
+        minimumDelegation
       };
     } catch (err: any) {
       console.log(err)
@@ -193,35 +195,29 @@ export class GrandMasterManager {
     }).sort((a, b) => b.delegation - a.delegation);
   }
   
-  private async getGrandmasterAddressAndMinimumDelegation(): Promise<{ minimumDelegation: number, grandMaster: string[]}> {
+  private async getGrandmasterAddressAndMinimumDelegation(forceRefreshGrandMaster?: boolean): Promise<{ minimumDelegation: number, grandMasterAddress: string[]}> {
     try {
-      const grandMasterResult = await this.web3Contract.methods.getGrandMasters().call();
-      if (!grandMasterResult || !grandMasterResult.length) throw new ManagerError("No grand master found in the node", ErrorTypes.INTERNAL_ERROR);
-      let minimumDelegation = 0;
-      const minimumDelegationResult: number[] = await this.web3Contract.methods.minCandidateCap().call();
-      if(!minimumDelegationResult || !minimumDelegationResult.length) {
-        minimumDelegation = minimumDelegationResult[0]
+      if (!this.grandMasterInfo || forceRefreshGrandMaster) {
+        const grandMasterResult = await this.web3Contract.methods.getGrandMasters().call();
+        if (!grandMasterResult || !grandMasterResult.length) throw new ManagerError("No grand master found in the node", ErrorTypes.INTERNAL_ERROR);
+        let minimumDelegation = 0;
+        const minimumDelegationResult: number[] = await this.web3Contract.methods.minCandidateCap().call();
+        if(!minimumDelegationResult || !minimumDelegationResult.length) {
+          minimumDelegation = minimumDelegationResult[0]
+        } 
+        this.grandMasterInfo = {
+          grandMasterAddress: grandMasterResult[0],
+          minimumDelegation
+        }
       }
-      return {
-        minimumDelegation,
-        grandMaster: grandMasterResult[0]
-      }
+      return this.grandMasterInfo;
     } catch (error) {
       throw new ManagerError("Error while fetching grand master related data from the node", ErrorTypes.INTERNAL_ERROR);
-    }
-    
+    } 
   }
   
-  private async verifyGrandMaster(accountAddress: string, networkId: number, forceRefreshGrandMaster?: boolean) {
-    if (!this.grandMasterInfo || forceRefreshGrandMaster) {
-      const { grandMaster, minimumDelegation } = await this.getGrandmasterAddressAndMinimumDelegation();
-      this.grandMasterInfo = {
-        grandMasterAddress: grandMaster,
-        minimumDelegation
-      }
-    }
-    
-    if (this.grandMasterInfo.grandMasterAddress.indexOf(accountAddress)) {
+  private async verifyGrandMaster(accountAddress: string, networkId: number) {
+    if (this.grandMasterInfo!.grandMasterAddress.indexOf(accountAddress)) {
       throw new ManagerError("Not Grand Master", ErrorTypes.NOT_GRANDMASTER);
     } else if(networkId != this.chainSetting?.chainId) {
       throw new ManagerError("Not on the right networkId", ErrorTypes.NOT_ON_THE_RIGHT_NETWORK);
@@ -236,9 +232,10 @@ export class GrandMasterManager {
     const accountAddress = accounts[0];
     const balance = await this.web3Client!.eth.getBalance(accountAddress, undefined, { number: FMT_NUMBER.NUMBER, bytes: FMT_BYTES.HEX });
     const networkId = await this.web3Client!.eth.getChainId({ number: FMT_NUMBER.NUMBER, bytes: FMT_BYTES.HEX });
+    const { grandMasterAddress, minimumDelegation } = await this.getGrandmasterAddressAndMinimumDelegation();
     await this.verifyGrandMaster(accountAddress, networkId);
     return {
-      accountAddress, balance
+      accountAddress, balance, grandMasterAddress, minimumDelegation
     };
   }
 }
