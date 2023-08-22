@@ -11,12 +11,11 @@ export interface CandidateDetails {
 
 export class StatsServiceClient {
   async getChainSettingInfo() {
-    // Replaced by API calls
+    const { data } = await axios.get<{ rpcUrl: string, denom: string, networkName: string}>(`${baseUrl}/information/chainsetting`);
     return {
-      rpcUrl: "https://devnetstats.apothem.network/subnet",
-      denom: "xdc",
-      chainId: 59467
-    }
+      ...data,
+      chainId: 8230
+    };
   }
   
   async getCandidates() {

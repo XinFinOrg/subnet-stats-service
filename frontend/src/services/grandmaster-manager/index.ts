@@ -55,8 +55,7 @@ export class GrandMasterManager {
    */
   async login(): Promise<AccountDetails> {
     try {
-      const { rpcUrl, denom, chainId } = await this.statsServiceClient.getChainSettingInfo();
-      this.chainSetting = { rpcUrl, denom, chainId };
+      const {rpcUrl, denom, chainId} = await this.getChainSetting();
       const { accountAddress, balance, minimumDelegation} = await this.grandMasterAccountDetails();
       return {
         accountAddress,
@@ -65,7 +64,6 @@ export class GrandMasterManager {
         minimumDelegation
       };
     } catch (err: any) {
-      console.log(err)
       if (err instanceof ManagerError) throw err;
       throw new ManagerError(err.message, ErrorTypes.INTERNAL_ERROR);
     }
@@ -120,7 +118,9 @@ export class GrandMasterManager {
     try {
       const { accountAddress } = await this.grandMasterAccountDetails();
       const nonce = await this.web3Client!.eth.getTransactionCount(accountAddress, undefined, { number: FMT_NUMBER.NUMBER, bytes: FMT_BYTES.HEX });
-
+      console.log("1")
+      console.log(await this.web3Contract.methods.isCandidate(replaceXdcWith0x(address)).call())
+      console.log("2")
       if (capValue > 0) {
         await this.web3Contract.methods.vote(replaceXdcWith0x(address)).send({
           from: accountAddress,
@@ -174,7 +174,7 @@ export class GrandMasterManager {
   
   // TODO: To be removed after API is done for the getCandidates method
   private async getCandidates_temporary() {
-    const rpcBasedWeb3 = new Web3("https://devnetstats.apothem.network/subnet");
+    const rpcBasedWeb3 = new Web3("http://144.126.140.3:8545");
     rpcBasedWeb3.registerPlugin(new CustomRpcMethodsPlugin());
     
     const result = await rpcBasedWeb3!.xdcSubnet.getCandidates("latest");
@@ -195,9 +195,18 @@ export class GrandMasterManager {
     }).sort((a, b) => b.delegation - a.delegation);
   }
   
+  private async getChainSetting() {
+    if (!this.chainSetting) {
+      const { rpcUrl, denom, chainId } = await this.statsServiceClient.getChainSettingInfo();
+      this.chainSetting = { rpcUrl, denom, chainId };
+    }
+    return this.chainSetting;
+  }
+  
   private async getGrandmasterAddressAndMinimumDelegation(forceRefreshGrandMaster?: boolean): Promise<{ minimumDelegation: number, grandMasterAddress: string[]}> {
     try {
       if (!this.grandMasterInfo || forceRefreshGrandMaster) {
+        console.log(await this.web3Contract.methods.getGrandMasters().call());
         const grandMasterResult = await this.web3Contract.methods.getGrandMasters().call();
         if (!grandMasterResult || !grandMasterResult.length) throw new ManagerError("No grand master found in the node", ErrorTypes.INTERNAL_ERROR);
         let minimumDelegation = 0;
@@ -217,9 +226,10 @@ export class GrandMasterManager {
   }
   
   private async verifyGrandMaster(accountAddress: string, networkId: number) {
+    const chainId = (await this.getChainSetting()).chainId;
     if (this.grandMasterInfo!.grandMasterAddress.indexOf(accountAddress)) {
       throw new ManagerError("Not Grand Master", ErrorTypes.NOT_GRANDMASTER);
-    } else if(networkId != this.chainSetting?.chainId) {
+    } else if(networkId != chainId) {
       throw new ManagerError("Not on the right networkId", ErrorTypes.NOT_ON_THE_RIGHT_NETWORK);
     }
   }
@@ -235,7 +245,7 @@ export class GrandMasterManager {
     const { grandMasterAddress, minimumDelegation } = await this.getGrandmasterAddressAndMinimumDelegation();
     await this.verifyGrandMaster(accountAddress, networkId);
     return {
-      accountAddress, balance, grandMasterAddress, minimumDelegation
+      accountAddress, balance, grandMasterAddress, minimumDelegation, networkId
     };
   }
 }
