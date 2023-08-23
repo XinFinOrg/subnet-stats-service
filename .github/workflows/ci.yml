@@ -3,7 +3,7 @@ name: Build and Push via Master
 on:
   push:
     branches:    
-      - master
+      - fe-v0.1.2
     tags:
       - '*'
 
@@ -41,13 +41,14 @@ jobs:
       run: docker push ${{ steps.image.outputs.name }}
 
   frontend_test_build_and_push_to_docker_registry:
-    name: build and publish frontend image to docker hub
+    name: Test, build and publish frontend image to docker hub
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
     - uses: actions/setup-node@v3
       with:
         node-version: '18.x'
+
     - name: Docker login
       env:
         DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}}
@@ -64,6 +65,21 @@ jobs:
         fi
     - name: Docker build and tag image
       run: cd frontend && docker build . --file Dockerfile --tag ${{ steps.image.outputs.name }}
+
+    - name: Install dependencies          #test after docker build to not pollute image with files
+      run: cd frontend && yarn
+      # env:
+        # NODE_ENV: production
+
+    - name: Test build 
+      run: cd frontend && yarn run build
+      # env:
+      #   NODE_ENV: production
+
+    - name: Test serve 
+      run: cd frontend && yarn global add serve
+      # env:
+      #   NODE_ENV: production
 
     - name: Docker push
       run: docker push ${{ steps.image.outputs.name }}

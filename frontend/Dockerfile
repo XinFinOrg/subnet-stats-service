@@ -1,17 +1,11 @@
-FROM node:18-alpine
-ENV NODE_ENV=production
+FROM node:18
 
-RUN npm install -g yarn --force
+# ENV NODE_ENV=production #breaks
 
 COPY . ./app
 
 WORKDIR /app
 
-#macos
-RUN apk add --update --no-cache python3 g++ make
-
-RUN yarn install
-
-EXPOSE 5000
+RUN yarn 
 
 CMD ["/bin/sh","-c","/app/start.sh"]
