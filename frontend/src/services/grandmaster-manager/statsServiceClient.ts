@@ -12,10 +12,7 @@ export interface CandidateDetails {
 export class StatsServiceClient {
   async getChainSettingInfo() {
     const { data } = await axios.get<{ rpcUrl: string, denom: string, networkName: string}>(`${baseUrl}/information/chainsetting`);
-    return {
-      ...data,
-      chainId: 8230
-    };
+    return data;
   }
   
   async getCandidates() {

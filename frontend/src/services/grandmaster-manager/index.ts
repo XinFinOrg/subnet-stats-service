@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import Web3, { FMT_BYTES, FMT_NUMBER } from 'web3';
+import Web3, { Contract, FMT_BYTES, FMT_NUMBER } from 'web3';
 
 import { CONTRACT_ADDRESS, FIXED_CAP_VALUE } from '@/constants/config';
 import { ErrorTypes, ManagerError } from '@/services/grandmaster-manager/errors';
@@ -26,7 +26,6 @@ interface GrandMasterInfo {
 export interface ChainSettingInfo {
   rpcUrl: string;
   denom: string;
-  chainId: number;
 }
 
 export class GrandMasterManager {
@@ -34,14 +33,13 @@ export class GrandMasterManager {
   private web3Client: Web3 | undefined;
   private web3Contract: any;
   private statsServiceClient: StatsServiceClient;
-  private chainSetting: ChainSettingInfo | undefined;
 
   constructor() {
     if (!(window as any).ethereum) {
       throw new ManagerError("XDC Pay Not Installed", ErrorTypes.WALLET_NOT_INSTALLED);
     }
     this.web3Client = new Web3((window as any).ethereum);
-    this.web3Contract = new this.web3Client.eth.Contract(ABI, CONTRACT_ADDRESS);
+    this.web3Contract = new Contract(ABI, CONTRACT_ADDRESS, this.web3Client);
     this.web3Contract.defaultHardfork = "homestead";
     this.web3Contract.defaultChain = "mainnet";
 
@@ -55,12 +53,12 @@ export class GrandMasterManager {
    */
   async login(): Promise<AccountDetails> {
     try {
-      const {rpcUrl, denom, chainId} = await this.getChainSetting();
-      const { accountAddress, balance, minimumDelegation} = await this.grandMasterAccountDetails();
+      const { rpcUrl, denom } = await this.statsServiceClient.getChainSettingInfo();
+      const { accountAddress, balance, minimumDelegation, networkId} = await this.grandMasterAccountDetails();
       return {
         accountAddress,
         balance,
-        rpcUrl, denom, networkId: chainId,
+        rpcUrl, denom, networkId,
         minimumDelegation
       };
     } catch (err: any) {
@@ -118,9 +116,6 @@ export class GrandMasterManager {
     try {
       const { accountAddress } = await this.grandMasterAccountDetails();
       const nonce = await this.web3Client!.eth.getTransactionCount(accountAddress, undefined, { number: FMT_NUMBER.NUMBER, bytes: FMT_BYTES.HEX });
-      console.log("1")
-      console.log(await this.web3Contract.methods.isCandidate(replaceXdcWith0x(address)).call())
-      console.log("2")
       if (capValue > 0) {
         await this.web3Contract.methods.vote(replaceXdcWith0x(address)).send({
           from: accountAddress,
@@ -195,18 +190,9 @@ export class GrandMasterManager {
     }).sort((a, b) => b.delegation - a.delegation);
   }
   
-  private async getChainSetting() {
-    if (!this.chainSetting) {
-      const { rpcUrl, denom, chainId } = await this.statsServiceClient.getChainSettingInfo();
-      this.chainSetting = { rpcUrl, denom, chainId };
-    }
-    return this.chainSetting;
-  }
-  
   private async getGrandmasterAddressAndMinimumDelegation(forceRefreshGrandMaster?: boolean): Promise<{ minimumDelegation: number, grandMasterAddress: string[]}> {
     try {
       if (!this.grandMasterInfo || forceRefreshGrandMaster) {
-        console.log(await this.web3Contract.methods.getGrandMasters().call());
         const grandMasterResult = await this.web3Contract.methods.getGrandMasters().call();
         if (!grandMasterResult || !grandMasterResult.length) throw new ManagerError("No grand master found in the node", ErrorTypes.INTERNAL_ERROR);
         let minimumDelegation = 0;
@@ -221,17 +207,9 @@ export class GrandMasterManager {
       }
       return this.grandMasterInfo;
     } catch (error) {
+    console.log(error)
       throw new ManagerError("Error while fetching grand master related data from the node", ErrorTypes.INTERNAL_ERROR);
     } 
-  }
-  
-  private async verifyGrandMaster(accountAddress: string, networkId: number) {
-    const chainId = (await this.getChainSetting()).chainId;
-    if (this.grandMasterInfo!.grandMasterAddress.indexOf(accountAddress)) {
-      throw new ManagerError("Not Grand Master", ErrorTypes.NOT_GRANDMASTER);
-    } else if(networkId != chainId) {
-      throw new ManagerError("Not on the right networkId", ErrorTypes.NOT_ON_THE_RIGHT_NETWORK);
-    }
   }
 
   private async grandMasterAccountDetails() {
@@ -243,7 +221,9 @@ export class GrandMasterManager {
     const balance = await this.web3Client!.eth.getBalance(accountAddress, undefined, { number: FMT_NUMBER.NUMBER, bytes: FMT_BYTES.HEX });
     const networkId = await this.web3Client!.eth.getChainId({ number: FMT_NUMBER.NUMBER, bytes: FMT_BYTES.HEX });
     const { grandMasterAddress, minimumDelegation } = await this.getGrandmasterAddressAndMinimumDelegation();
-    await this.verifyGrandMaster(accountAddress, networkId);
+    if (grandMasterAddress.indexOf(accountAddress)) {
+      throw new ManagerError("Not Grand Master", ErrorTypes.NOT_GRANDMASTER);
+    }
     return {
       accountAddress, balance, grandMasterAddress, minimumDelegation, networkId
     };
