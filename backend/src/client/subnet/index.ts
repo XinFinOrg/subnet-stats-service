@@ -1,3 +1,4 @@
+import { Candidates } from './../extensions';
 import Web3 from 'web3';
 import { HttpsAgent } from 'agentkeepalive';
 import { networkExtensions, Web3WithExtension } from '../extensions';
@@ -20,6 +21,19 @@ export class SubnetClient {
     const provider = new Web3.providers.HttpProvider(SUBNET_URL, { keepAlive: true, agent: { https: keepaliveAgent } });
 
     this.web3 = new Web3(provider).extend(networkExtensions());
+  }
+
+  async getCandidates() {
+    try {
+      const { candidates, success } = await this.web3.xdcSubnet.getCandidates('latest');
+      if (!success) {
+        throw new Error('Failed on getting the candidates data');
+      }
+      return candidates;
+    } catch (error) {
+      logger.error(`Fail to load candidates information from subnet nodes, ${error}`);
+      throw new HttpException(500, error.message ? error.message : 'Exception when getting candidates information from subnet node');
+    }
   }
 
   async getLastMasternodesInformation(): Promise<MasternodesInfo> {

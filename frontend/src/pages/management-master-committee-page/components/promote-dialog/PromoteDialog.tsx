@@ -9,11 +9,11 @@ import InfoList from '@/components/info-list/InfoList';
 import {
   setMasterNodeDialogFailResult, setMasterNodeDialogSuccessResult
 } from '@/pages/management-master-committee-page/utils/helper';
-import { CandidateDetails, GrandMasterManager } from '@/services/grandmaster-manager';
+import { GrandMasterManager } from '@/services/grandmaster-manager';
+import { CandidateDetails } from '@/services/grandmaster-manager/statsServiceClient';
 import { formatHash } from '@/utils/formatter';
 
 import type { ManagementLoaderData } from '@/types/loaderData';
-
 interface PromoteDialogProps {
   type: PromoteDialogType;
   data: CandidateDetails;

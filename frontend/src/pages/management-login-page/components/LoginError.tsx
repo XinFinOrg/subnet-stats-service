@@ -101,9 +101,9 @@ function CardContent({ errorType }: CardContentProps): JSX.Element {
     case ErrorTypes.WALLET_NOT_LOGIN:
       return (
         <>
-          <div>Incorrect log in detected</div>
+          <div>Not logged in</div>
           <p className='text-base font-normal'>
-            Error Info: Wrong network. Please switch account or follow the instructions below
+            Please login via XDC Wallet or Metamask
           </p>
         </>
       );

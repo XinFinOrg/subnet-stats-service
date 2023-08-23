@@ -10,10 +10,12 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/tooltip/To
 import AddMasterNodeDialog from '@/pages/management-master-committee-page/components/add-master-node-dialog/AddMasterNodeDialog';
 import PromoteDialog from '@/pages/management-master-committee-page/components/promote-dialog/PromoteDialog';
 import RemoveMasterNodeDialog from '@/pages/management-master-committee-page/components/remove-master-node-dialog/RemoveMasterNodeDialog';
-import { CandidateDetailsStatus, GrandMasterManager } from '@/services/grandmaster-manager';
+import { GrandMasterManager } from '@/services/grandmaster-manager';
 import { ManagerError } from '@/services/grandmaster-manager/errors';
-import { TableContent } from '@/types/managementMasterCommitteePage';
+import { CandidateDetailsStatus } from '@/services/grandmaster-manager/statsServiceClient';
 import { formatHash } from '@/utils/formatter';
+
+import type { TableContent } from '@/types/managementMasterCommitteePage';
 
 export default function ManagementMasterCommitteePage() {
   const [isLoading, setIsLoading] = useState<boolean>(true);

@@ -12,28 +12,31 @@ import { StatsServiceClient } from './statsServiceClient';
 export interface AccountDetails {
   accountAddress: string;
   balance: number;
-  networkId: number;
-  rpcAddress: string;
+  rpcUrl: string;
   denom: string;
+  networkId: number;
+  minimumDelegation: number;
 }
-export type CandidateDetailsStatus = 'MASTERNODE' | 'PROPOSED' | 'SLASHED';
 
-export interface CandidateDetails {
-  address: string;
-  delegation: number;
-  status: CandidateDetailsStatus;
+interface GrandMasterInfo {
+  grandMasterAddress: string[];
+  minimumDelegation: number;
+}
+
+export interface ChainSettingInfo {
+  rpcUrl: string;
+  denom: string;
+  chainId: number;
 }
 
 export class GrandMasterManager {
-  private initilised: boolean;
+  private grandMasterInfo: GrandMasterInfo | undefined;
   private web3Client: Web3 | undefined;
   private web3Contract: any;
-
-  private rpcBasedWeb3: Web3 | undefined;
   private statsServiceClient: StatsServiceClient;
+  private chainSetting: ChainSettingInfo | undefined;
 
   constructor() {
-    this.initilised = false;
     if (!(window as any).ethereum) {
       throw new ManagerError("XDC Pay Not Installed", ErrorTypes.WALLET_NOT_INSTALLED);
     }
@@ -45,49 +48,26 @@ export class GrandMasterManager {
     this.statsServiceClient = new StatsServiceClient();
   }
 
-  async init(forceInit = false) {
-    if (this.initilised && !forceInit) {
-      return;
-    }
-    this.rpcBasedWeb3 = new Web3(await this.statsServiceClient.getRpcUrl());
-    this.rpcBasedWeb3.registerPlugin(new CustomRpcMethodsPlugin());
-    this.initilised = true;
-  }
-
-  private async getGrandMasterAccountDetails() {
-    await this.init();
-    const accounts = await this.web3Client!.eth.getAccounts();
-    if (!accounts || !accounts.length || !accounts[0].length) {
-      throw new Error("No wallet address found, have you logged in?");
-    }
-    const accountAddress = accounts[0];
-    const balance = await this.web3Client!.eth.getBalance(accountAddress, undefined, { number: FMT_NUMBER.NUMBER, bytes: FMT_BYTES.HEX });
-    const networkId = await this.web3Client!.eth.getChainId({ number: FMT_NUMBER.NUMBER, bytes: FMT_BYTES.HEX });
-    // TODO: Get denom, rpcAddress
-    // TODO: Check with the grand master info from the node. Make sure they are the same, otherwise NOT_GRANDMASTER error
-    return {
-      accountAddress, balance, networkId
-    };
-  }
-
   /**
    * This method will detect XDC-Pay and verify if customer has alraedy loggin.
    * @returns Account details will be returned if all good
    * @throws ManagerError with type of "WALLET_NOT_INSTALLED" || "WALLET_NOT_LOGIN"
    */
   async login(): Promise<AccountDetails> {
-    await this.init();
     try {
-      const { accountAddress, balance, networkId } = await this.getGrandMasterAccountDetails();
+      const { rpcUrl, denom, chainId } = await this.statsServiceClient.getChainSettingInfo();
+      this.chainSetting = { rpcUrl, denom, chainId };
+      const { accountAddress, balance, minimumDelegation } = await this.grandMasterAccountDetails();
       return {
         accountAddress,
-        balance: roundDownToSixDecimalPlaces(balance),
-        networkId,
-        denom: "hxdc",
-        rpcAddress: "https://devnetstats.apothem.network/subnet"
+        balance,
+        rpcUrl, denom, networkId: chainId,
+        minimumDelegation
       };
     } catch (err: any) {
-      throw new ManagerError(err.message, ErrorTypes.WALLET_NOT_LOGIN);
+      console.log(err);
+      if (err instanceof ManagerError) throw err;
+      throw new ManagerError(err.message, ErrorTypes.INTERNAL_ERROR);
     }
   }
 
@@ -96,9 +76,8 @@ export class GrandMasterManager {
    * @param address The master node to be added
    */
   async addNewMasterNode(address: string): Promise<void> {
-    await this.init();
     try {
-      const { accountAddress } = await this.getGrandMasterAccountDetails();
+      const { accountAddress } = await this.grandMasterAccountDetails();
       const nonce = await this.web3Client!.eth.getTransactionCount(accountAddress, undefined, { number: FMT_NUMBER.NUMBER, bytes: FMT_BYTES.HEX });
       await this.web3Contract.methods.propose(replaceXdcWith0x(address)).send({
         from: accountAddress,
@@ -117,9 +96,8 @@ export class GrandMasterManager {
    * @param address The master node to be removed
    */
   async removeMasterNode(address: string): Promise<void> {
-    await this.init();
     try {
-      const { accountAddress } = await this.getGrandMasterAccountDetails();
+      const { accountAddress } = await this.grandMasterAccountDetails();
       const nonce = await this.web3Client!.eth.getTransactionCount(accountAddress, undefined, { number: FMT_NUMBER.NUMBER, bytes: FMT_BYTES.HEX });
       await this.web3Contract.methods.resign(replaceXdcWith0x(address)).send({
         from: accountAddress,
@@ -139,9 +117,8 @@ export class GrandMasterManager {
    * @param capValue The xdc value that will be applied to the targeted address. This value indicates the cap that would like to be increase/reduced on this address
    */
   async changeVote(address: string, capValue: number): Promise<void> {
-    await this.init();
     try {
-      const { accountAddress } = await this.getGrandMasterAccountDetails();
+      const { accountAddress } = await this.grandMasterAccountDetails();
       const nonce = await this.web3Client!.eth.getTransactionCount(accountAddress, undefined, { number: FMT_NUMBER.NUMBER, bytes: FMT_BYTES.HEX });
 
       if (capValue > 0) {
@@ -167,13 +144,12 @@ export class GrandMasterManager {
   }
 
   /**
-   * A event listener on wallet account. If user switch to a different account, this method will update notify the provided handler
+   * A event listener on wallet account. If user switch to a different account, this method will notify the provided handler
    * @param changeHandler The handler function to process when the accounts changed. The provided value will be the new wallet address.
    */
   async onAccountChange(changeHandler: (accounts: string) => any) {
     (this.web3Client!.currentProvider as any).on("accountsChanged", (accounts: string[]) => {
       if (accounts && accounts.length) {
-        this.init(true);
         changeHandler(accounts[0]);
       }
     });
@@ -186,34 +162,87 @@ export class GrandMasterManager {
    * 'PROPOSED' means it just been proposed, but waiting for have enough vote in order to be the masternode.
    * 'SLASHED' means it's been taken out from the masternode list
    */
-  async getCandidates(): Promise<CandidateDetails[]> {
-    await this.init();
+  async getCandidates() {
     try {
-      const result = await this.rpcBasedWeb3!.xdcSubnet.getCandidates("latest");
-      if (!result) {
-        throw new ManagerError("Fail to get list of candidates from xdc subnet, empty value returned");
-      }
-      const { candidates, success } = result;
-      if (!success) {
-        throw new ManagerError("Fail to get list of candidates from xdc subnet");
-      }
-      return Object.entries(candidates).map(entry => {
-        const [address, { capacity, status }] = entry;
-        return {
-          address,
-          delegation: roundDownToSixDecimalPlaces(weiToEther(capacity)),
-          status
-        };
-      }).sort((a, b) => b.delegation - a.delegation);
-
-    } catch (error: any) {
-      throw handleTransactionError(error);
+      return this.getCandidates_temporary();
+      // return await this.statsServiceClient.getCandidates();
+    } catch (error) {
+      if (error instanceof ManagerError) throw error;
+      throw new ManagerError("Unable to get list of candidates", ErrorTypes.INTERNAL_ERROR);
     }
+  }
+
+  // TODO: To be removed after API is done for the getCandidates method
+  private async getCandidates_temporary() {
+    const rpcBasedWeb3 = new Web3("https://devnetstats.apothem.network/subnet");
+    rpcBasedWeb3.registerPlugin(new CustomRpcMethodsPlugin());
+
+    const result = await rpcBasedWeb3!.xdcSubnet.getCandidates("latest");
+    if (!result) {
+      throw new ManagerError("Fail to get list of candidates from xdc subnet, empty value returned");
+    }
+    const { candidates, success } = result;
+    if (!success) {
+      throw new ManagerError("Fail to get list of candidates from xdc subnet");
+    }
+    return Object.entries(candidates).map(entry => {
+      const [address, { capacity, status }] = entry;
+      return {
+        address,
+        delegation: roundDownToSixDecimalPlaces(weiToEther(capacity)),
+        status
+      };
+    }).sort((a, b) => b.delegation - a.delegation);
+  }
+
+  private async getGrandmasterAddressAndMinimumDelegation(forceRefreshGrandMaster?: boolean): Promise<{ minimumDelegation: number, grandMasterAddress: string[]; }> {
+    try {
+      if (!this.grandMasterInfo || forceRefreshGrandMaster) {
+        const grandMasterResult = await this.web3Contract.methods.getGrandMasters().call();
+        if (!grandMasterResult || !grandMasterResult.length) throw new ManagerError("No grand master found in the node", ErrorTypes.INTERNAL_ERROR);
+        let minimumDelegation = 0;
+        const minimumDelegationResult: number[] = await this.web3Contract.methods.minCandidateCap().call();
+        if (!minimumDelegationResult || !minimumDelegationResult.length) {
+          minimumDelegation = minimumDelegationResult[0];
+        }
+        this.grandMasterInfo = {
+          grandMasterAddress: grandMasterResult[0],
+          minimumDelegation
+        };
+      }
+      return this.grandMasterInfo;
+    } catch (error) {
+      throw new ManagerError("Error while fetching grand master related data from the node", ErrorTypes.INTERNAL_ERROR);
+    }
+  }
+
+  private async verifyGrandMaster(accountAddress: string, networkId: number) {
+    if (this.grandMasterInfo!.grandMasterAddress.indexOf(accountAddress)) {
+      throw new ManagerError("Not Grand Master", ErrorTypes.NOT_GRANDMASTER);
+    } else if (networkId != this.chainSetting?.chainId) {
+      throw new ManagerError("Not on the right networkId", ErrorTypes.NOT_ON_THE_RIGHT_NETWORK);
+    }
+  }
+
+  private async grandMasterAccountDetails() {
+    const accounts = await this.web3Client!.eth.getAccounts();
+    if (!accounts || !accounts.length || !accounts[0].length) {
+      throw new ManagerError("No wallet address found, have you logged in?", ErrorTypes.WALLET_NOT_LOGIN);
+    }
+    const accountAddress = accounts[0];
+    const balance = await this.web3Client!.eth.getBalance(accountAddress, undefined, { number: FMT_NUMBER.NUMBER, bytes: FMT_BYTES.HEX });
+    const networkId = await this.web3Client!.eth.getChainId({ number: FMT_NUMBER.NUMBER, bytes: FMT_BYTES.HEX });
+    const { grandMasterAddress, minimumDelegation } = await this.getGrandmasterAddressAndMinimumDelegation();
+    await this.verifyGrandMaster(accountAddress, networkId);
+    return {
+      accountAddress, balance, grandMasterAddress, minimumDelegation
+    };
   }
 }
 
 const handleTransactionError = (error: any) => {
-  if (error && error.code) {
+  if (error instanceof ManagerError) throw error;
+  else if (error && error.code) {
     switch (error.code) {
       case 100:
         return new ManagerError(error.message, ErrorTypes.USER_DENINED);
@@ -227,5 +256,8 @@ const handleTransactionError = (error: any) => {
 };
 
 const replaceXdcWith0x = (address: string) => {
-  return address.replace("xdc", "0x");
+  if (address.startsWith("xdc")) {
+    return address.replace("xdc", "0x");
+  }
+  return address;
 };
