@@ -3,7 +3,7 @@ name: Build and Push via Master
 on:
   push:
     branches:    
-      - fe-v0.1.2
+      - master
     tags:
       - '*'
 
