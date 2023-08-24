@@ -169,7 +169,7 @@ export class GrandMasterManager {
   
   // TODO: To be removed after API is done for the getCandidates method
   private async getCandidates_temporary() {
-    const rpcBasedWeb3 = new Web3("http://144.126.140.3:8545");
+    const rpcBasedWeb3 = new Web3("https://devnetstats.apothem.network/subnet");
     rpcBasedWeb3.registerPlugin(new CustomRpcMethodsPlugin());
     
     const result = await rpcBasedWeb3!.xdcSubnet.getCandidates("latest");
