@@ -22,6 +22,7 @@ export class Route implements Routes {
     this.router.get('/information/network', this.blocksController.getBlockChainStats);
     this.router.get('/information/relayer', this.relayerController.getRelayerRelatedDetails);
     this.router.get('/information/chainsetting', this.relayerController.getChainDetails);
+    this.router.get('/information/candidates', this.masterNodeController.getCandidates);
     this.router.get('/confirmation', this.blocksController.confirmBlock);
   }
 }
