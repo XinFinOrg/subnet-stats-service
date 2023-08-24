@@ -161,11 +161,9 @@ function FormContent(props: PromoteDialogProps) {
       },
     ],
   };
-  ABI;
+ 
   const [rdata, setRdata] = useState({});
   (rdata as any)["voteAddress"] = address;
-
-  console.log((rdata as any)["voteAddress"], (rdata as any)["voteValue"]);
 
   const promote = {
     buttonName: "Proceed to wallet confirmation",
@@ -176,6 +174,20 @@ function FormContent(props: PromoteDialogProps) {
       functionName: "vote",
       args: [(rdata as any)["voteAddress"]?.replace(/^xdc/, "0x")],
       value: parseEther((rdata as any)["voteValue"] || "0"),
+    },
+  };
+
+  const demote = {
+    buttonName: "Proceed to wallet confirmation",
+    disabled: !((rdata as any)["voteAddress"] && (rdata as any)["voteValue"]),
+    data: {
+      address: CONTRACT_ADDRESS,
+      abi: ABI as any,
+      functionName: "unvote",
+      args: [
+        (rdata as any)["voteAddress"]?.replace(/^xdc/, "0x"),
+        parseEther((rdata as any)["voteValue"] || "0"),
+      ],
     },
   };
 
@@ -217,7 +229,9 @@ function FormContent(props: PromoteDialogProps) {
       />
 
       <div className="flex gap-2 mt-2">
-        <WriteButtion {...promote} />
+        {type == "promote" && <WriteButtion {...promote} />}
+        {type == "demote" && <WriteButtion {...demote} />}
+
         <Button
           onClick={closeDialog}
           className="font-extrabold px-4 py-2.5 flex-1"
