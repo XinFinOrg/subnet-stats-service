@@ -35,7 +35,7 @@ export default function ManagementLoginPage() {
       { name: "Network RPC:", value: network.chain?.rpcUrls.default.http },
     ],
   };
-
+//
   useEffect(() => {
     setIsLoading(false);
   }, []);
