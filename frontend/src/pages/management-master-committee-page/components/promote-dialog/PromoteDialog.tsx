@@ -1,5 +1,5 @@
 import { Form, Formik, FormikContextType, useFormikContext } from "formik";
-import { useContext, useRef } from "react";
+import { useContext, useRef, useState } from "react";
 import { useLoaderData } from "react-router-dom";
 import * as Yup from "yup";
 import WriteButtion from "@/components/WriteButton";
@@ -17,8 +17,12 @@ import {
 } from "@/pages/management-master-committee-page/utils/helper";
 import { CandidateDetails } from "@/services/grandmaster-manager/statsServiceClient";
 import { formatHash } from "@/utils/formatter";
-
+import Button from "@/components/button/Button";
 import type { ManagementLoaderData } from "@/types/loaderData";
+import { CONTRACT_ADDRESS } from "@/constants/config";
+import ABI from "../../../../abi/ABI.json";
+import { useAccount, useBalance } from "wagmi";
+import { parseEther } from "viem";
 
 interface PromoteDialogProps {
   type: PromoteDialogType;
@@ -138,11 +142,14 @@ function FormContent(props: PromoteDialogProps) {
   const { address, delegation } = data;
   const formattedAddress = formatHash(address);
 
+  const { address: masterAddress } = useAccount();
+  const { data: balance } = useBalance({ address: masterAddress });
+
   const initInfo = {
     data: [
       {
         name: "Grandmaster's remaining balance:",
-        value: `${grandmasterRemainingBalance} xdc`,
+        value: `${(balance?.formatted as any) / 1} xdc`,
       },
       {
         name: `${formattedAddress}'s current delegation:`,
@@ -154,6 +161,23 @@ function FormContent(props: PromoteDialogProps) {
       },
     ],
   };
+  ABI;
+  const [rdata, setRdata] = useState({});
+  (rdata as any)["voteAddress"] = address;
+
+  console.log((rdata as any)["voteAddress"], (rdata as any)["voteValue"]);
+
+  const promote = {
+    buttonName: "Proceed to wallet confirmation",
+    disabled: !((rdata as any)["voteAddress"] && (rdata as any)["voteValue"]),
+    data: {
+      address: CONTRACT_ADDRESS,
+      abi: ABI as any,
+      functionName: "vote",
+      args: [(rdata as any)["voteAddress"]?.replace(/^xdc/, "0x")],
+      value: parseEther((rdata as any)["voteValue"] || "0"),
+    },
+  };
 
   return (
     <>
@@ -163,7 +187,17 @@ function FormContent(props: PromoteDialogProps) {
       <div className="pt-6">
         <InfoList info={initInfo} noIcon valueClassName="text-lg" />
       </div>
-      <DialogFormField
+      <input
+        type="number"
+        placeholder="increaseDelegation"
+        className="input w-full max-w-xs my-2"
+        onChange={(e: any) => {
+          (rdata as any)["voteValue"] = e.target.value;
+
+          setRdata({ ...rdata });
+        }}
+      />
+      {/* <DialogFormField
         labelText={actionLabel}
         name="increaseDelegation"
         type="number"
@@ -175,20 +209,30 @@ function FormContent(props: PromoteDialogProps) {
             formik.touched.increaseDelegation
           )
         }
-      />
+      /> */}
       <PreviewUpdatedMasterNodeInfo
         delegation={delegation}
         formattedAddress={formattedAddress}
         type={type}
       />
 
-      <WriteButtion />
-      <DialogButtons
+      <div className="flex gap-2 mt-2">
+        <WriteButtion {...promote} />
+        <Button
+          onClick={closeDialog}
+          className="font-extrabold px-4 py-2.5 flex-1"
+          variant="contained"
+          colour="primary"
+        >
+          {"Cancel"}
+        </Button>
+      </div>
+      {/* <DialogButtons
         isSubmitting={formik.isSubmitting}
         omitSeparator
         submitText="Proceed to wallet confirmation"
         onClose={closeDialog}
-      />
+      /> */}
     </>
   );
 }

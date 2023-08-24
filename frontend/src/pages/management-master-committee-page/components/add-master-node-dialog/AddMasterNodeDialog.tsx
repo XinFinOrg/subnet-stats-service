@@ -1,5 +1,5 @@
 import { Form, Formik, FormikContextType } from "formik";
-import { useContext, useRef } from "react";
+import { useContext, useRef, useState } from "react";
 import * as Yup from "yup";
 import WriteButtion from "@/components/WriteButton";
 import Button from "@/components/button/Button";
@@ -17,9 +17,10 @@ import {
 } from "@/pages/management-master-committee-page/utils/helper";
 
 import type { InfoListInfo } from "@/types/info";
-import { useContractReads } from "wagmi";
+import { useAccount, useBalance, useContractReads } from "wagmi";
 import ABI from "../../../../abi/ABI.json";
 import { CONTRACT_ADDRESS } from "@/constants/config";
+import { parseEther, parseUnits } from "viem";
 interface AddMasterNodeDialogProps {
   closeDialog: () => void;
   setDialogResult?: React.Dispatch<
@@ -71,52 +72,65 @@ export default function AddMasterNodeDialog(props: AddMasterNodeDialogProps) {
     delegation: "",
   };
 
+  const { address } = useAccount();
+  const { data: balance } = useBalance({ address: address });
+
   const masternodeInfo: InfoListInfo = {
     data: [
       {
         name: "Grandmaster's remaining balance:",
-        value: "unknown",
+        value: (balance?.formatted as any) / 1,
       },
     ],
   };
+
+  const [rdata, setRdata] = useState({});
 
   const addMaster = {
     buttonName: "Proceed to wallet confirmation",
-    data: {},
+    disabled: !(
+      (rdata as any)["proposeAddress"] && (rdata as any)["proposeValue"]
+    ),
+    data: {
+      address: CONTRACT_ADDRESS,
+      abi: ABI as any,
+      functionName: "propose",
+      args: [(rdata as any)["proposeAddress"]],
+      value: parseEther((rdata as any)["proposeValue"] || "0"),
+    },
   };
-
-  const {data} = useContractReads({
-    contracts: [
-      {
-        address: CONTRACT_ADDRESS,
-        abi: ABI as any,
-        functionName: "getCandidates",
-      },
-    ],
-  });
-
-  console.log(data);
 
   return (
     <>
-      <Formik
-        initialValues={initialValues}
-        validationSchema={validationSchema}
-        onSubmit={handleSubmit}
-        innerRef={formikRef}
-      >
-        {({ errors, touched, isSubmitting }) => (
-          <Form>
-            <DialogTitle title="Add a new master node candidate" />
-            <div className="pt-6">
-              <InfoList info={masternodeInfo} noIcon valueClassName="text-lg" />
-            </div>
-            <DialogFormField
+      <DialogTitle title="Add a new master node candidate" />
+      <div className="pt-6">
+        <InfoList info={masternodeInfo} noIcon valueClassName="text-lg" />
+      </div>
+      <input
+        type="text"
+        placeholder="New master node address:"
+        className="input w-full max-w-xs my-2"
+        onChange={(e: any) => {
+          (rdata as any)["proposeAddress"] = e.target.value;
+          setRdata({ ...rdata });
+        }}
+      />
+      <input
+        type="number"
+        placeholder="How much to delegate:"
+        className="input w-full max-w-xs my-2"
+        onChange={(e: any) => {
+          (rdata as any)["proposeValue"] = e.target.value;
+          setRdata({ ...rdata });
+        }}
+      />
+      {/* <DialogFormField
               labelText="New master node address:"
               name="newAddress"
               className="pt-6"
               isError={!!(errors.newAddress && touched.newAddress)}
             />
+
             <DialogFormField
               labelText="How much to delegate:"
               valueSuffix="xdc"
@@ -124,29 +138,26 @@ export default function AddMasterNodeDialog(props: AddMasterNodeDialogProps) {
               type="number"
               className="pt-6"
               isError={!!(errors.delegation && touched.delegation)}
-            />
+            /> */}
 
-            <div className="flex gap-2 mt-2">
-              <WriteButtion {...addMaster} />
-              <Button
-                onClick={closeDialog}
-                className="font-extrabold px-4 py-2.5 flex-1"
-                variant="contained"
-                colour="primary"
-              >
-                {"Cancel"}
-              </Button>
-            </div>
+      <div className="flex gap-2 mt-2">
+        <WriteButtion {...addMaster} />
+        <Button
+          onClick={closeDialog}
+          className="font-extrabold px-4 py-2.5 flex-1"
+          variant="contained"
+          colour="primary"
+        >
+          {"Cancel"}
+        </Button>
+      </div>
 
-            {/* <DialogButtons
+      {/* <DialogButtons
               omitSeparator
               isSubmitting={isSubmitting}
               onClose={closeDialog}
               submitText="Proceed to wallet confirmation"
             /> */}
-          </Form>
-        )}
-      </Formik>
     </>
   );
 }
