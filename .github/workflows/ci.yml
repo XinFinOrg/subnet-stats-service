@@ -43,6 +43,9 @@ jobs:
   frontend_test_build_and_push_to_docker_registry:
     name: Test, build and publish frontend image to docker hub
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
     steps:
     - uses: actions/checkout@master
     - uses: actions/setup-node@v3
@@ -64,20 +67,20 @@ jobs:
           echo "name=xinfinorg/subnet-frontend:${{github.ref_name}}" >> $GITHUB_OUTPUT
         fi
     - name: Docker build and tag image
-      run: cd frontend && docker build . --file Dockerfile --tag ${{ steps.image.outputs.name }}
+      run: docker build . --file Dockerfile --tag ${{ steps.image.outputs.name }}
 
     - name: Install dependencies          #test after docker build to not pollute image with files
-      run: cd frontend && yarn
+      run: yarn
       env:
         NODE_ENV: production
 
     - name: Test build 
-      run: cd frontend && yarn run build
+      run: yarn run build
       env:
         NODE_ENV: production
 
     - name: Test serve 
-      run: cd frontend && yarn global add serve
+      run: yarn global add serve
       env:
         NODE_ENV: production
 
