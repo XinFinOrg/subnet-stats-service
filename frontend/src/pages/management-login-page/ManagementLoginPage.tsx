@@ -24,7 +24,10 @@ export default function ManagementLoginPage() {
   const walletInfo = {
     data: [
       { name: "Wallet Connected:", value: formatHash(address as any) },
-      { name: "Current Balance:", value: `${balance?.formatted} hxdc` },
+      {
+        name: "Current Balance:",
+        value: `${(balance?.formatted as any) / 1} hxdc`,
+      },
     ],
   };
 
@@ -35,10 +38,14 @@ export default function ManagementLoginPage() {
       { name: "Network RPC:", value: network.chain?.rpcUrls.default.http },
     ],
   };
-//
+  //
   useEffect(() => {
     setIsLoading(false);
   }, []);
+
+  if (isLoading) {
+    return <Loader />;
+  }
 
   if (errorType) {
     return <LoginError errorType={errorType} />;
@@ -48,9 +55,7 @@ export default function ManagementLoginPage() {
     return <ErrorState title="master login" />;
   }
 
-  return isLoading ? (
-    <Loader />
-  ) : (
+  return (
     <>
       <h1 className="text-xl font-extrabold">
         Successfully logged in as the grand master
