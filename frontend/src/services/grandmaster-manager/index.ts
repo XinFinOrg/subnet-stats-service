@@ -155,46 +155,6 @@ export class GrandMasterManager {
     });
   }
 
-  /**
-   * A method to return subnet candidates and its status.
-   * @returns The address and its current status and stake.
-   * 'MASTERNODE' means it's one of the mining masternode
-   * 'PROPOSED' means it just been proposed, but waiting for have enough vote in order to be the masternode.
-   * 'SLASHED' means it's been taken out from the masternode list
-   */
-  async getCandidates() {
-    try {
-      return this.getCandidates_temporary();
-      // return await this.statsServiceClient.getCandidates();
-    } catch (error) {
-      if (error instanceof ManagerError) throw error;
-      throw new ManagerError("Unable to get list of candidates", ErrorTypes.INTERNAL_ERROR);
-    }
-  }
-
-  // TODO: To be removed after API is done for the getCandidates method
-  private async getCandidates_temporary() {
-    const rpcBasedWeb3 = new Web3("https://devnetstats.apothem.network/subnet");
-    rpcBasedWeb3.registerPlugin(new CustomRpcMethodsPlugin());
-
-    const result = await rpcBasedWeb3!.xdcSubnet.getCandidates("latest");
-    if (!result) {
-      throw new ManagerError("Fail to get list of candidates from xdc subnet, empty value returned");
-    }
-    const { candidates, success } = result;
-    if (!success) {
-      throw new ManagerError("Fail to get list of candidates from xdc subnet");
-    }
-    return Object.entries(candidates).map(entry => {
-      const [address, { capacity, status }] = entry;
-      return {
-        address,
-        delegation: roundDownToSixDecimalPlaces(weiToEther(capacity)),
-        status
-      };
-    }).sort((a, b) => b.delegation - a.delegation);
-  }
-
   private async getGrandmasterAddressAndMinimumDelegation(forceRefreshGrandMaster?: boolean): Promise<{ minimumDelegation: number, grandMasterAddress: string[]; }> {
     try {
       if (!this.grandMasterInfo || forceRefreshGrandMaster) {
@@ -261,3 +221,43 @@ const replaceXdcWith0x = (address: string) => {
   }
   return address;
 };
+
+/**
+ * A method to return subnet candidates and its status.
+ * @returns The address and its current status and stake.
+ * 'MASTERNODE' means it's one of the mining masternode
+ * 'PROPOSED' means it just been proposed, but waiting for have enough vote in order to be the masternode.
+ * 'SLASHED' means it's been taken out from the masternode list
+ */
+export async function getCandidates() {
+  try {
+    return getCandidates_temporary();
+    // return await this.statsServiceClient.getCandidates();
+  } catch (error) {
+    if (error instanceof ManagerError) throw error;
+    throw new ManagerError("Unable to get list of candidates", ErrorTypes.INTERNAL_ERROR);
+  }
+}
+
+// TODO: To be removed after API is done for the getCandidates method
+async function getCandidates_temporary() {
+  const rpcBasedWeb3 = new Web3("https://devnetstats.apothem.network/subnet");
+  rpcBasedWeb3.registerPlugin(new CustomRpcMethodsPlugin());
+
+  const result = await rpcBasedWeb3!.xdcSubnet.getCandidates("latest");
+  if (!result) {
+    throw new ManagerError("Fail to get list of candidates from xdc subnet, empty value returned");
+  }
+  const { candidates, success } = result;
+  if (!success) {
+    throw new ManagerError("Fail to get list of candidates from xdc subnet");
+  }
+  return Object.entries(candidates).map(entry => {
+    const [address, { capacity, status }] = entry;
+    return {
+      address,
+      delegation: roundDownToSixDecimalPlaces(weiToEther(capacity)),
+      status
+    };
+  }).sort((a, b) => b.delegation - a.delegation);
+}

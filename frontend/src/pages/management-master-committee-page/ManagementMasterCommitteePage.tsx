@@ -10,7 +10,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/tooltip/To
 import AddMasterNodeDialog from '@/pages/management-master-committee-page/components/add-master-node-dialog/AddMasterNodeDialog';
 import PromoteDialog from '@/pages/management-master-committee-page/components/promote-dialog/PromoteDialog';
 import RemoveMasterNodeDialog from '@/pages/management-master-committee-page/components/remove-master-node-dialog/RemoveMasterNodeDialog';
-import { GrandMasterManager } from '@/services/grandmaster-manager';
+import { getCandidates } from '@/services/grandmaster-manager';
 import { ManagerError } from '@/services/grandmaster-manager/errors';
 import { CandidateDetailsStatus } from '@/services/grandmaster-manager/statsServiceClient';
 import { formatHash } from '@/utils/formatter';
@@ -31,8 +31,7 @@ export default function ManagementMasterCommitteePage() {
       try {
         setIsLoading(true);
 
-        const service = new GrandMasterManager();
-        const candidates = await service?.getCandidates();
+        const candidates = await getCandidates();
 
         if (!candidates) {
           setTableContent(null);
