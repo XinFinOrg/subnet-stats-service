@@ -34,6 +34,16 @@ jobs:
       with:
         node-version: '18.x'
     - name: Install dependencies
-      run: yarn install
-    - name: Test build
-      run: yarn build
+      run: yarn
+      env:
+        NODE_ENV: production
+
+    - name: Test build 
+      run: yarn run build
+      env:
+        NODE_ENV: production
+
+    - name: Test serve 
+      run: yarn global add serve
+      env:
+        NODE_ENV: production
