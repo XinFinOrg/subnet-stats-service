@@ -1,8 +1,3 @@
-export interface ManagementLoaderData {
-  minimumDelegation: number;
-  grandmasterRemainingBalance: number;
-}
-
 export interface AppLoaderData {
   name: string;
 }

@@ -1,6 +1,5 @@
 import { Form, Formik, FormikContextType, useFormikContext } from 'formik';
 import { useRef } from 'react';
-import { useLoaderData } from 'react-router-dom';
 import * as Yup from 'yup';
 
 import { DialogButtons, DialogResultBase, DialogTitle } from '@/components/dialog/Dialog';
@@ -9,15 +8,15 @@ import InfoList from '@/components/info-list/InfoList';
 import {
   setMasterNodeDialogFailResult, setMasterNodeDialogSuccessResult
 } from '@/pages/management-master-committee-page/utils/helper';
-import { GrandMasterManager } from '@/services/grandmaster-manager';
+import { AccountDetails, GrandMasterManager } from '@/services/grandmaster-manager';
 import { CandidateDetails } from '@/services/grandmaster-manager/statsServiceClient';
 import { formatHash } from '@/utils/formatter';
 
-import type { ManagementLoaderData } from '@/types/loaderData';
 interface PromoteDialogProps {
   type: PromoteDialogType;
   data: CandidateDetails;
   closeDialog: () => void;
+  accountDetails?: AccountDetails;
   setDialogResult?: React.Dispatch<React.SetStateAction<DialogResultBase | undefined>>;
 }
 
@@ -28,9 +27,8 @@ interface FormValues {
 type PromoteDialogType = 'promote' | 'demote';
 
 export default function PromoteDialog(props: PromoteDialogProps) {
-  const { setDialogResult, data, type } = props;
-
-  const { minimumDelegation } = useLoaderData() as ManagementLoaderData;
+  const { setDialogResult, data, type, accountDetails } = props;
+  const minimumDelegation = accountDetails?.minimumDelegation ?? 'unknown, login failed';
 
   const formikRef = useRef<FormikContextType<FormValues>>(null);
 
@@ -85,9 +83,9 @@ interface UpdatedMasterNodeInfoProps {
 }
 
 function FormContent(props: PromoteDialogProps) {
-  const { type, data, closeDialog } = props;
+  const { type, data, closeDialog, accountDetails } = props;
 
-  const { minimumDelegation, grandmasterRemainingBalance } = useLoaderData() as ManagementLoaderData;
+  const minimumDelegation = accountDetails?.minimumDelegation ?? 'unknown, login failed';
 
   const formik = useFormikContext<FormValues>();
 
@@ -123,7 +121,7 @@ function FormContent(props: PromoteDialogProps) {
 
   const initInfo = {
     data: [
-      { name: 'Grandmaster\'s remaining balance:', value: `${grandmasterRemainingBalance} xdc` },
+      { name: 'Grandmaster\'s remaining balance:', value: `${minimumDelegation} xdc` },
       { name: `${formattedAddress}'s current delegation:`, value: `${delegation} hxdc` },
       { name: `${formattedAddress}'s minimum delegation:`, value: `${minimumDelegation} hxdc` },
     ]

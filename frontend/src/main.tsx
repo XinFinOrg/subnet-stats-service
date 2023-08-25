@@ -9,28 +9,10 @@ import ErrorPage from '@/pages/ErrorPage.tsx';
 import HomePage from '@/pages/HomePage.tsx';
 import ManagementLoginPage from '@/pages/management-login-page/ManagementLoginPage.tsx';
 import ManagementMasterCommitteePage from '@/pages/management-master-committee-page/ManagementMasterCommitteePage.tsx';
-import { roundDownToSixDecimalPlaces } from '@/utils/formatter.ts';
 
 import App from './App.tsx';
 
 import '@/index.css';
-
-async function managementLoader() {
-  // async function getData() {
-  // TODO: This is broken without the new api
-  //   const response = await axios.get(`${baseUrl}/information/newAPI`);
-  //   return response.data;
-  // }
-
-  // const data = await getData();
-  const minimumDelegation = 0;
-  const grandmasterRemainingBalance = 0;
-
-  return {
-    minimumDelegation: roundDownToSixDecimalPlaces(minimumDelegation),
-    grandmasterRemainingBalance: roundDownToSixDecimalPlaces(grandmasterRemainingBalance)
-  };
-}
 
 export async function appLoader() {
   async function getData() {
@@ -99,7 +81,6 @@ const router = createBrowserRouter([
     }, {
       path: 'managementMasterCommittee',
       element: <ManagementMasterCommitteePage />,
-      loader: managementLoader
     }, {
       path: '*',
       element: <Navigate to='/home' replace />,

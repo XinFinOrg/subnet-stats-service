@@ -60,9 +60,9 @@ export class GrandMasterManager {
       const { accountAddress, balance, minimumDelegation } = await this.grandMasterAccountDetails();
       return {
         accountAddress,
-        balance,
+        balance: roundDownToSixDecimalPlaces(balance),
         rpcUrl, denom, networkId: chainId,
-        minimumDelegation
+        minimumDelegation: roundDownToSixDecimalPlaces(minimumDelegation),
       };
     } catch (err: any) {
       console.log(err);

@@ -1,6 +1,5 @@
 import { Form, Formik, FormikContextType } from 'formik';
 import { useRef } from 'react';
-import { useLoaderData } from 'react-router';
 import * as Yup from 'yup';
 
 import { DialogButtons, DialogResultBase, DialogTitle } from '@/components/dialog/Dialog';
@@ -9,22 +8,19 @@ import InfoList from '@/components/info-list/InfoList';
 import {
   setMasterNodeDialogFailResult, setMasterNodeDialogSuccessResult
 } from '@/pages/management-master-committee-page/utils/helper';
-import { GrandMasterManager } from '@/services/grandmaster-manager';
-
-import type { ManagementLoaderData } from '@/types/loaderData';
+import { AccountDetails, GrandMasterManager } from '@/services/grandmaster-manager';
 
 import type { InfoListInfo } from '@/types/info';
 interface AddMasterNodeDialogProps {
   closeDialog: () => void;
+  accountDetails?: AccountDetails;
   setDialogResult?: React.Dispatch<React.SetStateAction<DialogResultBase | undefined>>;
 }
 
 export default function AddMasterNodeDialog(props: AddMasterNodeDialogProps) {
-  const { closeDialog, setDialogResult } = props;
+  const { closeDialog, setDialogResult, accountDetails } = props;
 
   const formikRef = useRef<FormikContextType<FormValues>>(null);
-
-  const { grandmasterRemainingBalance } = useLoaderData() as ManagementLoaderData;
 
   const validationSchema = Yup.object().shape({
     newAddress: Yup.string()
@@ -64,7 +60,7 @@ export default function AddMasterNodeDialog(props: AddMasterNodeDialogProps) {
   const masternodeInfo: InfoListInfo = {
     data: [{
       name: 'Grandmaster\'s remaining balance:',
-      value: grandmasterRemainingBalance
+      value: accountDetails?.balance ?? 'unknown, login failed'
     }]
   };
 

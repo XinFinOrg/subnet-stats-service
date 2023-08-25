@@ -8,21 +8,24 @@ import ErrorState from '@/components/error-state/ErrorState';
 import Loader from '@/components/loader/Loader';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/tooltip/Tooltip';
 import AddMasterNodeDialog from '@/pages/management-master-committee-page/components/add-master-node-dialog/AddMasterNodeDialog';
+import {
+  NoLoginDialog
+} from '@/pages/management-master-committee-page/components/no-login-dialog/NoLoginDialog';
 import PromoteDialog from '@/pages/management-master-committee-page/components/promote-dialog/PromoteDialog';
 import RemoveMasterNodeDialog from '@/pages/management-master-committee-page/components/remove-master-node-dialog/RemoveMasterNodeDialog';
-import { getCandidates } from '@/services/grandmaster-manager';
+import { AccountDetails, getCandidates, GrandMasterManager } from '@/services/grandmaster-manager';
 import { ManagerError } from '@/services/grandmaster-manager/errors';
 import { CandidateDetailsStatus } from '@/services/grandmaster-manager/statsServiceClient';
 import { formatHash } from '@/utils/formatter';
 
 import type { TableContent } from '@/types/managementMasterCommitteePage';
-
 export default function ManagementMasterCommitteePage() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [tableContent, setTableContent] = useState<TableContent | null>();
   const [dialogContent, setDialogContent] = useState<React.ReactNode | null>(null);
   const [dialogResult, setDialogResult] = useState<DialogResultBase>();
   const [error, setError] = useState<ManagerError>();
+  const [accountDetails, setAccountDetails] = useState<AccountDetails>();
 
   const dialogRef = useRef<DialogRef>(null);
 
@@ -32,6 +35,15 @@ export default function ManagementMasterCommitteePage() {
         setIsLoading(true);
 
         const candidates = await getCandidates();
+
+        // try login, use view-only mode if can not login
+        try {
+          const service = new GrandMasterManager();
+          const accountDetails = await service.login();
+          setAccountDetails(accountDetails);
+        } catch (error) {
+          console.log('no login info, entering view-only mode');
+        }
 
         if (!candidates) {
           setTableContent(null);
@@ -90,6 +102,12 @@ export default function ManagementMasterCommitteePage() {
   }, []);
 
   function openDialog(content: React.ReactNode) {
+    if (!accountDetails) {
+      setDialogContent(<NoLoginDialog closeDialog={handleCloseDialog} />);
+      dialogRef.current?.open();
+      return;
+    }
+
     setDialogContent(content);
     dialogRef.current?.open();
   }
@@ -140,7 +158,7 @@ export default function ManagementMasterCommitteePage() {
         <div className='self-end'>
           <Button
             colour='primary'
-            onClick={() => openDialog(<AddMasterNodeDialog closeDialog={handleCloseDialog} setDialogResult={setDialogResult} />)}
+            onClick={() => openDialog(<AddMasterNodeDialog accountDetails={accountDetails} closeDialog={handleCloseDialog} setDialogResult={setDialogResult} />)}
           >
             Add a new master candidate
           </Button>
@@ -166,7 +184,7 @@ export default function ManagementMasterCommitteePage() {
                       variant='outlined'
                       colour='success'
                       className='px-4'
-                      onClick={() => openDialog(<PromoteDialog closeDialog={handleCloseDialog} data={row} type='promote' setDialogResult={setDialogResult} />)}
+                      onClick={() => openDialog(<PromoteDialog accountDetails={accountDetails} closeDialog={handleCloseDialog} data={row} type='promote' setDialogResult={setDialogResult} />)}
                     >
                       Promote
                     </Button>
@@ -174,7 +192,7 @@ export default function ManagementMasterCommitteePage() {
                       variant='outlined'
                       colour='warning'
                       className='px-4 ml-2'
-                      onClick={() => openDialog(<PromoteDialog closeDialog={handleCloseDialog} data={row} type='demote' setDialogResult={setDialogResult} />)}
+                      onClick={() => openDialog(<PromoteDialog accountDetails={accountDetails} closeDialog={handleCloseDialog} data={row} type='demote' setDialogResult={setDialogResult} />)}
                     >
                       Demote
                     </Button>
