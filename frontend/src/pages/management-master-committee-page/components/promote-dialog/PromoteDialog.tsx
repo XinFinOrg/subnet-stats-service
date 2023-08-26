@@ -21,7 +21,7 @@ import Button from "@/components/button/Button";
 import type { ManagementLoaderData } from "@/types/loaderData";
 import { CONTRACT_ADDRESS } from "@/constants/config";
 import ABI from "../../../../abi/ABI.json";
-import { useAccount, useBalance } from "wagmi";
+import { useAccount, useBalance, useContractReads } from "wagmi";
 import { parseEther } from "viem";
 
 interface PromoteDialogProps {
@@ -107,11 +107,6 @@ interface UpdatedMasterNodeInfoProps {
 function FormContent(props: PromoteDialogProps) {
   const { type, data, closeDialog } = props;
 
-  const { minimumDelegation, grandmasterRemainingBalance } =
-    useLoaderData() as ManagementLoaderData;
-
-  const formik = useFormikContext<FormValues>();
-
   function getTitle(type: PromoteDialogType) {
     switch (type) {
       case "promote":
@@ -142,8 +137,24 @@ function FormContent(props: PromoteDialogProps) {
   const { address, delegation } = data;
   const formattedAddress = formatHash(address);
 
-  const { address: masterAddress } = useAccount();
-  const { data: balance } = useBalance({ address: masterAddress });
+  const { data: readData0 } = useContractReads({
+    contracts: [
+      {
+        address: CONTRACT_ADDRESS,
+        abi: ABI as any,
+        functionName: "getGrandMasters",
+      },
+      {
+        address: CONTRACT_ADDRESS,
+        abi: ABI as any,
+        functionName: "minCandidateCap",
+      },
+    ],
+  });
+  const grandmMasters = readData0?.[0]?.["result"] as any;
+  const minCandidateCap = Number(readData0?.[1]?.["result"]) / 1e18;
+
+  const { data: balance } = useBalance({ address: grandmMasters?.[0] });
 
   const initInfo = {
     data: [
@@ -157,11 +168,11 @@ function FormContent(props: PromoteDialogProps) {
       },
       {
         name: `${formattedAddress}'s minimum delegation:`,
-        value: `${minimumDelegation} hxdc`,
+        value: `${minCandidateCap} hxdc`,
       },
     ],
   };
- 
+
   const [rdata, setRdata] = useState({});
   (rdata as any)["voteAddress"] = address;
 
