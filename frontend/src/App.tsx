@@ -13,10 +13,13 @@ import "@rainbow-me/rainbowkit/styles.css";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
-
-import { publicProvider } from "wagmi/providers/public";
-
-import { Chain } from "wagmi";
+import { InjectedConnector } from "wagmi/connectors/injected";
+import {
+  Chain,
+  Wallet,
+  getWalletConnectConnector,
+  connectorsForWallets,
+} from "@rainbow-me/rainbowkit";
 
 export const xdcsubnet = {
   id: 56162,
@@ -33,6 +36,29 @@ export const xdcsubnet = {
   },
 } as const satisfies Chain;
 
+export interface MyWalletOptions {
+  chains: Chain[];
+}
+
+export const injectedWallet = ({ chains }: MyWalletOptions): Wallet => ({
+  id: "injected",
+  name: "XDC Pay",
+  iconUrl: async () => (await import("./assets/icon/icon.ico")).default,
+  iconBackground: "#fff",
+  hidden: ({ wallets }) =>
+    wallets.some(
+      (wallet) =>
+        wallet.installed &&
+        wallet.name === wallet.connector.name &&
+        (wallet.connector instanceof InjectedConnector ||
+          wallet.id === "coinbase")
+    ),
+  createConnector: () => ({
+    connector: new InjectedConnector({
+      chains,
+    }),
+  }),
+});
 const { chains, publicClient } = configureChains(
   [xdcsubnet],
   [
@@ -44,11 +70,12 @@ const { chains, publicClient } = configureChains(
   ]
 );
 
-const { connectors } = getDefaultWallets({
-  appName: "App",
-  projectId: "2a612b9a18e81ce3fda2f82787eb6a4a",
-  chains,
-});
+const connectors = connectorsForWallets([
+  {
+    groupName: "Recommended",
+    wallets: [injectedWallet({ chains })],
+  },
+]);
 const wagmiConfig = createConfig({
   autoConnect: true,
   connectors,
