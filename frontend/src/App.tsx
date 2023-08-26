@@ -19,7 +19,7 @@ import { publicProvider } from "wagmi/providers/public";
 import { Chain } from "wagmi";
 
 export const xdcsubnet = {
-  id: 8230,
+  id: 56162,
   name: "XDC Subnet",
   network: "XDC Subnet",
   nativeCurrency: {
