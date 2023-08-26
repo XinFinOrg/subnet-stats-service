@@ -3,8 +3,6 @@ import Web3, { Contract, FMT_BYTES, FMT_NUMBER } from 'web3';
 
 import { CONTRACT_ADDRESS, FIXED_CAP_VALUE } from '@/constants/config';
 import { ErrorTypes, ManagerError } from '@/services/grandmaster-manager/errors';
-import { CustomRpcMethodsPlugin } from '@/services/grandmaster-manager/extensions';
-import { weiToEther } from '@/utils/formatter';
 
 import { ABI } from './abi';
 import { StatsServiceClient } from './statsServiceClient';
@@ -159,35 +157,11 @@ export class GrandMasterManager {
    */
   async getCandidates() {
     try {
-      return this.getCandidates_temporary()
-      // return await this.statsServiceClient.getCandidates();
+      return await this.statsServiceClient.getCandidates();
     } catch (error) {
       if (error instanceof ManagerError) throw error;
       throw new ManagerError("Unable to get list of candidates", ErrorTypes.INTERNAL_ERROR);
     }
-  }
-  
-  // TODO: To be removed after API is done for the getCandidates method
-  private async getCandidates_temporary() {
-    const rpcBasedWeb3 = new Web3("https://devnetstats.apothem.network/subnet");
-    rpcBasedWeb3.registerPlugin(new CustomRpcMethodsPlugin());
-    
-    const result = await rpcBasedWeb3!.xdcSubnet.getCandidates("latest");
-    if (!result) {
-      throw new ManagerError("Fail to get list of candidates from xdc subnet, empty value returned");
-    }
-    const { candidates, success } = result;
-    if (!success) {
-      throw new ManagerError("Fail to get list of candidates from xdc subnet");
-    }
-    return Object.entries(candidates).map(entry => {
-      const [address, { capacity, status }] = entry;
-      return {
-        address,
-        delegation: weiToEther(capacity),
-        status
-      };
-    }).sort((a, b) => b.delegation - a.delegation);
   }
   
   private async getGrandmasterAddressAndMinimumDelegation(forceRefreshGrandMaster?: boolean): Promise<{ minimumDelegation: number, grandMasterAddress: string[]}> {
