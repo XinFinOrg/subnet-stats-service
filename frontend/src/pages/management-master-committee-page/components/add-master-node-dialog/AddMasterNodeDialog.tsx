@@ -72,14 +72,24 @@ export default function AddMasterNodeDialog(props: AddMasterNodeDialogProps) {
     delegation: "",
   };
 
-  const { address } = useAccount();
-  const { data: balance } = useBalance({ address: address });
+  const { data: readData0 } = useContractReads({
+    contracts: [
+      {
+        address: CONTRACT_ADDRESS,
+        abi: ABI as any,
+        functionName: "getGrandMasters",
+      },
+    ],
+  });
+  const grandmMasters = readData0?.[0]?.["result"] as any;
+
+  const { data: balance } = useBalance({ address: grandmMasters?.[0] });
 
   const masternodeInfo: InfoListInfo = {
     data: [
       {
         name: "Grandmaster's remaining balance:",
-        value: (balance?.formatted as any) / 1,
+        value: (balance?.formatted as any) / 1+" xdc",
       },
     ],
   };

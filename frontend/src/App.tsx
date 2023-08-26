@@ -11,15 +11,10 @@ import { useIsDesktop } from "@/hooks/useMediaQuery";
 import { TooltipProvider } from "@radix-ui/react-tooltip";
 import "@rainbow-me/rainbowkit/styles.css";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
-import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
+import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
 import { InjectedConnector } from "wagmi/connectors/injected";
-import {
-  Chain,
-  Wallet,
-  getWalletConnectConnector,
-  connectorsForWallets,
-} from "@rainbow-me/rainbowkit";
+import { Chain, Wallet, connectorsForWallets } from "@rainbow-me/rainbowkit";
 
 export const xdcsubnet = {
   id: 56162,
