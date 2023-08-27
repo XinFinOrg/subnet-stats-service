@@ -34,13 +34,16 @@ export class RelayerController {
     }
   };
 
-  // TODO: Fetch the chain denom
   public getChainDetails = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    const data = {
-      rpcUrl: SUBNET_URL,
-      denom: 'xdc',
-      networkName: 'XDC-Subnet',
-    };
-    res.status(200).json(data);
+    try {
+      const result = await this.accountService.getNetworkInfo();
+      const data = {
+        ...result,
+        rpcUrl: SUBNET_URL,
+      };
+      res.status(200).json(data);
+    } catch (error) {
+      next(error);
+    }
   };
 }

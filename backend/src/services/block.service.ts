@@ -6,10 +6,7 @@ import { BlockInfo, LatestCommittedBlockInfoData } from '../interfaces/input/blo
 import { BaseBlockResponse, BlockResponse } from '../interfaces/output/blocksResponse.interface';
 import { SubnetClient } from '../client/subnet';
 import { HttpException } from '@/exceptions/httpException';
-import { BlocksController } from '@/controllers/blocks.controller';
 import { NUM_OF_BLOCKS_RETURN } from '../config';
-import { length } from 'class-validator';
-import { start } from 'repl';
 
 @Service()
 export class BlockService {

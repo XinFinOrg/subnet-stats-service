@@ -1,7 +1,7 @@
 import { Service } from 'typedi';
 import { MasternodesStorage } from './../storage/masternodes';
 import { SubnetClient } from '../client/subnet';
-import { Candidates } from '../client/extensions';
+
 @Service()
 export class MasternodesService {
   private masternodesStorage: MasternodesStorage;

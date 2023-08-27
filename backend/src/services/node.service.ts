@@ -1,5 +1,5 @@
 import { Service } from 'typedi';
-import { NodeInfo } from '../interfaces/node.interface';
+import { NodeInfo } from '../interfaces/input/node.interface';
 import { NodeStorage } from '../storage/node';
 import { ValidationException } from '../exceptions/validationException';
 

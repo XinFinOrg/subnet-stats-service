@@ -18,7 +18,7 @@ export class Services {
     this.nodeServide = new NodeService();
     this.blockService = new BlockService(subnetClient, parentChainClient);
     this.masternodeService = new MasternodesService();
-    this.accountService = new AccountService(parentChainClient);
+    this.accountService = new AccountService(subnetClient, parentChainClient);
   }
 }
 
