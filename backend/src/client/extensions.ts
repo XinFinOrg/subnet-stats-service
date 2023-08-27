@@ -40,6 +40,13 @@ export interface Candidates {
   epoch: number;
 }
 
+export interface NetworkInfo {
+  NetworkId: number;
+  XDCValidatorAddress: string;
+  Denom: string;
+  NetworkName: string;
+}
+
 export interface Web3WithExtension extends Web3 {
   xdcSubnet: {
     getV2Block: (type: 'committed') => Promise<FetchedV2BlockInfo>;
@@ -47,6 +54,7 @@ export interface Web3WithExtension extends Web3 {
     getV2BlockByHash: (blockHash: string) => Promise<FetchedV2BlockInfo>;
     getMasternodesByNumber: (blockStatus: BlockStatus) => Promise<MasternodesInfo>;
     getCandidates: (param: 'latest') => Promise<Candidates>;
+    getNetworkInfo: () => Promise<NetworkInfo>;
   };
 }
 
@@ -78,6 +86,11 @@ export const networkExtensions = (extensionName = 'xdcSubnet') => {
         name: 'getCandidates',
         params: 1,
         call: 'eth_getCandidates',
+      },
+      {
+        name: 'getNetworkInfo',
+        params: 0,
+        call: 'XDPoS_networkInformation',
       },
     ],
   };

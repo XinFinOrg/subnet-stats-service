@@ -282,6 +282,14 @@ paths:
                       rpcUrl:
                         description: Subnet Chain RPC URL
                         type: string
+                      denom:
+                        type: string
+                      networkName:
+                        type: string
+                      networkId:
+                        type: integer
+                      validatorSmartContractAddress:
+                        type: string
                     required:
                       - rpcUrl
                       - denom

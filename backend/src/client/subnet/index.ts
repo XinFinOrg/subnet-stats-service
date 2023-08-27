@@ -1,4 +1,3 @@
-import { Candidates } from './../extensions';
 import Web3 from 'web3';
 import { HttpsAgent } from 'agentkeepalive';
 import { networkExtensions, Web3WithExtension } from '../extensions';
@@ -33,6 +32,21 @@ export class SubnetClient {
     } catch (error) {
       logger.error(`Fail to load candidates information from subnet nodes, ${error}`);
       throw new HttpException(500, error.message ? error.message : 'Exception when getting candidates information from subnet node');
+    }
+  }
+
+  async getNetworkInfo() {
+    try {
+      const { NetworkId, XDCValidatorAddress, Denom, NetworkName } = await this.web3.xdcSubnet.getNetworkInfo();
+      return {
+        networkId: NetworkId,
+        validatorSmartContractAddress: XDCValidatorAddress,
+        denom: Denom ? Denom : 'xdc',
+        networkName: NetworkName ? NetworkName : 'xdc-subnet',
+      };
+    } catch (error) {
+      logger.error(`Fail to load chain network information from subnet nodes, ${error}`);
+      throw new HttpException(500, error.message ? error.message : 'Exception when getting network information from subnet node');
     }
   }
 
