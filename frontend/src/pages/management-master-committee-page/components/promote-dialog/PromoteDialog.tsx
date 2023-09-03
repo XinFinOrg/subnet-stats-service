@@ -1,8 +1,7 @@
 import { Form, Formik, FormikContextType, useFormikContext } from "formik";
-import { useContext, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useLoaderData } from "react-router-dom";
 import * as Yup from "yup";
-import WriteButtion from "@/components/WriteButton";
 import {
   DialogButtons,
   DialogResultBase,
@@ -10,19 +9,17 @@ import {
 } from "@/components/dialog/Dialog";
 import { DialogFormField } from "@/components/form-field/FormField";
 import InfoList from "@/components/info-list/InfoList";
-import { ServiceContext } from "@/contexts/ServiceContext";
 import {
   setMasterNodeDialogFailResult,
   setMasterNodeDialogSuccessResult,
 } from "@/pages/management-master-committee-page/utils/helper";
-import { CandidateDetails } from "@/services/grandmaster-manager/statsServiceClient";
 import { formatHash } from "@/utils/formatter";
-import Button from "@/components/button/Button";
 import type { ManagementLoaderData } from "@/types/loaderData";
 import { CONTRACT_ADDRESS } from "@/constants/config";
 import ABI from "../../../../abi/ABI.json";
-import { useAccount, useBalance, useContractReads } from "wagmi";
+import { useContractWrite, useBalance, useContractReads } from "wagmi";
 import { parseEther } from "viem";
+import { CandidateDetails } from "../../ManagementMasterCommitteePage";
 
 interface PromoteDialogProps {
   type: PromoteDialogType;
@@ -40,12 +37,11 @@ interface FormValues {
 type PromoteDialogType = "promote" | "demote";
 
 export default function PromoteDialog(props: PromoteDialogProps) {
-  const { setDialogResult, data, type } = props;
+  const { setDialogResult, type } = props;
 
   const { minimumDelegation } = useLoaderData() as ManagementLoaderData;
 
   const formikRef = useRef<FormikContextType<FormValues>>(null);
-  const service = useContext(ServiceContext);
 
   const initialValues: FormValues = {
     increaseDelegation: "",
@@ -60,29 +56,54 @@ export default function PromoteDialog(props: PromoteDialogProps) {
         `The value must be greater than minimum delegation ${minimumDelegation}`
       ),
   });
-
+  
+  const voteCall = useContractWrite({
+    address: CONTRACT_ADDRESS,
+    abi: ABI as any,
+    functionName: "vote",
+  })
+  
+  const unvoteCall = useContractWrite({
+    address: CONTRACT_ADDRESS,
+    abi: ABI as any,
+    functionName: "unvote",
+  })
+  
+  useEffect(() => {
+    if (setDialogResult) {
+      if (voteCall.error || unvoteCall.error) {
+        setMasterNodeDialogFailResult(setDialogResult, voteCall.error ? voteCall.error : unvoteCall.error);
+      } else if (voteCall.isSuccess || unvoteCall.isSuccess) {
+        setMasterNodeDialogSuccessResult(setDialogResult);
+      }
+    }  
+  })
+  
   async function handleSubmit({ increaseDelegation }: FormValues) {
     if (
       !increaseDelegation ||
       Number.isNaN(increaseDelegation) ||
-      !setDialogResult ||
-      !service ||
       !formikRef.current
     ) {
       return;
+    }  
+    const delegation = getDelegation(increaseDelegation, type);
+    if (delegation >0 ) {
+      voteCall.write({
+        args: [props.data.address.replace(/^xdc/, "0x")],
+        value: parseEther(delegation.toString()),
+      });
+    } else {
+      unvoteCall.write({
+        args: [
+          props.data.address.replace(/^xdc/, "0x"),
+          parseEther((Math.abs(delegation)).toString()),
+        ]
+      });
     }
-
-    try {
-      const delegation = getDelegation(increaseDelegation, type);
-      await service.changeVote(data.address, delegation);
-
-      setMasterNodeDialogSuccessResult(setDialogResult);
-
-      formikRef.current.resetForm();
-    } catch (error) {
-      setMasterNodeDialogFailResult(setDialogResult, error);
-    }
+    formikRef.current.resetForm();
   }
+  
 
   return (
     <Formik
@@ -106,6 +127,7 @@ interface UpdatedMasterNodeInfoProps {
 
 function FormContent(props: PromoteDialogProps) {
   const { type, data, closeDialog } = props;
+  const formik = useFormikContext<FormValues>();
 
   function getTitle(type: PromoteDialogType) {
     switch (type) {
@@ -173,35 +195,6 @@ function FormContent(props: PromoteDialogProps) {
     ],
   };
 
-  const [rdata, setRdata] = useState({});
-  (rdata as any)["voteAddress"] = address;
-
-  const promote = {
-    buttonName: "Proceed to wallet confirmation",
-    disabled: !((rdata as any)["voteAddress"] && (rdata as any)["voteValue"]),
-    data: {
-      address: CONTRACT_ADDRESS,
-      abi: ABI as any,
-      functionName: "vote",
-      args: [(rdata as any)["voteAddress"]?.replace(/^xdc/, "0x")],
-      value: parseEther((rdata as any)["voteValue"] || "0"),
-    },
-  };
-
-  const demote = {
-    buttonName: "Proceed to wallet confirmation",
-    disabled: !((rdata as any)["voteAddress"] && (rdata as any)["voteValue"]),
-    data: {
-      address: CONTRACT_ADDRESS,
-      abi: ABI as any,
-      functionName: "unvote",
-      args: [
-        (rdata as any)["voteAddress"]?.replace(/^xdc/, "0x"),
-        parseEther((rdata as any)["voteValue"] || "0"),
-      ],
-    },
-  };
-
   return (
     <>
       <DialogTitle title={title} />
@@ -210,17 +203,7 @@ function FormContent(props: PromoteDialogProps) {
       <div className="pt-6">
         <InfoList info={initInfo} noIcon valueClassName="text-lg" />
       </div>
-      <input
-        type="number"
-        placeholder="increaseDelegation"
-        className="input w-full max-w-xs my-2"
-        onChange={(e: any) => {
-          (rdata as any)["voteValue"] = e.target.value;
-
-          setRdata({ ...rdata });
-        }}
-      />
-      {/* <DialogFormField
+      <DialogFormField
         labelText={actionLabel}
         name="increaseDelegation"
         type="number"
@@ -232,32 +215,18 @@ function FormContent(props: PromoteDialogProps) {
             formik.touched.increaseDelegation
           )
         }
-      /> */}
+      />
       <PreviewUpdatedMasterNodeInfo
         delegation={delegation}
         formattedAddress={formattedAddress}
         type={type}
       />
-
-      <div className="flex gap-2 mt-2">
-        {type == "promote" && <WriteButtion {...promote} />}
-        {type == "demote" && <WriteButtion {...demote} />}
-
-        <Button
-          onClick={closeDialog}
-          className="font-extrabold px-4 py-2.5 flex-1"
-          variant="contained"
-          colour="primary"
-        >
-          {"Cancel"}
-        </Button>
-      </div>
-      {/* <DialogButtons
+      <DialogButtons
         isSubmitting={formik.isSubmitting}
         omitSeparator
         submitText="Proceed to wallet confirmation"
         onClose={closeDialog}
-      /> */}
+      />
     </>
   );
 }

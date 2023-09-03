@@ -13,15 +13,24 @@ import { ServiceContext } from "@/contexts/ServiceContext";
 import AddMasterNodeDialog from "@/pages/management-master-committee-page/components/add-master-node-dialog/AddMasterNodeDialog";
 import PromoteDialog from "@/pages/management-master-committee-page/components/promote-dialog/PromoteDialog";
 import RemoveMasterNodeDialog from "@/pages/management-master-committee-page/components/remove-master-node-dialog/RemoveMasterNodeDialog";
-import { CandidateDetailsStatus } from "@/services/grandmaster-manager/statsServiceClient";
-import { ManagerError } from "@/services/grandmaster-manager/errors";
+import { ManagerError } from "@/pages/errors";
 import { TableContent } from "@/types/managementMasterCommitteePage";
 import { formatHash } from "@/utils/formatter";
+import { baseUrl } from '@/constants/urls.ts';
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@radix-ui/react-tooltip";
+import axios from "axios";
+
+export type CandidateDetailsStatus = 'MASTERNODE' | 'PROPOSED' | 'SLASHED';
+
+export interface CandidateDetails {
+  address: string;
+  delegation: number;
+  status: CandidateDetailsStatus;
+}
 
 export default function ManagementMasterCommitteePage() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -39,9 +48,8 @@ export default function ManagementMasterCommitteePage() {
     async function fetchData() {
       try {
         setIsLoading(true);
-        const candidates = await service?.getCandidates();
-
-        if (!candidates) {
+        const { data } = await axios.get<CandidateDetails[]>(`${baseUrl}/information/candidates`);
+        if (!data) {
           setTableContent(null);
           return;
         }
@@ -92,7 +100,7 @@ export default function ManagementMasterCommitteePage() {
               width: "w-[100px]",
             },
           ],
-          body: candidates,
+          body: data,
         };
 
         setTableContent(tableContent);

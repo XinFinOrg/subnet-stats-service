@@ -1,5 +1,4 @@
 import { useContext, useEffect, useState } from "react";
-
 import Card from "@/components/card/Card";
 import ErrorState from "@/components/error-state/ErrorState";
 import InfoList from "@/components/info-list/InfoList";
@@ -10,9 +9,9 @@ import { useAccount, useBalance, useNetwork } from "wagmi";
 import type {
   ErrorTypes,
   ManagerError,
-} from "@/services/grandmaster-manager/errors";
+} from "@/pages/errors";
 
-export default function ManagementLoginPage() {
+export default function ManagementLoggedInPage() {
   const [errorType, setErrorType] = useState<ErrorTypes>();
 
   const [isLoading, setIsLoading] = useState(true);
@@ -38,7 +37,7 @@ export default function ManagementLoginPage() {
       { name: "Network RPC:", value: network.chain?.rpcUrls.default.http },
     ],
   };
-  //
+  
   useEffect(() => {
     setIsLoading(false);
   }, []);
@@ -54,7 +53,7 @@ export default function ManagementLoginPage() {
   if (!address) {
     return <ErrorState title="master login" />;
   }
-
+  // TODO: Check if address is the grandmaster
   return (
     <>
       <h1 className="text-xl font-extrabold">

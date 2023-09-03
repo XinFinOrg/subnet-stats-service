@@ -1,14 +1,11 @@
 import { createContext, PropsWithChildren } from 'react';
 
-import { GrandMasterManager } from '@/services/grandmaster-manager';
+export const ServiceContext = createContext<null>(null);
 
-export const ServiceContext = createContext<GrandMasterManager | null>(null);
-
-const grandMasterManager = new GrandMasterManager();
 
 export default function ServiceContextProvider({ children }: PropsWithChildren) {
   return (
-    <ServiceContext.Provider value={grandMasterManager}>
+    <ServiceContext.Provider value={null}>
       {children}
     </ServiceContext.Provider>
   );

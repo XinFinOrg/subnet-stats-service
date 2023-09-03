@@ -1,6 +1,6 @@
 import { DialogResultBase } from '@/components/dialog/Dialog';
 import { TransactionFail, TransactionSuccess } from '@/constants/transactionResult';
-import { ManagerError } from '@/services/grandmaster-manager/errors';
+import { ManagerError } from '@/pages/errors';
 
 export function setMasterNodeDialogSuccessResult(setDialogResult: React.Dispatch<React.SetStateAction<DialogResultBase | undefined>>
 ) {

@@ -1,5 +1,4 @@
-import { Outlet, useNavigation } from "react-router-dom";
-
+import { Outlet, useNavigation, useLoaderData } from "react-router-dom";
 import Alert from "@/components/alert/Alert";
 import Loader from "@/components/loader/Loader";
 import Nav from "@/components/nav/Nav";
@@ -15,76 +14,79 @@ import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
 import { InjectedConnector } from "wagmi/connectors/injected";
 import { Chain, Wallet, connectorsForWallets } from "@rainbow-me/rainbowkit";
-
-export const xdcsubnet = {
-  id: 56162,
-  name: "XDC Subnet",
-  network: "XDC Subnet",
-  nativeCurrency: {
-    decimals: 18,
-    name: "XDC Subnet",
-    symbol: "XDC",
-  },
-  rpcUrls: {
-    public: { http: ["https://devnetstats.apothem.network/subnet"] },
-    default: { http: ["https://devnetstats.apothem.network/subnet"] },
-  },
-} as const satisfies Chain;
-
-export interface MyWalletOptions {
-  chains: Chain[];
-}
-
-export const injectedWallet = ({ chains }: MyWalletOptions): Wallet => ({
-  id: "injected",
-  name: "XDC Pay",
-  iconUrl: async () => (await import("./assets/icon/icon.ico")).default,
-  iconBackground: "#fff",
-  hidden: ({ wallets }) =>
-    wallets.some(
-      (wallet) =>
-        wallet.installed &&
-        wallet.name === wallet.connector.name &&
-        (wallet.connector instanceof InjectedConnector ||
-          wallet.id === "coinbase")
-    ),
-  createConnector: () => ({
-    connector: new InjectedConnector({
-      chains,
-    }),
-  }),
-});
-const { chains, publicClient } = configureChains(
-  [xdcsubnet],
-  [
-    jsonRpcProvider({
-      rpc: (chain) => ({
-        http: "https://devnetstats.apothem.network/subnet",
-      }),
-    }),
-  ]
-);
-
-const connectors = connectorsForWallets([
-  {
-    groupName: "Recommended",
-    wallets: [injectedWallet({ chains })],
-  },
-]);
-const wagmiConfig = createConfig({
-  autoConnect: true,
-  connectors,
-  publicClient,
-});
+import { ChainSetting } from "./main";
 
 function App() {
+  const chainSetting = useLoaderData() as ChainSetting
   const navigation = useNavigation();
   const isDesktop = useIsDesktop();
 
+  const xdcsubnet = {
+    id: chainSetting.networkId,
+    name: chainSetting.networkName,
+    network: "XDC Subnet",
+    nativeCurrency: {
+      decimals: 18,
+      name: chainSetting.denom,
+      symbol: chainSetting.denom,
+    },
+    rpcUrls: {
+      public: { http: [chainSetting.rpcUrl] },
+      default: { http: [chainSetting.rpcUrl] },
+    },
+  } as const satisfies Chain;
+  
+  interface MyWalletOptions {
+    chains: Chain[];
+  }
+  
+  const injectedWallet = ({ chains }: MyWalletOptions): Wallet => ({
+    id: "injected",
+    name: "XDC Pay",
+    iconUrl: async () => (await import("./assets/icon/icon.ico")).default,
+    iconBackground: "#fff",
+    hidden: ({ wallets }) =>
+      wallets.some(
+        (wallet) =>
+          wallet.installed &&
+          wallet.name === wallet.connector.name &&
+          (wallet.connector instanceof InjectedConnector ||
+            wallet.id === "coinbase")
+      ),
+    createConnector: () => ({
+      connector: new InjectedConnector({
+        chains,
+      }),
+    }),
+  });
+  
+  const { chains, publicClient } = configureChains(
+    [xdcsubnet],
+    [
+      jsonRpcProvider({
+        rpc: (chain) => ({
+          http: chainSetting.rpcUrl
+        }),
+      }),
+    ]
+  );
+  
+  const connectors = connectorsForWallets([
+    {
+      groupName: "Recommended",
+      wallets: [
+        injectedWallet({ chains })
+      ],
+    },
+  ]);
+  const wagmiConfig = createConfig({
+    autoConnect: true,
+    connectors,
+    publicClient,
+  });
   const rainbowKitConfig = {
     chains: chains,
     showRecentTransactions: true,
-    coolMode: true,
   };
   return (
     <WagmiConfig config={wagmiConfig}>

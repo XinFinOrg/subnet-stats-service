@@ -220,9 +220,6 @@ paths:
                   subnet:
                     type: object
                     properties:
-                      name:
-                        description: Subnet Chain name
-                        type: string
                       block:
                         description: block metadata, such as mining frequency
                         type: object

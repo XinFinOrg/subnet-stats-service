@@ -1,6 +1,5 @@
 import { PropsWithChildren, useEffect, useState } from "react";
 import { useLoaderData, useLocation } from "react-router-dom";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
 import CheckerImage from "@/components/images/CheckerImage";
 import HouseImage from "@/components/images/HouseImage";
 import ManagementImage from "@/components/images/ManagementImage";
@@ -143,9 +142,6 @@ function BaseNavItems({ name, children }: BaseNavItemsProps) {
             page="managementMasterCommittee"
           />
         </div>
-      </div>
-      <div className="pl-7 mt-4">
-        <ConnectButton />
       </div>
     </>
   );
