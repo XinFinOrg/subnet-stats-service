@@ -64,7 +64,6 @@ export class BlocksController {
       const [blockStatus, chainStatus] = await Promise.all([this.blockService.getBlockStats(), this.blockService.getBlockChainStatus()]);
       const resp = {
         subnet: {
-          name: 'hashlab-subnet', // TODO: Get it from web3 api
           block: {
             averageBlockTime: blockStatus.averageBlockTime,
             txThroughput: blockStatus.txThroughput,

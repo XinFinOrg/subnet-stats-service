@@ -7,38 +7,46 @@ import { baseUrl } from '@/constants/urls.ts';
 import CheckerPage from '@/pages/CheckerPage.tsx';
 import ErrorPage from '@/pages/ErrorPage.tsx';
 import HomePage from '@/pages/HomePage.tsx';
-import ManagementLoginPage from '@/pages/management-login-page/ManagementLoginPage.tsx';
 import ManagementMasterCommitteePage from '@/pages/management-master-committee-page/ManagementMasterCommitteePage.tsx';
 
 import App from './App.tsx';
 
 import '@/index.css';
+import LoginPage from './pages/management-login-page/index.tsx';
 
-async function managementLoader() {
-  // async function getData() {
-  // TODO: This is broken without the new api
-  //   const response = await axios.get(`${baseUrl}/information/newAPI`);
-  //   return response.data;
-  // }
-
-  // const data = await getData();
-
-  return {
-    minimumDelegation: 0,
-    grandmasterRemainingBalance: 0
-  };
+export interface ChainSetting {
+  validatorSmartContractAddress: string;
+  networkId: number;
+  networkName: string;
+  denom: string;
+  rpcUrl: string;
 }
 
-export async function appLoader() {
+async function managementLoader() {
   async function getData() {
-    const response = await axios.get(`${baseUrl}/information/network`);
+    const response = await axios.get<ChainSetting>(`${baseUrl}/information/chainsetting`);
     return response.data;
   }
 
   const data = await getData();
 
   return {
-    name: data.subnet.name
+    minimumDelegation: 0,
+    grandmasterRemainingBalance: 0,
+    ...data
+  };
+}
+
+export async function appLoader() {
+  async function getData() {
+    const { data } = await axios.get<ChainSetting>(`${baseUrl}/information/chainsetting`);
+    return data;
+  }
+
+  const data = await getData();
+
+  return {
+    ...data
   };
 }
 
@@ -92,7 +100,8 @@ const router = createBrowserRouter([
       element: <CheckerPage />,
     }, {
       path: 'managementLogin',
-      element: <ManagementLoginPage />,
+      element: <LoginPage />,
+      loader: managementLoader
     }, {
       path: 'managementMasterCommittee',
       element: <ManagementMasterCommitteePage />,

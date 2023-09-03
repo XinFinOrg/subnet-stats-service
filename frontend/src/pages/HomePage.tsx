@@ -112,6 +112,7 @@ export default function HomePage() {
 
   return (
     <div className='grid gap-6 grid-col-1'>
+  
       <BlockCards
         lastSubnetBlock={lastSubnetBlock}
         lastParentBlock={lastParentBlock}
