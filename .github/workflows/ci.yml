@@ -71,18 +71,14 @@ jobs:
 
     - name: Install dependencies          #test after docker build to not pollute image with files
       run: yarn
-      env:
-        NODE_ENV: production
+      # env:
+      #   NODE_ENV: production
 
     - name: Test build 
       run: yarn run build
-      env:
-        NODE_ENV: production
 
     - name: Test serve 
       run: yarn global add serve
-      env:
-        NODE_ENV: production
 
     - name: Docker push
       run: docker push ${{ steps.image.outputs.name }}
