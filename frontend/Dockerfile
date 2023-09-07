@@ -8,4 +8,4 @@ WORKDIR /app
 
 RUN yarn 
 
-CMD ["/bin/sh","-c","/app/start.sh"]
+ENTRYPOINT ["/bin/sh","-c","/app/start.sh"]
