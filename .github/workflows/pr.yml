@@ -37,11 +37,8 @@ jobs:
     - name: Determine Docker Image Name
       id: image
       run: |
-        if [[ "${{github.ref_name}}" == "master" ]]; then
-          echo "name=xinfinorg/subnet-frontend:latest" >> $GITHUB_OUTPUT
-        else
-          echo "name=xinfinorg/subnet-frontend:${{github.ref_name}}" >> $GITHUB_OUTPUT
-        fi
+        echo "name=subnet-frontend:pr" >> $GITHUB_OUTPUT
+
     - name: Docker build and tag image
       run: docker build . --file Dockerfile --tag ${{ steps.image.outputs.name }}
 
