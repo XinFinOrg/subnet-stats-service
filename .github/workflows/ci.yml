@@ -4,6 +4,7 @@ on:
   push:
     branches:    
       - master
+      - fix-fe-img
     tags:
       - '*'
 
@@ -74,11 +75,8 @@ jobs:
       # env:
       #   NODE_ENV: production
 
-    - name: Test build 
-      run: yarn run build
-
-    - name: Test serve 
-      run: yarn global add serve
+    - name: Test run docker
+      run:  docker run --entrypoint /bin/sh local-frontend -c 'yarn run build && yarn global add serve'
 
     - name: Docker push
       run: docker push ${{ steps.image.outputs.name }}
