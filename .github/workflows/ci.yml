@@ -76,7 +76,7 @@ jobs:
       #   NODE_ENV: production
 
     - name: Test run docker
-      run:  docker run --entrypoint /bin/sh local-frontend -c 'yarn run build && yarn global add serve'
+      run:  docker run --entrypoint /bin/sh ${{ steps.image.outputs.name }} -c 'yarn run build && yarn global add serve'
 
     - name: Docker push
       run: docker push ${{ steps.image.outputs.name }}
