@@ -33,17 +33,14 @@ jobs:
     - uses: actions/setup-node@v3
       with:
         node-version: '18.x'
-    - name: Install dependencies
-      run: yarn
-      env:
-        NODE_ENV: production
 
-    - name: Test build 
-      run: yarn run build
-      env:
-        NODE_ENV: production
+    - name: Determine Docker Image Name
+      id: image
+      run: |
+        echo "name=subnet-frontend:pr" >> $GITHUB_OUTPUT
 
-    - name: Test serve 
-      run: yarn global add serve
-      env:
-        NODE_ENV: production
+    - name: Docker build and tag image
+      run: docker build . --file Dockerfile --tag ${{ steps.image.outputs.name }}
+
+    - name: Test run docker
+      run:  docker run --entrypoint /bin/sh ${{ steps.image.outputs.name }} -c 'yarn run build && yarn global add serve'

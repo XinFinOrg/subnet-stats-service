@@ -69,16 +69,8 @@ jobs:
     - name: Docker build and tag image
       run: docker build . --file Dockerfile --tag ${{ steps.image.outputs.name }}
 
-    - name: Install dependencies          #test after docker build to not pollute image with files
-      run: yarn
-      # env:
-      #   NODE_ENV: production
-
-    - name: Test build 
-      run: yarn run build
-
-    - name: Test serve 
-      run: yarn global add serve
+    - name: Test run docker
+      run:  docker run --entrypoint /bin/sh ${{ steps.image.outputs.name }} -c 'yarn run build && yarn global add serve'
 
     - name: Docker push
       run: docker push ${{ steps.image.outputs.name }}
