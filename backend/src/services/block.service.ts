@@ -216,7 +216,7 @@ export class BlockService {
     if (mode == 'lite') {
       if (timeDiff > 1000) isProcessing = false;
     } else {
-      if (timeDiff > 60) isProcessing = false;
+      if (timeDiff > 120) isProcessing = false;
     }
 
     return {
