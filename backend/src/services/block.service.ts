@@ -211,13 +211,10 @@ export class BlockService {
     const { smartContractHeight, smartContractCommittedHash } = await this.getAndSetLastSubmittedBlockInfo();
     const mode = await this.parentChainClient.mode();
     const { timestamp } = await this.parentChainClient.getParentChainBlockBySubnetHash(smartContractCommittedHash);
-    let isProcessing = true;
+
     const timeDiff = new Date().getTime() / 1000 - parseInt(timestamp.toString());
-    if (mode == 'lite') {
-      if (timeDiff > 1000) isProcessing = false;
-    } else if (mode == 'full') {
-      if (timeDiff > 120) isProcessing = false;
-    }
+
+    const isProcessing = (mode == 'full' && timeDiff < 120) || (mode == 'lite' && timeDiff < 1000);
 
     return {
       processedUntil: smartContractHeight,
