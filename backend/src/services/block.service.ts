@@ -215,7 +215,7 @@ export class BlockService {
     const timeDiff = new Date().getTime() / 1000 - parseInt(timestamp.toString());
     if (mode == 'lite') {
       if (timeDiff > 1000) isProcessing = false;
-    } else {
+    } else if (mode == 'full') {
       if (timeDiff > 120) isProcessing = false;
     }
 
