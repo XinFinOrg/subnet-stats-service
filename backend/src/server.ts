@@ -9,7 +9,7 @@ const app = new App([new Route()]);
 const server = http.createServer(app.getServer());
 const eventHandler = new EventsHandler(server);
 
-server.listen(3000, () => {
+server.listen(3001, () => {
   eventHandler.init();
   logger.info(`=================================`);
   logger.info('🚀 Subnet Stats Service listening on the port 3000');

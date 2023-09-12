@@ -70,6 +70,19 @@ export const abi = [
     type: 'event',
   },
   {
+    inputs: [],
+    name: 'MODE',
+    outputs: [
+      {
+        internalType: 'string',
+        name: '',
+        type: 'string',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
     constant: true,
     inputs: [
       {

@@ -12,6 +12,13 @@ export namespace InfoListInfo {
   }
 }
 
-export type InfoListHealth = 'Normal' | 'Abnormal';
+export type InfoListHealth = "Normal" | "Abnormal" | "Low funds";
 
-export type InfoNames = 'masterNodes' | 'relayer' | 'network' | 'parentChain' | 'transaction' | 'subnetBlock' | 'subnet';
+export type InfoNames =
+  | "masterNodes"
+  | "relayer"
+  | "network"
+  | "parentChain"
+  | "transaction"
+  | "subnetBlock"
+  | "subnet";

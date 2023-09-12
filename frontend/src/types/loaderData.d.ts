@@ -91,6 +91,7 @@ export namespace HomeLoaderData {
       details: string;
     };
     averageTXfee: number;
+    mode:string;
   }
 
   export interface Network {
