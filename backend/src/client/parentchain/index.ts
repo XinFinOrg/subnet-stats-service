@@ -58,6 +58,16 @@ export class ParentChainClient {
     }
   }
 
+  async mode(): Promise<string> {
+    try {
+      const result = await this.smartContractInstance.methods.MODE().call();
+      return result;
+    } catch (error) {
+      logger.error("Error while trying to fetch the mode in XDC mainnet", { message: error.message });
+      throw new HttpException(500, error.message ? error.message : 'Error while trying to fetch the mode in XDC parentchain');
+    }
+  }
+
   /**
    *
    * @param committedSubnetBlockHash WARNING: This method only check against the block has that has already been committed, otherwise always 0

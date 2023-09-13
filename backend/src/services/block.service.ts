@@ -135,7 +135,7 @@ export class BlockService {
   }
 
   // Returns the block num difference between what's mined in subnet and what's submitted to parent chain
-  public async getProcessingBacklog(): Promise<{ gap: number; isProcessing: boolean }> {
+  public async getProcessingBacklog(): Promise<{ gap: number; isProcessing: boolean; mode: string }> {
     const [lastSubnetCommittedBlock, smartContractProcessingInfo] = await Promise.all([
       this.getLastSubnetCommittedBlock(),
       this.getSmartContractProcessingInfo(),
@@ -143,6 +143,7 @@ export class BlockService {
     return {
       gap: lastSubnetCommittedBlock.number - smartContractProcessingInfo.processedUntil || -1,
       isProcessing: smartContractProcessingInfo.isProcessing,
+      mode: smartContractProcessingInfo.mode,
     };
   }
 
@@ -206,16 +207,19 @@ export class BlockService {
     };
   }
 
-  private async getSmartContractProcessingInfo(): Promise<{ processedUntil: number; isProcessing: boolean }> {
+  private async getSmartContractProcessingInfo(): Promise<{ processedUntil: number; isProcessing: boolean; mode: string }> {
     const { smartContractHeight, smartContractCommittedHash } = await this.getAndSetLastSubmittedBlockInfo();
+    const mode = await this.parentChainClient.mode();
     const { timestamp } = await this.parentChainClient.getParentChainBlockBySubnetHash(smartContractCommittedHash);
-    let isProcessing = true;
+
     const timeDiff = new Date().getTime() / 1000 - parseInt(timestamp.toString());
-    if (timeDiff > 60) isProcessing = false;
+
+    const isProcessing = (mode == 'full' && timeDiff < 120) || (mode == 'lite' && timeDiff < 1000);
 
     return {
       processedUntil: smartContractHeight,
       isProcessing,
+      mode,
     };
   }
 

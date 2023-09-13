@@ -27,6 +27,7 @@ export class RelayerController {
         health: {
           status: processingBacklog.isProcessing ? 'UP' : 'DOWN',
         },
+        mode: processingBacklog.mode,
       };
       res.status(200).json(resp);
     } catch (error) {
