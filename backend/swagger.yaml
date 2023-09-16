@@ -273,28 +273,22 @@ paths:
               schema: 
                 type: object
                 properties:
-                  subnet:
-                    type: object
-                    properties:
-                      rpcUrl:
-                        description: Subnet Chain RPC URL
-                        type: string
-                      denom:
-                        type: string
-                      networkName:
-                        type: string
-                      networkId:
-                        type: integer
-                      validatorSmartContractAddress:
-                        type: string
-                    required:
-                      - rpcUrl
-                      - denom
-                      - networkName
+                  rpcUrl:
+                    description: Subnet Chain RPC URL
+                    type: string
+                  denom:
+                    type: string
+                  networkName:
+                    type: string
+                  networkId:
+                    type: integer
+                  validatorSmartContractAddress:
+                    type: string
                 required:
-                  - subnet
+                  - rpcUrl
                   - denom
                   - networkName
+                  - networkId
         '400':
           description: 'Bad Request'
         '500':
