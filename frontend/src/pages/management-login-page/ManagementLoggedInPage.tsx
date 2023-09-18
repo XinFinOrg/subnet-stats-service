@@ -1,18 +1,11 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Card from "@/components/card/Card";
 import ErrorState from "@/components/error-state/ErrorState";
 import InfoList from "@/components/info-list/InfoList";
 import Loader from "@/components/loader/Loader";
-import LoginError from "@/pages/management-login-page/components/LoginError";
 import { formatHash } from "@/utils/formatter";
 import { useAccount, useBalance, useNetwork } from "wagmi";
-import type {
-  ErrorTypes,
-  ManagerError,
-} from "@/pages/errors";
-
 export default function ManagementLoggedInPage() {
-  const [errorType, setErrorType] = useState<ErrorTypes>();
 
   const [isLoading, setIsLoading] = useState(true);
 
@@ -44,10 +37,6 @@ export default function ManagementLoggedInPage() {
 
   if (isLoading) {
     return <Loader />;
-  }
-
-  if (errorType) {
-    return <LoginError errorType={errorType} />;
   }
 
   if (!address) {

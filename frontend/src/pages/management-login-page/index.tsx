@@ -8,7 +8,7 @@ import { ChainSetting } from "@/main";
 import ABI from "../../abi/ABI.json";
 
 export default function LoginPage() {
-  const loaderData = useLoaderData() as ChainSetting
+  const chainSetting = useLoaderData() as ChainSetting
   const { isConnected, address } = useAccount();
   const { data: readData0 } = useContractReads({
     contracts: [
@@ -22,11 +22,11 @@ export default function LoginPage() {
   const grandmMasters = readData0?.[0]?.["result"] as any;
   if (isConnected) {
     if (grandmMasters != address) {
-      return <LoginError errorType={ErrorTypes.NOT_GRANDMASTER}/>
+      return <LoginError errorType={ErrorTypes.NOT_GRANDMASTER} chainSetting={chainSetting}/>
     }    
     return <ManagementLoggedInPage/>
   } else {
-    return <LoginError errorType={ErrorTypes.WALLET_NOT_LOGIN}/>
+    return <LoginError errorType={ErrorTypes.WALLET_NOT_LOGIN} chainSetting={chainSetting}/>
   }
   
 }

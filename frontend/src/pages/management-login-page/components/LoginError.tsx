@@ -1,18 +1,22 @@
 import { twMerge } from "tailwind-merge";
 
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import XDCPlaceholder from "@/assets/xdc-logo.png";
+import fillinNetworkGif from "@/assets/fillin-network.gif";
+import addNetworkGif from "@/assets/add-network.gif";
+import importAccountGif from "@/assets/import-account.gif";
 import Card from "@/components/card/Card";
 import InfoList from "@/components/info-list/InfoList";
 import { ErrorTypes } from "@/pages/errors";
 
 
 import type { InfoListInfo } from "@/types/info";
+import { ChainSetting } from "@/main";
 interface LoginErrorProps {
   errorType: ErrorTypes;
+  chainSetting: ChainSetting;
 }
 
-export default function LoginError({ errorType }: LoginErrorProps) {
+export default function LoginError({ errorType, chainSetting }: LoginErrorProps) {
   return (
     <>
       <h1 className="text-2xl font-extrabold">Login in Portal</h1>
@@ -22,45 +26,79 @@ export default function LoginError({ errorType }: LoginErrorProps) {
           <h2 className="pl-4">How to log in correctly?</h2>
         </div>
         <div className="mt-8 grid gap-6 grid-cols-[repeat(auto-fill,minmax(330px,1fr))]">
-          <ImagePlaceholder />
-          <ImagePlaceholder />
-          <ImagePlaceholder />
+          <AddNetworkGif />
+          <FillInNetworkGif />
+          <ImportAccountGif />
         </div>
         <p className="mt-8 text-xl">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
-          minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-          aliquip ex ea commodo consequat. Duis aute irure dolor in
-          reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-          pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-          culpa qui officia deserunt mollit anim id est laborum.
+          <b>Metamask</b>
         </p>
         <p className="mt-8 text-xl">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
-          minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-          aliquip ex ea commodo consequat. Duis aute irure dolor in
-          reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-          pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-          culpa qui officia deserunt mollit anim id est laborum.
+          1. Download the Wallet from <a target="_blank" href="https://metamask.io/download/" style={{color: "blue"}}>Metamask</a> or <a target="_blank" href="https://chrome.google.com/webstore/detail/xdcpay-20/iidmfamdbddcbjmemafekkohbnfiblhp" style={{color: "blue"}}>XDCPay 2.0</a>
+        </p>
+        <p className="mt-8 text-xl">
+          2. Follow wallet instruction to <b>Create new wallet</b>
+        </p>
+        <p className="mt-8 text-xl">
+          3. Click top left network selector button and <b>"Add a network manually"</b>, filling below fields and save:
+          <br></br>
+          <b>Network name:</b> {chainSetting.networkName}
+          <br></br>
+          <b>New RPC URL:</b> {chainSetting.rpcUrl}
+          <br></br>
+          <b>Chain ID:</b> {chainSetting.networkId}
+          <br></br>
+          <b>Currency symbol:</b> {chainSetting.denom}
+        </p>
+        <p className="mt-8 text-xl">
+          4. Click account selector and select <b>Import account</b>, paste your <b>grandmaster private key</b>
+        </p>
+        <p className="mt-8 text-xl">
+          5. Click the "Connect Wallet" button and click "XDC Pay". Follow the instruction to connect to the site.
         </p>
       </Card>
     </>
   );
 }
 
-function ImagePlaceholder() {
+function AddNetworkGif() {
   return (
     <img
       loading="lazy"
       className="p-5 h-[330px] object-contain"
       width="330"
       height="330"
-      src={XDCPlaceholder}
+      src={addNetworkGif}
       alt="placeholder"
     />
   );
 }
+function FillInNetworkGif() {
+  return (
+    <img
+      loading="lazy"
+      className="p-5 h-[330px] object-contain"
+      width="330"
+      height="330"
+      src={fillinNetworkGif}
+      alt="placeholder"
+    />
+  );
+}
+
+function ImportAccountGif() {
+  return (
+    <img
+      loading="lazy"
+      className="p-5 h-[330px] object-contain"
+      width="330"
+      height="330"
+      src={importAccountGif}
+      alt="placeholder"
+    />
+  );
+}
+
 
 interface ManagementLoginPageInfoItemProps {
   info: InfoListInfo;
