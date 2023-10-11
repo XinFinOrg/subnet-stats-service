@@ -75,7 +75,6 @@ jobs:
     - name: Docker push
       run: docker push ${{ steps.image.outputs.name }}
 
-
   trigger_deploy_workflow:
     name: Trigger deployment workflow 
     needs: [frontend_test_build_and_push_to_docker_registry, backend_test_build_and_push_to_docker_registry]
