@@ -1,5 +1,4 @@
-name: Build and Push via Master
-
+name: Build and publish image 
 on:
   push:
     branches:    
