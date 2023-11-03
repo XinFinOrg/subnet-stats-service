@@ -6,7 +6,7 @@ on:
   
 jobs:
   test_on_pr_backend:
-    name: Test Backend
+    name: Run backend tests on PR
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
@@ -22,7 +22,7 @@ jobs:
     #   run: npm run test
 
   test_on_pr_frontend:
-    name: Test Frontend
+    name: Run frontend tests on PR
     runs-on: ubuntu-latest
     defaults:
       run:
