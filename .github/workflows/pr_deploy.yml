@@ -115,6 +115,13 @@ jobs:
     needs: [frontend_build_and_deploy, backend_build_and_deploy]
     runs-on: ubuntu-latest
     steps:
+      - name: Record branch env
+        id: branch
+        run: |
+          echo "repo=${{ github.repository }}" >> $GITHUB_OUTPUT
+          echo "branch=$(git rev-parse --abbrev-ref HEAD)" >> $GITHUB_OUTPUT
+          echo "commit=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+       
       - name: trigger deploy workflow
         id: trigger_deploy
         run: |
