@@ -3,7 +3,7 @@ import { Contract } from 'web3-eth-contract';
 import { HttpsAgent } from 'agentkeepalive';
 import { abi } from './contract';
 import { logger } from '../../utils/logger';
-import { CHECKPOINT_CONTRACT, PARENTCHAIN_URL } from '../../config';
+import { CHECKPOINT_CONTRACT, PARENTNET_URL } from '../../config';
 import { HttpException } from '../../exceptions/httpException';
 import { networkExtensions, Web3WithExtension } from '../extensions';
 
@@ -20,7 +20,7 @@ export class ParentChainClient {
 
   constructor() {
     const keepaliveAgent = new HttpsAgent();
-    const provider = new Web3.providers.HttpProvider(PARENTCHAIN_URL, { keepAlive: true, agent: { https: keepaliveAgent } });
+    const provider = new Web3.providers.HttpProvider(PARENTNET_URL, { keepAlive: true, agent: { https: keepaliveAgent } });
     this.web3 = new Web3(provider).extend(networkExtensions());
     this.smartContractInstance = new this.web3.eth.Contract(abi as any[], CHECKPOINT_CONTRACT);
   }

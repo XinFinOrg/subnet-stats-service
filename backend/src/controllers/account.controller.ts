@@ -1,5 +1,5 @@
 import { BlockService } from '../services/block.service';
-import { CHECKPOINT_CONTRACT, PARENTCHAIN_WALLET, SUBNET_URL } from '../config';
+import { CHECKPOINT_CONTRACT, PARENTNET_WALLET, SUBNET_URL } from '../config';
 import { getService } from '../services';
 import { AccountService } from '../services/account.service';
 import { NextFunction, Request, Response } from 'express';
@@ -20,7 +20,7 @@ export class RelayerController {
       const resp = {
         account: {
           balance: balance,
-          walletAddress: PARENTCHAIN_WALLET,
+          walletAddress: PARENTNET_WALLET,
         },
         backlog: processingBacklog.gap,
         contractAddress: CHECKPOINT_CONTRACT,

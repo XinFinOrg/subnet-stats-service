@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { PARENTCHAIN_URL } from '../config';
+import { PARENTNET_URL } from '../config';
 import { BlocksResponse } from '../interfaces/output/blocksResponse.interface';
 import { BlockService } from '../services/block.service';
 import { getService } from './../services/index';
@@ -70,7 +70,7 @@ export class BlocksController {
           },
         },
         parentChain: {
-          url: PARENTCHAIN_URL,
+          url: PARENTNET_URL,
           name: 'Devnet', // TODO: get from web3 api
         },
         health: {
