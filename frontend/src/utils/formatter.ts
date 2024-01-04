@@ -1,8 +1,5 @@
 import BigNumber from 'bignumber.js';
 
-export function formatHashFromNonZero(hash: string): string {
-  return formatHash(hash.replace(/0x[0]*/, 'xdc'));
-}
 
 export function formatHash(hash: string): string {
   if (hash?.length >= 15) {

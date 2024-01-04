@@ -8,7 +8,7 @@ import InfoList from '@/components/info-list/InfoList';
 import Loader from '@/components/loader/Loader';
 import SearchBar from '@/components/search-bar/SearchBar';
 import SearchNotFound from '@/components/search-not-found/SearchNotFound';
-import { formatHash, formatHashFromNonZero, formatMoney, formatTime } from '@/utils/formatter';
+import { formatHash, formatMoney, formatTime } from '@/utils/formatter';
 
 import type { Info, InfoListInfo } from '@/types/info';
 import type { SearchResult } from '@/types/searchResult';
@@ -71,7 +71,7 @@ function getMappedInfo(searchResult: SearchResult) {
         value: formatHash(parentChain.blockHash)
       }, {
         name: 'Proposer',
-        value: formatHashFromNonZero(parentChain.proposer)
+        value: parentChain.proposer
       }, {
         name: 'Timestamp',
         value: formatTime(parentChain.timestamp)
@@ -88,7 +88,7 @@ function getMappedInfo(searchResult: SearchResult) {
         value: formatHash(subnet.blockHash)
       }, {
         name: 'Proposer',
-        value: formatHashFromNonZero(subnet.proposer)
+        value: subnet.proposer
       }, {
         name: 'Timestamp',
         value: formatTime(subnet.timestamp)
