@@ -1,6 +1,6 @@
 import Web3 from 'web3';
 import { HttpsAgent } from 'agentkeepalive';
-import { networkExtensions, Web3WithExtension } from '../extensions';
+import { subnetExtensions, Web3WithExtension } from '../extensions';
 import { logger } from '../../utils/logger';
 import { HttpException } from '../../exceptions/httpException';
 import { SUBNET_URL } from '../../config';
@@ -19,7 +19,7 @@ export class SubnetClient {
     const keepaliveAgent = new HttpsAgent();
     const provider = new Web3.providers.HttpProvider(SUBNET_URL, { keepAlive: true, agent: { https: keepaliveAgent } });
 
-    this.web3 = new Web3(provider).extend(networkExtensions());
+    this.web3 = new Web3(provider).extend(subnetExtensions());
   }
 
   async getCandidates() {
