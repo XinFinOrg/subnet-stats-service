@@ -5,7 +5,7 @@ import { abi } from './contract';
 import { logger } from '../../utils/logger';
 import { CHECKPOINT_CONTRACT, PARENTNET_URL } from '../../config';
 import { HttpException } from '../../exceptions/httpException';
-import { parentnetExtensions, Web3WithExtension } from '../extensions';
+import { xdcExtensions, Web3WithExtension } from '../extensions';
 
 export interface SmartContractAuditedBlockInfo {
   smartContractHash: string;
@@ -21,7 +21,7 @@ export class ParentChainClient {
   constructor() {
     const keepaliveAgent = new HttpsAgent();
     const provider = new Web3.providers.HttpProvider(PARENTNET_URL, { keepAlive: true, agent: { https: keepaliveAgent } });
-    this.web3 = new Web3(provider).extend(parentnetExtensions());
+    this.web3 = new Web3(provider).extend(xdcExtensions());
     this.smartContractInstance = new this.web3.eth.Contract(abi as any[], CHECKPOINT_CONTRACT);
   }
 
@@ -103,7 +103,7 @@ export class ParentChainClient {
         timestamp: 0,
       }
     }
-    const { Committed, Hash, Miner, Timestamp } = await this.web3.xdcParentnet.getV2BlockByNumber(Web3.utils.numberToHex(mainnet_num));
+    const { Committed, Hash, Miner, Timestamp } = await this.web3.xdcApi.getV2BlockByNumber(Web3.utils.numberToHex(mainnet_num));
     return {
       isCommitted: Committed && finalized,
       parentchainHash: Hash,

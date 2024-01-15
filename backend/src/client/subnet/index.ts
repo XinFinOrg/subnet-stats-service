@@ -1,6 +1,6 @@
 import Web3 from 'web3';
 import { HttpsAgent } from 'agentkeepalive';
-import { subnetExtensions, Web3WithExtension } from '../extensions';
+import { xdcExtensions, Web3WithExtension } from '../extensions';
 import { logger } from '../../utils/logger';
 import { HttpException } from '../../exceptions/httpException';
 import { SUBNET_URL } from '../../config';
@@ -19,12 +19,12 @@ export class SubnetClient {
     const keepaliveAgent = new HttpsAgent();
     const provider = new Web3.providers.HttpProvider(SUBNET_URL, { keepAlive: true, agent: { https: keepaliveAgent } });
 
-    this.web3 = new Web3(provider).extend(subnetExtensions());
+    this.web3 = new Web3(provider).extend(xdcExtensions());
   }
 
   async getCandidates() {
     try {
-      const { candidates, success } = await this.web3.xdcSubnet.getCandidates('latest');
+      const { candidates, success } = await this.web3.xdcApi.getCandidates('latest');
       if (!success) {
         throw new Error('Failed on getting the candidates data');
       }
@@ -37,7 +37,7 @@ export class SubnetClient {
 
   async getNetworkInfo() {
     try {
-      const { NetworkId, XDCValidatorAddress, Denom, NetworkName } = await this.web3.xdcSubnet.getNetworkInfo();
+      const { NetworkId, XDCValidatorAddress, Denom, NetworkName } = await this.web3.xdcApi.getNetworkInfo();
       return {
         networkId: NetworkId,
         validatorSmartContractAddress: XDCValidatorAddress,
@@ -52,7 +52,7 @@ export class SubnetClient {
 
   async getLastMasternodesInformation(): Promise<MasternodesInfo> {
     try {
-      const { Number, Round, Masternodes, Penalty } = await this.web3.xdcSubnet.getMasternodesByNumber('latest');
+      const { Number, Round, Masternodes, Penalty } = await this.web3.xdcApi.getMasternodesByNumber('latest');
       return {
         currentBlockNumber: Number,
         currentRound: Round,
@@ -67,7 +67,7 @@ export class SubnetClient {
 
   async getLatestCommittedBlockInfo(): Promise<{ hash: string; number: number; round: number }> {
     try {
-      const { Hash, Number, Round } = await this.web3.xdcSubnet.getV2Block('committed');
+      const { Hash, Number, Round } = await this.web3.xdcApi.getV2Block('committed');
       return {
         hash: Hash,
         number: Number,
@@ -80,7 +80,7 @@ export class SubnetClient {
   }
 
   async getBlockInfoByHash(hash: string) {
-    const { Hash, Number, Committed, Miner, Timestamp } = await this.web3.xdcSubnet.getV2BlockByHash(hash);
+    const { Hash, Number, Committed, Miner, Timestamp } = await this.web3.xdcApi.getV2BlockByHash(hash);
     if (!Hash || !Number) {
       logger.warn(`Invalid block hash or height or ParentHash received, hash: ${hash}, number: ${Number}`);
       throw new HttpException(404, 'No such block exit in subnet');

@@ -48,7 +48,7 @@ export interface NetworkInfo {
 }
 
 export interface Web3WithExtension extends Web3 {
-  xdcSubnet: {
+  xdcApi: {
     getV2Block: (type: 'committed') => Promise<FetchedV2BlockInfo>;
     getV2BlockByNumber: (blockNum: string) => Promise<FetchedV2BlockInfo>;
     getV2BlockByHash: (blockHash: string) => Promise<FetchedV2BlockInfo>;
@@ -56,15 +56,9 @@ export interface Web3WithExtension extends Web3 {
     getCandidates: (param: 'latest') => Promise<Candidates>;
     getNetworkInfo: () => Promise<NetworkInfo>;
   };
-  xdcParentnet: {
-    getV2Block: (type: 'committed') => Promise<FetchedV2BlockInfo>;
-    getV2BlockByNumber: (blockNum: string) => Promise<FetchedV2BlockInfo>;
-    getV2BlockByHash: (blockHash: string) => Promise<FetchedV2BlockInfo>;
-    getNetworkInfo: () => Promise<NetworkInfo>;
-  }
 }
 
-export const subnetExtensions = (extensionName = 'xdcSubnet') => {
+export const xdcExtensions = (extensionName = 'xdcApi') => {
   return {
     property: extensionName,
     methods: [
@@ -92,34 +86,6 @@ export const subnetExtensions = (extensionName = 'xdcSubnet') => {
         name: 'getCandidates',
         params: 1,
         call: 'eth_getCandidates',
-      },
-      {
-        name: 'getNetworkInfo',
-        params: 0,
-        call: 'XDPoS_networkInformation',
-      },
-    ],
-  };
-};
-
-export const parentnetExtensions = (extensionName = 'xdcParentnet') => {
-  return {
-    property: extensionName,
-    methods: [
-      {
-        name: 'getV2Block',
-        params: 1,
-        call: 'XDPoS_getV2BlockByNumber',
-      },
-      {
-        name: 'getV2BlockByNumber',
-        params: 1,
-        call: 'XDPoS_getV2BlockByNumber',
-      },
-      {
-        name: 'getV2BlockByHash',
-        params: 1,
-        call: 'XDPoS_getV2BlockByHash',
       },
       {
         name: 'getNetworkInfo',
