@@ -125,7 +125,7 @@ export class BlocksController {
             blockHash: parentChain.parentchainBlockHash,
             blockHeight: parentChain.parentchainBlockHeight,
             proposer: parentChain.proposer,
-            timestamp: subnet.timestamp.toString(),
+            timestamp: parentChain.timestamp.toString(),
           },
         };
       } else if (parseInt(input)) {
@@ -145,7 +145,7 @@ export class BlocksController {
             blockHash: parentChain.parentchainBlockHash,
             blockHeight: parentChain.parentchainBlockHeight,
             proposer: parentChain.proposer,
-            timestamp: subnet.timestamp.toString(),
+            timestamp: parentChain.timestamp.toString(),
           },
         };
       } else {

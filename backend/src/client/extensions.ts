@@ -48,9 +48,9 @@ export interface NetworkInfo {
 }
 
 export interface Web3WithExtension extends Web3 {
-  xdcSubnet: {
+  xdcApi: {
     getV2Block: (type: 'committed') => Promise<FetchedV2BlockInfo>;
-    getV2BlockByNumber: (bluckNum: string) => Promise<FetchedV2BlockInfo>;
+    getV2BlockByNumber: (blockNum: string) => Promise<FetchedV2BlockInfo>;
     getV2BlockByHash: (blockHash: string) => Promise<FetchedV2BlockInfo>;
     getMasternodesByNumber: (blockStatus: BlockStatus) => Promise<MasternodesInfo>;
     getCandidates: (param: 'latest') => Promise<Candidates>;
@@ -58,7 +58,7 @@ export interface Web3WithExtension extends Web3 {
   };
 }
 
-export const networkExtensions = (extensionName = 'xdcSubnet') => {
+export const xdcExtensions = (extensionName = 'xdcApi') => {
   return {
     property: extensionName,
     methods: [
