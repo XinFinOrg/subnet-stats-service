@@ -62,6 +62,16 @@ export class BlocksController {
   public getBlockChainStats = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const [blockStatus, chainStatus] = await Promise.all([this.blockService.getBlockStats(), this.blockService.getBlockChainStatus()]);
+      let display_name: string
+      if (PARENTNET_URL == 'https://devnetstats.apothem.network/devnet') {
+        display_name = 'Devnet'
+      } else if (PARENTNET_URL == 'https://devnetstats.apothem.network/testnet') {
+        display_name = 'Testnet'
+      } else if (PARENTNET_URL == 'https://devnetstats.apothem.network/mainnet') {
+        display_name = 'Mainnet'
+      } else {
+        display_name = PARENTNET_URL        
+      }
       const resp = {
         subnet: {
           block: {
@@ -71,7 +81,7 @@ export class BlocksController {
         },
         parentChain: {
           url: PARENTNET_URL,
-          name: 'Devnet', // TODO: get from web3 api
+          name: display_name
         },
         health: {
           status: chainStatus ? 'UP' : 'DOWN',
