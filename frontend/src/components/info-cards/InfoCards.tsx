@@ -170,7 +170,7 @@ function getMappedInfo(
             Math.round(loaderData.network.subnet.block.txThroughput * 100) / 100
           } txs/s`,
         },
-        { name: "Checkpointed to", value: loaderData.network.parentChain.name },
+        { name: "Checkpointed to", value: loaderData.network.parentChain.url },
       ],
     };
   }
