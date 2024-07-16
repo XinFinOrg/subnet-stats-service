@@ -11,6 +11,7 @@ import { ErrorTypes } from "@/pages/errors";
 
 import type { InfoListInfo } from "@/types/info";
 import { ChainSetting } from "@/main";
+import { rpcUrl } from "@/constants/urls";
 interface LoginErrorProps {
   errorType: ErrorTypes;
   chainSetting: ChainSetting;
@@ -44,7 +45,7 @@ export default function LoginError({ errorType, chainSetting }: LoginErrorProps)
           <br></br>
           <b>Network name:</b> {chainSetting.networkName}
           <br></br>
-          <b>New RPC URL:</b> {chainSetting.rpcUrl}
+          <b>New RPC URL:</b> {rpcUrl}
           <br></br>
           <b>Chain ID:</b> {chainSetting.networkId}
           <br></br>

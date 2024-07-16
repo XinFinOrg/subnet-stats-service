@@ -15,6 +15,7 @@ import { configureChains, createConfig, WagmiConfig } from "wagmi";
 import { InjectedConnector } from "wagmi/connectors/injected";
 import { Chain, Wallet, connectorsForWallets } from "@rainbow-me/rainbowkit";
 import { ChainSetting } from "./main";
+import { rpcUrl } from "./constants/urls";
 
 function App() {
   const chainSetting = useLoaderData() as ChainSetting
@@ -31,8 +32,9 @@ function App() {
       symbol: chainSetting.denom,
     },
     rpcUrls: {
-      public: { http: [chainSetting.rpcUrl] },
-      default: { http: [chainSetting.rpcUrl] },
+      public: { http: [rpcUrl] },
+      default: { http: [rpcUrl] },
+      private: { http: [chainSetting.rpcUrl] }
     },
   } as const satisfies Chain;
   
@@ -65,7 +67,7 @@ function App() {
     [
       jsonRpcProvider({
         rpc: (chain) => ({
-          http: chainSetting.rpcUrl
+          http: rpcUrl
         }),
       }),
     ]

@@ -5,6 +5,7 @@ import InfoList from "@/components/info-list/InfoList";
 import Loader from "@/components/loader/Loader";
 import { formatHash } from "@/utils/formatter";
 import { useAccount, useBalance, useNetwork } from "wagmi";
+import { rpcUrl } from "@/constants/urls";
 export default function ManagementLoggedInPage() {
 
   const [isLoading, setIsLoading] = useState(true);
