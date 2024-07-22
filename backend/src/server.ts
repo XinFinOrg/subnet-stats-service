@@ -9,9 +9,9 @@ const app = new App([new Route()]);
 const server = http.createServer(app.getServer());
 const eventHandler = new EventsHandler(server);
 
-server.listen(3000, () => {
+server.listen(5213, () => {
   eventHandler.init();
   logger.info(`=================================`);
-  logger.info('🚀 Subnet Stats Service listening on the port 3000');
+  logger.info('🚀 Subnet Stats Service listening on the port 5213');
   logger.info(`=================================`);
 });
