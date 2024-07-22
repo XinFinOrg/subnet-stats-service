@@ -32,9 +32,9 @@ function App() {
       symbol: chainSetting.denom,
     },
     rpcUrls: {
+      // public: { http: [chainSetting.rpcUrl] } //backend provided url, for reference.
       public: { http: [rpcUrl] },
       default: { http: [rpcUrl] },
-      private: { http: [chainSetting.rpcUrl] }
     },
   } as const satisfies Chain;
   
