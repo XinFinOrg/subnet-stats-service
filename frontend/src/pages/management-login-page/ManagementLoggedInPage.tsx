@@ -27,7 +27,7 @@ export default function ManagementLoggedInPage() {
   const networkInfo = {
     data: [
       { name: "Network ID:", value: network.chain?.id },
-      { name: "Network Denom:", value: network.chain?.name },
+      { name: "Network Name:", value: network.chain?.name },
       { name: "Network RPC:", value: network.chain?.rpcUrls.default.http },
     ],
   };
