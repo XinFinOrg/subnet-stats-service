@@ -50,7 +50,7 @@ export default function InfoCards(props: InfoCardsProps) {
   }
 
   function getRelayerStatus(): InfoListHealth {
-    if (Number(loaderData.relayer?.account.balance) < 1) {
+    if (Number(loaderData.relayer?.account.balance) < 100) {
       return "Low funds";
     }
     if (loaderData.relayer?.health.status === "UP") {
