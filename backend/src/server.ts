@@ -1,4 +1,5 @@
 import http from 'http';
+import { STATS_PORT } from './config';
 import { App } from './app';
 import { Route } from './routes';
 import { EventsHandler } from './events';
@@ -9,9 +10,9 @@ const app = new App([new Route()]);
 const server = http.createServer(app.getServer());
 const eventHandler = new EventsHandler(server);
 
-server.listen(5213, () => {
+server.listen(STATS_PORT, () => {
   eventHandler.init();
   logger.info(`=================================`);
-  logger.info('🚀 Subnet Stats Service listening on the port 5213');
+  logger.info(`🚀 Subnet Stats Service listening on the port ${STATS_PORT}`);
   logger.info(`=================================`);
 });

@@ -20,3 +20,5 @@ if (!PARENTNET_WALLET || !CHECKPOINT_CONTRACT) {
 export const { NODE_ENV, LOG_FORMAT, STATS_SECRET } = process.env;
 
 export const CORS_ALLOW_ORIGIN = process.env.CORS_ALLOW_ORIGIN || '';
+
+export const STATS_PORT = process.env.STATS_PORT || '5213';

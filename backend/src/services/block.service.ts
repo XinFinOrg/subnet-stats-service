@@ -217,10 +217,11 @@ export class BlockService {
 
     let isProcessing = true;
     const blockDiff = subnetCommittedNumber - smartContractHeight;
-    if (mode == 'lite') {
-      if (blockDiff > 1000) isProcessing = false;
-    } else if (mode == 'full') {
-      if (blockDiff > 100) isProcessing = false;
+    if (mode == 'lite' && blockDiff > 1000) {
+      isProcessing = false;
+    }
+    if (mode == 'full' && blockDiff > 100) {
+      isProcessing = false;
     }
 
     return {
