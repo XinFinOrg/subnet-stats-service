@@ -73,7 +73,9 @@ export class ParentChainClient {
    * @param committedSubnetBlockHash WARNING: This method only check against the block has that has already been committed, otherwise always 0
    * @returns The full block header that hosted the transaction submitted by relayer (i.e the tx for committing the subnet block into parentchain)
    */
-  async getParentChainBlockBySubnetHash(committedSubnetBlockHash: string) {
+  async getParentChainBlockBySubnetHash(committedSubnetBlockHash: string) { 
+  // TODO: check if this is possible, how can parentchain block num be known in SC
+  // TODO: also SC is returning subnet block height not parentnet height
     try {
       const { mainnet_num } = await this.smartContractInstance.methods.getHeader(committedSubnetBlockHash).call();
       if (!mainnet_num) {

@@ -30,7 +30,7 @@ build-dev: ## Build the container image - Dvelopment
 		-f Dockerfile.dev .
 
 run: ## Run the container image
-	docker run -d -it -p 3000:3000 ${APP_NAME}
+	docker run -d -it -p 5213:5213 ${APP_NAME}
 
 pause: ## Pause the containers
 	docker container rm -f ${APP_NAME}

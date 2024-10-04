@@ -7,6 +7,8 @@ import { BaseBlockResponse, BlockResponse } from '../interfaces/output/blocksRes
 import { SubnetClient } from '../client/subnet';
 import { HttpException } from '@/exceptions/httpException';
 import { NUM_OF_BLOCKS_RETURN } from '../config';
+import { logger } from '../utils/logger';
+
 
 @Service()
 export class BlockService {
@@ -211,10 +213,16 @@ export class BlockService {
     const { smartContractHeight, smartContractCommittedHash } = await this.getAndSetLastSubmittedBlockInfo();
     const mode = await this.parentChainClient.mode();
     const { timestamp } = await this.parentChainClient.getParentChainBlockBySubnetHash(smartContractCommittedHash);
+    const { number: subnetCommittedNumber } = await this.subnetClient.getLatestCommittedBlockInfo();
 
-    const timeDiff = new Date().getTime() / 1000 - parseInt(timestamp.toString());
-
-    const isProcessing = (mode == 'full' && timeDiff < 120) || (mode == 'lite' && timeDiff < 1000);
+    let isProcessing = true;
+    const blockDiff = subnetCommittedNumber - smartContractHeight;
+    if (mode == 'lite' && blockDiff > 1000) {
+      isProcessing = false;
+    }
+    if (mode == 'full' && blockDiff > 100) {
+      isProcessing = false;
+    }
 
     return {
       processedUntil: smartContractHeight,
