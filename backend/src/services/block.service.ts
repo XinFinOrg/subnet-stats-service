@@ -9,12 +9,12 @@ import { HttpException } from '@/exceptions/httpException';
 import { NUM_OF_BLOCKS_RETURN } from '../config';
 import { logger } from '../utils/logger';
 
-
 @Service()
 export class BlockService {
   private blockStorage: BlockStorage;
   private subnetClient: SubnetClient;
   private parentChainClient: ParentChainClient;
+  private committedRefreshedAtBlock = 0;
 
   constructor(subnetClient: SubnetClient, parentChainClient: ParentChainClient) {
     this.blockStorage = new BlockStorage();
@@ -105,6 +105,16 @@ export class BlockService {
     if (!lastCommittedBlock || lastCommittedBlock.number < newCommittedBlock.number) {
       await this.blockStorage.setLatestCommittedBlock(newCommittedBlock);
     }
+  }
+
+  // Every connected node reports each new block, so fetch the committed block once per mined block, not once per event
+  public async refreshLatestSubnetCommittedBlock(minedBlockNumber: number): Promise<void> {
+    if (minedBlockNumber <= this.committedRefreshedAtBlock) {
+      return;
+    }
+    this.committedRefreshedAtBlock = minedBlockNumber;
+    const committedBlock = await this.subnetClient.getLatestCommittedBlockInfo();
+    await this.addLatestSubnetCommittedBlock(committedBlock);
   }
 
   // This method will get the latest committed block in subnet

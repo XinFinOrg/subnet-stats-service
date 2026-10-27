@@ -1,6 +1,7 @@
 import Web3 from 'web3';
 import { HttpsAgent } from 'agentkeepalive';
 import { xdcExtensions, Web3WithExtension } from '../extensions';
+import { emptyIfUnknownBlock } from '../xdpos';
 import { logger } from '../../utils/logger';
 import { HttpException } from '../../exceptions/httpException';
 import { SUBNET_URL } from '../../config';
@@ -80,7 +81,7 @@ export class SubnetClient {
   }
 
   async getBlockInfoByHash(hash: string) {
-    const { Hash, Number, Committed, Miner, Timestamp } = await this.web3.xdcApi.getV2BlockByHash(hash);
+    const { Hash, Number, Committed, Miner, Timestamp } = await this.web3.xdcApi.getV2BlockByHash(hash).catch(emptyIfUnknownBlock);
     if (!Hash || !Number) {
       logger.warn(`Invalid block hash or height or ParentHash received, hash: ${hash}, number: ${Number}`);
       throw new HttpException(404, 'No such block exit in subnet');
