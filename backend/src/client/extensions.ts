@@ -1,4 +1,5 @@
 import Web3 from 'web3';
+import { formatMasternodesInfo, formatNetworkInfo, formatV2BlockInfo, web3Formatter } from './xdpos';
 
 export type BlockStatus = 'latest' | 'pending' | 'earliest' | 'committed';
 
@@ -20,7 +21,7 @@ export interface FetchedV2BlockInfo {
   Timestamp: number;
 }
 
-interface MasternodesInfo {
+export interface MasternodesInfo {
   Number: number;
   Round: number;
   MasternodesLen: number;
@@ -66,21 +67,25 @@ export const xdcExtensions = (extensionName = 'xdcApi') => {
         name: 'getV2Block',
         params: 1,
         call: 'XDPoS_getV2BlockByNumber',
+        outputFormatter: web3Formatter(formatV2BlockInfo),
       },
       {
         name: 'getV2BlockByNumber',
         params: 1,
         call: 'XDPoS_getV2BlockByNumber',
+        outputFormatter: web3Formatter(formatV2BlockInfo),
       },
       {
         name: 'getV2BlockByHash',
         params: 1,
         call: 'XDPoS_getV2BlockByHash',
+        outputFormatter: web3Formatter(formatV2BlockInfo),
       },
       {
         name: 'getMasternodesByNumber',
         params: 1,
         call: 'XDPoS_getMasternodesByNumber',
+        outputFormatter: web3Formatter(formatMasternodesInfo),
       },
       {
         name: 'getCandidates',
@@ -91,6 +96,7 @@ export const xdcExtensions = (extensionName = 'xdcApi') => {
         name: 'getNetworkInfo',
         params: 0,
         call: 'XDPoS_networkInformation',
+        outputFormatter: web3Formatter(formatNetworkInfo),
       },
     ],
   };

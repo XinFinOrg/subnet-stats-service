@@ -64,13 +64,20 @@ export class EventsHandler {
       });
 
       // Subnet block data are emitted per each mined block
-      spark.on('block', (data: BlockEventData) => {
+      spark.on('block', async (data: BlockEventData) => {
         logger.debug(`RECEIVER: block, data: ${JSON.stringify(data)}`);
-        if (data.id) {
-          // This event also include the committed block information
-          if (data.block && data.latestCommittedBlockInfo) {
-            this.services.blockService.addBlock(data.block);
+        if (data.id && data.block) {
+          this.services.blockService.addBlock(data.block);
+          // XDPoSChain nodes include the committed block information in this event. Nethermind's
+          // EthStats sends the standard event without it, so read it from the subnet RPC instead.
+          if (data.latestCommittedBlockInfo) {
             this.services.blockService.addLatestSubnetCommittedBlock(data.latestCommittedBlockInfo);
+          } else {
+            try {
+              await this.services.blockService.refreshLatestSubnetCommittedBlock(data.block.number);
+            } catch (error) {
+              logger.warn(`Fail to refresh the latest committed block after block ${data.block.number}, ${error}`);
+            }
           }
         }
       });
